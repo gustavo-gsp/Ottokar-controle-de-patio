@@ -1,0 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    font-family: Roboto, Arial;
+}
+#addCar{
+    width: 43rem;
+    height: 25rem;
+    border: 2px solid;
+}
+div form input {
+    padding: 0.5rem;
+    margin-right: 3rem;
+}

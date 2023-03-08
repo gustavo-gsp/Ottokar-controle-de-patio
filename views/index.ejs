@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <title>Controle de patio</title>
+</head>
+<body>
+    <div id="addCar">
+        <h1>inserir Veículo</h1>
+        <form action="/create" method="post">
+            <label for="">Modelo:</label>
+            <input type="text" name="carName" id="carName" placeholder="Modelo do veículo">
+            <label for="">Placa:</label>
+            <input type="text" name="plate" id="plate" placeholder="Placa do veículo"><br>
+            <label for="">Previsão conclusão:</label>
+            <input type="datetime-local" name="forecast" id="forecast">
+            <label for="">Reclamação:</label>
+            <input type="text" name="complaint" id="complaint" placeholder="Reclamação do cliente"><br>
+            <label for="">Serviços:</label>
+            <textarea name="services" id="services" placeholder="Serviços" id="" cols="30" rows="10"></textarea>
+            <label for="">Peças:</label>
+            <textarea name="parts" id="parts" placeholder="peças" id="" cols="30" rows="10" ></textarea><br>
+            <input type="hidden" value="Agendado" name="stage">
+            <input type="hidden" value="" name="stage">
+            <button id="addButton" type="submit">Adicionar</button>
+        </form>
+    </div>
+
+    <ul>
+        <li>
+            
+            <% carList.forEach((car) =>{ %>
+                
+                <li>Modelo: <%= car.carName %> | Placa: <%= car.plate %> | Status: <%= car.stage%> |
+                    Responsavel: <%= car.responsible%> 
+                </li>
+                
+                <% }) %>
+            </li>
+    </ul>
+    <script src="script.js"></script>
+</body>
+</html>
