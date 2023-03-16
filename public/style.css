@@ -6,8 +6,20 @@
 }
 #addCar{
     width: 43rem;
-    height: 25rem;
+    
     border: 2px solid;
+    position: relative;
+    
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #00000080;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto;
 }
 div form input {
     padding: 0.5rem;

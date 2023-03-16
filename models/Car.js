@@ -23,15 +23,10 @@ const carSchema = new mongoose.Schema({
         type: String,
     },parts: {
         type: String,
-    },
-
-
-
-
-    date: {
+    },date: {
         type: Date,
         default: Date.now(),
     },    
 });
 
-module.exports = mongoose.model('Car', carSchema)
+module.exports = mongoose.model('Car', carSchema);

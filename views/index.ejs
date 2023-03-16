@@ -9,34 +9,62 @@
     <title>Controle de patio</title>
 </head>
 <body>
-    <div id="addCar">
+    <a href="">Novo veículo</a>
+    <section>
         <h1>inserir Veículo</h1>
-        <form action="/create" method="post">
-            <label for="">Modelo:</label>
-            <input type="text" name="carName" id="carName" placeholder="Modelo do veículo">
-            <label for="">Placa:</label>
-            <input type="text" name="plate" id="plate" placeholder="Placa do veículo"><br>
-            <label for="">Previsão conclusão:</label>
-            <input type="datetime-local" name="forecast" id="forecast">
-            <label for="">Reclamação:</label>
-            <input type="text" name="complaint" id="complaint" placeholder="Reclamação do cliente"><br>
-            <label for="">Serviços:</label>
-            <textarea name="services" id="services" placeholder="Serviços" id="" cols="30" rows="10"></textarea>
-            <label for="">Peças:</label>
-            <textarea name="parts" id="parts" placeholder="peças" id="" cols="30" rows="10" ></textarea><br>
-            <input type="hidden" value="Agendado" name="stage">
-            <input type="hidden" value="" name="stage">
-            <button id="addButton" type="submit">Adicionar</button>
+        <div id="addCar">
+            <form action="/createCar" method="post">
+                <label for="">Modelo:</label>
+                <input type="text" name="carName" id="carName" placeholder="Modelo do veículo">
+                <label for="">Placa:</label>
+                <input type="text" name="plate" id="plate" placeholder="Placa do veículo"><br>
+                <label for="">Previsão conclusão:</label>
+                <input type="datetime-local" name="forecast" id="forecast">
+                <label for="">Reclamação:</label>
+                <input type="text" name="complaint" id="complaint" placeholder="Reclamação do cliente"><br>
+                <label for="">Serviços:</label>
+                <textarea name="services" id="services" placeholder="Serviços" id="" cols="30" rows="10" ></textarea>
+                <label for="">Peças:</label>
+                <textarea name="parts" id="parts" placeholder="peças" id="" cols="30" rows="10" ></textarea><br>
+                <input type="hidden" value="Agendado" name="stage">
+                <input type="hidden" value="" name="stage">
+                <button id="addButton" type="submit">Adicionar</button>
+            </form>
+        </div>
+
+    </section>
+    <div>
+        <h1>Cadastro De Usuário</h1>
+        <form action="/createUser" method="post">
+            <label >Usuário</label>
+            <input type="text" name="user" id="user" placeholder="Digite o nome de usuario"><br>
+            <label >Senha</label>
+            <input type="password" name="password" id="password" placeholder="Digite a senha"><br>
+            <label>função</label>
+            <select name="func" id="func" required>
+                <option value="mec">Mecânico</option> <option value="fun">Funileiro</option>
+                <option value="buyer">Comprador</option> <option value="seller">Vendedor</option>
+                <option value="manager">Gerente</option>
+            </select><br>
+            <button type="submit">Cadastrar</button>
         </form>
     </div>
-
+    <section>
+        <div></div>
+    </section>
     <ul>
         <li>
             
             <% carList.forEach((car) =>{ %>
                 
-                <li>Modelo: <%= car.carName %> | Placa: <%= car.plate %> | Status: <%= car.stage%> |
+                <li><div>
+                    Modelo: <%= car.carName %> | Placa: <%= car.plate %> | Status: <%= car.stage%> |
                     Responsavel: <%= car.responsible%> 
+                </div> 
+                <div>
+                    <a class="btnDetals" href="" title="Detalhes"><i class="bi bi-list"></i></a>
+                    <a class="btnConclude" href="" title="Cuncluir tarefa"><i class="bi bi-check-square"></i></a>
+                </div>
                 </li>
                 
                 <% }) %>
