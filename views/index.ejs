@@ -17,15 +17,20 @@
                 <label for="">Modelo:</label>
                 <input type="text" name="carName" id="carName" placeholder="Modelo do veículo">
                 <label for="">Placa:</label>
-                <input type="text" name="plate" id="plate" placeholder="Placa do veículo"><br>
-                <label for="">Previsão conclusão:</label>
-                <input type="datetime-local" name="forecast" id="forecast">
+                <input type="text" name="plate" id="plate" placeholder="Placa do veículo">
+                <label for="">Especialidade:</label>
+                <select name="" id="">
+                    <option value="mec">Mecanica</option>
+                    <option value="fun">Funilaria</option>
+                </select><br>
                 <label for="">Reclamação:</label>
-                <input type="text" name="complaint" id="complaint" placeholder="Reclamação do cliente"><br>
+                <input type="text" name="complaint" id="complaint" style="width: 15rem; height: 1rem;" placeholder="Reclamação do cliente">
+                <label for="">Previsão conclusão:</label>
+                <input type="datetime-local" name="forecast" id="forecast"><br>
                 <label for="">Serviços:</label>
-                <textarea name="services" id="services" placeholder="Serviços" id="" cols="30" rows="10" ></textarea>
+                <input type="text" name="services" id="services" placeholder="Serviços" style="width: 15rem; height: 10rem;">
                 <label for="">Peças:</label>
-                <textarea name="parts" id="parts" placeholder="peças" id="" cols="30" rows="10" ></textarea><br>
+                <input name="parts" id="parts" placeholder="peças" style="width: 15rem; height: 10rem;"><br>
                 <input type="hidden" value="Agendado" name="stage">
                 <input type="hidden" value="" name="stage">
                 <button id="addButton" type="submit">Adicionar</button>
@@ -33,43 +38,63 @@
         </div>
 
     </section>
-    <div>
-        <h1>Cadastro De Usuário</h1>
-        <form action="/createUser" method="post">
-            <label >Usuário</label>
-            <input type="text" name="user" id="user" placeholder="Digite o nome de usuario"><br>
-            <label >Senha</label>
-            <input type="password" name="password" id="password" placeholder="Digite a senha"><br>
-            <label>função</label>
-            <select name="func" id="func" required>
-                <option value="mec">Mecânico</option> <option value="fun">Funileiro</option>
-                <option value="buyer">Comprador</option> <option value="seller">Vendedor</option>
-                <option value="manager">Gerente</option>
-            </select><br>
-            <button type="submit">Cadastrar</button>
-        </form>
-    </div>
     <section>
-        <div></div>
+        <div>
+                <h1>Cadastro De Usuário</h1>
+            <form action="/createUser" method="post">
+                <label >Usuário</label>
+                <input type="text" name="user" id="user" placeholder="Digite o nome de usuario"><br>
+                <label >Senha</label>
+                <input type="password" name="password" id="password" placeholder="Digite a senha"><br>
+                <label>função</label>
+                <select name="func" id="func" required>
+                    <option value="mec">Mecânico</option> <option value="fun">Funileiro</option>
+                    <option value="buyer">Comprador</option> <option value="seller">Vendedor</option>
+                    <option value="manager">Gerente</option>
+                </select><br>
+                <button type="submit">Cadastrar</button>
+            </form>
+        </div>
     </section>
-    <ul>
-        <li>
-            
-            <% carList.forEach((car) =>{ %>
-                
-                <li><div>
-                    Modelo: <%= car.carName %> | Placa: <%= car.plate %> | Status: <%= car.stage%> |
-                    Responsavel: <%= car.responsible%> 
-                </div> 
-                <div>
-                    <a class="btnDetals" href="" title="Detalhes"><i class="bi bi-list"></i></a>
-                    <a class="btnConclude" href="" title="Cuncluir tarefa"><i class="bi bi-check-square"></i></a>
-                </div>
+
+    <section style="border: 0.1rem solid; width: 40rem; height: 25rem; background-color: orange;">
+
+        <label for="">Modelo:</label>
+        <textarea name="" id="" cols="10" rows="1"></textarea>
+        <label for="">Placa:</label>
+        <textarea name="" id="" cols="10" rows="1"></textarea>
+        <label for="">Reclamação:</label>
+        <textarea name="" id="" cols="30" rows="1"></textarea><br>
+        <label for="">Previsão conclusão:</label>
+        <textarea name="" id="" cols="10" rows="1"></textarea>
+        <label for="">Status:</label>
+        <textarea name="" id="" cols="10" rows="1"></textarea><br>
+        <label for="">Serviços:</label>
+        <textarea name="services" id="services" placeholder="Serviços" cols="30" rows="10" ></textarea>
+        <label for="">Peças:</label>
+        <textarea name="parts" id="parts" placeholder="peças" cols="30" rows="10"></textarea><br>
+        <label for="">Historico:</label>
+        <textarea name="parts" id="parts" placeholder="peças" cols="30" rows="10"></textarea><br>
+    </section>
+    <a href="/conclude/<%= status %>">aaaaaaaaaa</a>
+    <section>    
+        <ul>
+            <li>
+                <% carList.forEach((car) =>{ %>
+                    <li><div>
+                        Modelo: <%= car.carName %> | Placa: <%= car.plate %> | Status: <%= car.stage%> |
+                        Responsavel: <%= car.responsible%> 
+                    </div>
+                    <div>
+                        <a class="btnDetals" href="" title="Detalhes"><i class="bi bi-list"></i></a>
+                        <a class="btnConclude" href="/getById/<%= car._id%>/conclude/<%= car.stage %>" title="Cuncluir tarefa"><i class="bi bi-check-square"></i></a>
+                    </div>
                 </li>
-                
                 <% }) %>
             </li>
-    </ul>
+        </ul>
+    </section>
+
     <script src="script.js"></script>
 </body>
 </html>

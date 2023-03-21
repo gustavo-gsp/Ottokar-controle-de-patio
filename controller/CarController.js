@@ -32,17 +32,38 @@ const login = async (req, res) => {
 const getById = async (req, res) => {
     try{
         const carList = await Car.find();
-        
+        if(req.params.method == "conclude"){
+            const carConclude = await Car.findOne({ _id: req.params.id });
+            res.render("index", {conclude: true, carConclude, status: req.params.stage, carList});
+        }
     }catch (err) {
         res.status(500).send({error: err.message})
     }
-
 }
 
 const getAllCars = async (req, res) => {
     try{
         const carList = await Car.find();
         return res.render('index', {carList, userName});
+    }catch (err) {
+        res.status(500).send({error: err.message})
+    }
+}
+
+const concludeCar = async (req, res) =>{
+    try{
+        const status = req.params.stage;
+        let stage = "";
+        const carList = await Car.find();
+        if(status == "agendado"){
+            stage = 'aguardando';
+            await Car.updateOne({_id: req.params.id},stage);
+            res.redirect('/home')
+        }
+        else{
+            res.redirect('/login')
+        }
+
     }catch (err) {
         res.status(500).send({error: err.message})
     }
@@ -92,4 +113,5 @@ module.exports = {
     login,
     createUser,
     getById,
+    concludeCar,
 } 
