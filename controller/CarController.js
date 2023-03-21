@@ -1,9 +1,12 @@
 const Car = require('../models/Car');
 const User = require('../models/User');
 const Bcrypt = require('bcrypt');
+const moment = require('moment');
+
 let message = "";
 let userName = "";
-
+let status = "";
+let details = false;
 
 const home = (req, res) =>{
     message = "";
@@ -12,8 +15,8 @@ const home = (req, res) =>{
 
 const login = async (req, res) => {
     const log = req.body;
+    userName = log.user; 
     User.findOne({user: userName}).then(user => {
-        userName = log.user; 
         if(user != undefined){
             let correct = Bcrypt.compareSync(log.password, user.password);
             if(correct){
@@ -27,14 +30,28 @@ const login = async (req, res) => {
             res.render('login', {message});
         }    
     });
-
 }
+
 const getById = async (req, res) => {
     try{
         const carList = await Car.find();
+        status = req.params.stage;
+        const car = await Car.findOne({ _id: req.params.id });
         if(req.params.method == "conclude"){
-            const carConclude = await Car.findOne({ _id: req.params.id });
-            res.render("index", {conclude: true, carConclude, status: req.params.stage, carList});
+            res.render("index", {conclude: true, car, status, carList});
+        }else{
+            res.render('index', {
+                userName, status, car, carList,
+                details: true,
+                model: car.carName, 
+                plate: car.plate,
+                complaint: car.complaint,
+                forecast: car.forecast,
+                stage: car.stage,
+                services: car.services,
+                parts: car.parts,
+                historic: car.historic,
+            });
         }
     }catch (err) {
         res.status(500).send({error: err.message})
@@ -44,26 +61,7 @@ const getById = async (req, res) => {
 const getAllCars = async (req, res) => {
     try{
         const carList = await Car.find();
-        return res.render('index', {carList, userName});
-    }catch (err) {
-        res.status(500).send({error: err.message})
-    }
-}
-
-const concludeCar = async (req, res) =>{
-    try{
-        const status = req.params.stage;
-        let stage = "";
-        const carList = await Car.find();
-        if(status == "agendado"){
-            stage = 'aguardando';
-            await Car.updateOne({_id: req.params.id},stage);
-            res.redirect('/home')
-        }
-        else{
-            res.redirect('/login')
-        }
-
+        return res.render('index', {carList, userName, status, details});
     }catch (err) {
         res.status(500).send({error: err.message})
     }
@@ -93,18 +91,68 @@ const createCar = async (req, res) =>{
     try{
         await Car.create({
             carName: car.carName,
-            plate: car.plate,
+            plate: car.plate.toUpperCase(),
             forecast: car.forecast.substring(0,17),
             complaint: car.complaint,
             services: car.services,
             parts: car.parts,
+            responsible: car.userName,
+            specialty: car.specialty,
+            historic: `Agendado - (${userName} | ${moment().format("DD/MM/YYYY hh:mm")})`,
         });
-        return res.redirect('/home');
+        return res.redirect('/carPage');
     }catch (err) {
         res.status(500).send({error: err.message})
     }
 }
 
+const concludeCar = async (req, res) =>{
+    try{
+        
+        status = req.params.stage;
+        let stages = "";
+        const carList = await Car.find();
+        if(status == "Agendado"){
+            stages = 'Aguardando';
+            await Car.updateOne({_id: req.params.id}, {$set: {stage: stages}});
+        res.redirect('/carPage')
+        }else if(status == "Aguardando"){
+            stages = 'Analisando';
+            await Car.updateOne({_id: req.params.id}, {$set: {stage: stages}});
+        res.redirect('/carPage');
+        }else if(status == "Analisando"){
+            stages = 'Aprovando';
+            await Car.updateOne({_id: req.params.id}, {$set: {stage: stages}});
+        res.redirect('/carPage');
+        }else if(status == "Aprovando"){
+            stages = 'Comprando';
+            await Car.updateOne({_id: req.params.id}, {$set: {stage: stages}});
+        res.redirect('/carPage');    
+        }else if(status == "Comprando"){
+            stages = 'Reparando';
+            await Car.updateOne({_id: req.params.id}, {$set: {stage: stages}});
+        res.redirect('/carPage');    
+        }else if(status == "Reparando"){
+            stages = 'Testando';
+            await Car.updateOne({_id: req.params.id}, {$set: {stage: stages}});
+        res.redirect('/carPage');    
+        }else if(status == "Testando"){
+            stages = 'Vistoriando';
+            await Car.updateOne({_id: req.params.id}, {$set: {stage: stages}});
+        res.redirect('/carPage');    
+        }else if(status == "Vistoriando"){
+            stages = 'Entregando';
+            await Car.updateOne({_id: req.params.id}, {$set: {stage: stages}});
+        res.redirect('/carPage');    
+        }else if(status == "Entregando"){
+            stages = '';
+            await Car.deleteOne({_id: req.params.id})
+        res.redirect('/carPage');    
+        }
+    }catch (err) {
+        res.status(500).send({error: err.message})
+    }
+}
 
 module.exports = {
     home,

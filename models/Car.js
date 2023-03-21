@@ -26,6 +26,11 @@ const carSchema = new mongoose.Schema({
     },date: {
         type: Date,
         default: Date.now(),
+    },specialty: {
+        type: String,
+        require: true,
+    },historic: {
+        type: String,
     },    
 });
 

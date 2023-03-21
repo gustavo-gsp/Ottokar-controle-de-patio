@@ -7,6 +7,6 @@ routes.get('/getByid/:id/:method/:stage', CarController.getById);
 routes.get('/carPage', CarController.getAllCars);
 routes.post('/createCar', CarController.createCar);
 routes.post('/createUser', CarController.createUser);
-routes.get('/conclude/:stage', CarController.concludeCar);
+routes.get('/conclude/:id/:stage', CarController.concludeCar);
 
 module.exports = routes;
