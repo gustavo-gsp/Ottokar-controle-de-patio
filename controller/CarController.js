@@ -7,6 +7,7 @@ let message = "";
 let userName = "";
 let status = "";
 let details = false;
+let conclude = false;
 
 const home = (req, res) =>{
     message = "";
@@ -38,10 +39,10 @@ const getById = async (req, res) => {
         status = req.params.stage;
         const car = await Car.findOne({ _id: req.params.id });
         if(req.params.method == "conclude"){
-            res.render("index", {conclude: true, car, status, carList});
+            res.render("index", {conclude: true, car, status, carList, userName, details: false,});
         }else{
             res.render('index', {
-                userName, status, car, carList,
+                userName, status, car, carList,conclude:false,
                 details: true,
                 model: car.carName, 
                 plate: car.plate,
@@ -61,7 +62,7 @@ const getById = async (req, res) => {
 const getAllCars = async (req, res) => {
     try{
         const carList = await Car.find();
-        return res.render('index', {carList, userName, status, details});
+        return res.render('index', {carList, userName, status, details, conclude});
     }catch (err) {
         res.status(500).send({error: err.message})
     }

@@ -9,38 +9,43 @@
     <title>Controle de patio</title>
 </head>
 <body>
-    <a href="">Novo veículo</a>
-    <section>
-        <h1>inserir Veículo</h1>
-        <div id="addCar">
+    <h1 class="title">CARS-CONTROL</h1>
+    <section id="addCar">
+        <div>
+            <h1 >Adicionar Veículo</h1>
             <form action="/createCar" method="post">
                 <label for="">Modelo:</label>
                 <input type="text" name="carName" id="carName" placeholder="Modelo do veículo">
-                <label for="">Placa:</label>
-                <input type="text" name="plate" id="plate" placeholder="Placa do veículo">
+                <div>
+                    <label for="">Placa:</label>
+                    <input type="text" name="plate" id="plate" placeholder="Placa do veículo">
+                </div>
+                <div>
+                    <label for="">Reclamação:</label>
+                    <input type="text" name="complaint" id="complaint" style="width: 15rem; height: 1rem;" 
+                    placeholder="Reclamação do cliente">
+                </div>
                 <label for="">Especialidade:</label>
                 <select name="specialty" id="specialty">
                     <option value="Mecanica">Mecanica</option>
                     <option value="Funilaria">Funilaria</option>
                 </select><br>
-                <label for="">Reclamação:</label>
-                <input type="text" name="complaint" id="complaint" style="width: 15rem; height: 1rem;" 
-                       placeholder="Reclamação do cliente">
                 <label for="">Previsão conclusão:</label>
-                <input type="datetime-local" name="forecast" id="forecast"><br>
+                <input type="datetime-local" name="forecast" id="forecast">
                 <label for="">Serviços:</label>
-                <input type="text" name="services" id="services" placeholder="Serviços" style="width: 15rem; height: 10rem;">
+                <input type="text" name="services" id="services" placeholder="Serviços" style="width: 15rem; height: 1rem;">
                 <label for="">Peças:</label>
-                <input name="parts" id="parts" placeholder="peças" style="width: 15rem; height: 10rem;"><br>
+                <input name="parts" id="parts" placeholder="peças" style="width: 15rem; height: 1rem;"><br>
                 <input type="hidden" value="<%= userName %>" name="userName">
                 <button id="addButton" type="submit">Adicionar</button>
             </form>
         </div>
-
+        
     </section>
-    <section>
+    <a href="">Novo veículo</a>
+    <section style="display: none;">
         <div>
-                <h1>Cadastro De Usuário</h1>
+            <h1>Cadastro De Usuário</h1>
             <form action="/createUser" method="post">
                 <label >Usuário</label>
                 <input type="text" name="user" id="user" placeholder="Digite o nome de usuario"><br>
@@ -76,21 +81,31 @@
                 <label for="">Historico:</label>
                 <textarea name="" id="" placeholder="Historico" cols="30" rows="10"><%= historic %></textarea><br>
     </section>
-    <a href="/conclude/<%=car._id%>/<%= status %>">aaaaaaaaaa</a>
-    <section>    
-        <% } %>
+    <% } %>
+    <% if(conclude) {%>
+        <section style="width: 20rem; height: 10rem; border: 2px solid;">
+            <div><a href="/carPage">X</a></div>
+            <p>Deseja realmente concluir essa tarefa?</p>
+            <a href="/carPage">Não</a>
+            <a href="/conclude/<%=car._id%>/<%= status %>">Sim</a>
+        </section>
+    <% } %>
+    <section class="cars">    
         <ul>
             <li>
                 <% carList.forEach((car) =>{ %>
                     <li><div>
-                        <%=car.specialty%> | Modelo: <%= car.carName %> | Placa: <%= car.plate %> | Status: <%= car.stage%> |
-                        Responsavel: <%= car.responsible%> 
-                    </div>
-                    <div>
+                       <p class="list">
+                        <%=car.specialty%> | Veículo: <%= car.carName %> | Placa: <%= car.plate %> | Status: <%= car.stage%> |
+                        Responsavel: <%= car.responsible%>
+                        </p> 
+                        </div>
+                    <div class="btnList">
                         <a class="btnDetals" href="/getById/<%=car._id%>/details/<%=car.stage%>" title="Detalhes"><i 
                            class="bi bi-list"></i></a>
+                           <a href="" title="Assumir"><i class="bi bi-person-fill-up"></i></a>
                         <a class="btnConclude" href="/getById/<%= car._id%>/conclude/<%= car.stage %>" 
-                           title="Cuncluir tarefa"><i class="bi bi-check-square"></i></a>
+                           title="Cuncluir tarefa"><i class="bi bi-check-lg"></i></a>
                     </div>
                 </li>
                 <% }) %>
