@@ -62,24 +62,24 @@
         </div>
     </section>
         <% if(details) {%>
-            <section style="border: 0.1rem solid; width: 40rem; height: 25rem; background-color: orange;">
+            <section class="details"">
                 
                 <label for="">Modelo:</label>
                 <textarea name="" id="" cols="10" rows="1"><%=model%></textarea>
                 <label for="">Placa:</label>
                 <textarea name="" id="" cols="10" rows="1"><%= plate %></textarea>
                 <label for="">Reclamação:</label>
-                <textarea name="" id="" cols="30" rows="1"><%= complaint %></textarea><br>
+                <textarea name="" id="" cols="30" rows="1"><%= complaint %></textarea>
                 <label for="">Previsão conclusão:</label>
-                <textarea name="" id="" cols="10" rows="1"><%= forecast %></textarea>
+                <textarea name="" id="" cols="20" rows="1"><%= forecast %></textarea>
                 <label for="">Status:</label>
                 <textarea name="" id="" cols="10" rows="1"><%= stage %></textarea><br>
                 <label for="">Serviços:</label>
-                <textarea placeholder="Serviços" cols="30" rows="10" ><%= services %></textarea>
+                <textarea placeholder="Serviços" cols="30" rows="5" ><%= services %></textarea>
                 <label for="">Peças:</label>
-                <textarea placeholder="peças" cols="30" rows="10"><%= parts %></textarea><br>
+                <textarea placeholder="peças" cols="30" rows="5"><%= parts %></textarea>
                 <label for="">Historico:</label>
-                <textarea name="" id="" placeholder="Historico" cols="30" rows="10"><%= historic %></textarea><br>
+                <textarea name="" id="" placeholder="Historico" cols="70" rows="5"><%= historic %></textarea><br>
     </section>
     <% } %>
     <% if(conclude) {%>
@@ -92,7 +92,6 @@
     <% } %>
     <section class="cars">    
         <ul>
-            <li>
                 <% carList.forEach((car) =>{ %>
                     <li><div>
                        <p class="list">
@@ -109,7 +108,6 @@
                     </div>
                 </li>
                 <% }) %>
-            </li>
         </ul>
     </section>
 
