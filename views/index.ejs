@@ -10,6 +10,9 @@
 </head>
 <body>
     <h1 class="title">CARS-CONTROL</h1>
+    <a href="">24/03/2023</a>
+    <a href="">25/03/2023</a>
+    <a href="">26/03/2023</a>
     <section id="addCar">
         <div>
             <h1 >Adicionar Veículo</h1>
@@ -60,26 +63,26 @@
                 <button type="submit">Cadastrar</button>
             </form>
         </div>
-    </section>
+    </section >
         <% if(details) {%>
             <section class="details"">
-                
-                <label for="">Modelo:</label>
-                <textarea name="" id="" cols="10" rows="1"><%=model%></textarea>
-                <label for="">Placa:</label>
-                <textarea name="" id="" cols="10" rows="1"><%= plate %></textarea>
-                <label for="">Reclamação:</label>
-                <textarea name="" id="" cols="30" rows="1"><%= complaint %></textarea>
-                <label for="">Previsão conclusão:</label>
-                <textarea name="" id="" cols="20" rows="1"><%= forecast %></textarea>
-                <label for="">Status:</label>
-                <textarea name="" id="" cols="10" rows="1"><%= stage %></textarea><br>
-                <label for="">Serviços:</label>
-                <textarea placeholder="Serviços" cols="30" rows="5" ><%= services %></textarea>
-                <label for="">Peças:</label>
-                <textarea placeholder="peças" cols="30" rows="5"><%= parts %></textarea>
-                <label for="">Historico:</label>
-                <textarea name="" id="" placeholder="Historico" cols="70" rows="5"><%= historic %></textarea><br>
+                <div><label  for="">Modelo:</label>
+                <textarea readonly name="" id="" cols="10" rows="1"><%=model%></textarea></div>
+                <div><label for="">Placa:</label>
+                <textarea readonly readonly name="" id="" cols="10" rows="1"><%= plate %></textarea></div>
+                <div></div><label for="">Reclamação:</label>
+                <textarea readonly name="" id="" cols="30" rows="1"><%= complaint %></textarea></div>
+                <div><label for="">Previsão conclusão:</label>
+                <textarea readonly name="" id="" cols="18" rows="1"><%= forecast %></textarea></div>
+                <div><label for="">Status:</label>
+                <textarea readonly name="" id="" cols="10" rows="1" ><%= stage %></textarea></div>
+                <div class="break"></div>
+                <div><label for="">Serviços:</label>
+                <textarea readonly placeholder="Serviços" cols="30" rows="5" ><%= services %></textarea></div>
+                <div><label for="">Peças:</label>
+                <textarea readonly placeholder="peças" cols="30" rows="5"><%= parts %></textarea></div>
+                <div><label>Historico:</label>
+                <textarea readonly placeholder="Historico" cols="50" rows="5"><%= historic %></textarea></div>
     </section>
     <% } %>
     <% if(conclude) {%>
