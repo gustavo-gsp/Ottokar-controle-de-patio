@@ -8,7 +8,7 @@ let userName = "";
 let status = "";
 let details = false;
 let conclude = false;
-
+let addCar = false;
 const home = (req, res) =>{
     message = "";
     return res.render('login',{message});
@@ -39,10 +39,10 @@ const getById = async (req, res) => {
         status = req.params.stage;
         const car = await Car.findOne({ _id: req.params.id });
         if(req.params.method == "conclude"){
-            res.render("index", {conclude: true, car, status, carList, userName, details: false,});
+            res.render("index", {conclude: true, car, status, carList, userName, details: false, addCar});
         }else{
             res.render('index', {
-                userName, status, car, carList,conclude:false,
+                userName, status, car, carList,conclude:false, addCar,
                 details: true,
                 model: car.carName, 
                 plate: car.plate,
@@ -62,7 +62,13 @@ const getById = async (req, res) => {
 const getAllCars = async (req, res) => {
     try{
         const carList = await Car.find();
-        return res.render('index', {carList, userName, status, details, conclude});
+        if(req.params.show == 'addCar'){
+            details = false;
+            addCar = true;
+            return res.render('index', {carList, userName, status, details, conclude, addCar});
+        }else{
+            return res.render('index', {carList, userName, status, details, conclude, addCar: false});
+        }
     }catch (err) {
         res.status(500).send({error: err.message})
     }
@@ -101,7 +107,8 @@ const createCar = async (req, res) =>{
             specialty: car.specialty,
             historic: `Agendado - (${userName} | ${moment().format("DD/MM/YYYY hh:mm")})`,
         });
-        return res.redirect('/carPage');
+        addCar = false;
+        return res.redirect('/carPage/a');
     }catch (err) {
         res.status(500).send({error: err.message})
     }
@@ -148,7 +155,7 @@ const concludeCar = async (req, res) =>{
         }else if(status == "Entregando"){
             stages = '';
             await Car.deleteOne({_id: req.params.id})
-        res.redirect('/carPage');    
+        res.redirect('/carPage/a');    
         }
     }catch (err) {
         res.status(500).send({error: err.message})

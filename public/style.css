@@ -1,141 +1,298 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap');
-*{
-    margin: 0;
-    padding: 0;
-    font-family: Roboto, Arial;
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap");
+* {
+  margin: 0;
+  padding: 0;
+  font-family: Roboto, Arial;
 }
-body{
-    background-color: #005290;
-    width: 100%;
-    height: 100%;
-    color:rgba(255, 119, 0, 0.973); 
-    font-weight: bolder;
+body {
+  background-color:#212153;
+  width: 100%;
+  height: 100%;
+  color: rgba(255, 119, 0, 0.973);
+  font-weight: bolder;
 }
-.title{
-    color: #529000;
-    text-align: center;
-    background-color: rgba(255, 119, 0, 0.973);
-    margin-bottom: .2rem;
-    font-family: 'Lobster', cursive;
-}
-#addCar{
-    width: 100%;
-    height:20%;
-    background-color: #212153;
-    padding: 1rem 0 1rem 0;
-    background-color: #212153;
-    /* margin: .5rem 10rem .5rem 10rem; */
-    text-align: center;
-    display: flex;
-    flex-wrap: nowrap;
-    justify-content: center;
-    align-items: center;
-    color:rgb(167, 167, 167);
-}
-#addCar h1{
-    padding: .3rem;
+select {
+  padding: 0.4rem;
+  border: none;
+  border-radius: 0.2rem;
+  margin: 0 0.2rem 0 0.2rem;
 }
 input {
-    margin: 1rem;
-    border: none;
-    border-radius: .2rem;
-    padding: .5rem;
-    background-color: rgb(214, 255, 255);
+  margin: 1rem;
+  border: none;
+  border-radius: 0.2rem;
+  padding: 0.5rem;
+  background-color: rgb(214, 255, 255);
 }
-#addCar button{
+div {
+  display: inline;
+}
+a {
+  text-decoration: none;
+}
+.title {
+  color: #212153;
+  text-align: center;
+  background-color: rgba(255, 119, 0, 0.973);
+  margin-bottom: 0.2rem;
+  font-family: "Lobster", cursive;
+  text-shadow: 0 0 .3em #aaffff;
+}
+#addCar {
+  width: 100%;
+  height: 20%;
+  background-color: #212153;
+  padding: 1rem 0 1rem 0;
+  background-color: #212153;
+  text-align: center;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  color: rgb(167, 167, 167);
+}
+#addCar h1 {
+  padding: 0.3rem;
+}
+#addCar button {
+  text-align: center;
+  padding: 0.3rem;
+  width: 11%;
+  height: 2%;
+  background-color: #005290;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 0.3rem;
+  border: #005290 solid 1px;
+  font-weight: bolder;
+  color: rgb(255, 119, 0);
+  transition: all 0.3s ease-in-out;
+}
+#addCar button:hover {
+  background-color: #143044;
+}
+.addUser {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #00000050;
+  color: #fff;
+  z-index: 9999;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  pointer-events: auto;
+}
+.addUser div{
+    width: 21rem;
+    height: 18rem;
+    background-color: rgba(255, 119, 0, 0.973);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: .5rem;
+    color: #212153;
+}
+.addUser div form{
     text-align: center;
-    padding: .3rem;
-    width: 11%;
-    height: 2%;
-    background-color:#005290;
-    font-size: 1rem;
-    cursor: pointer;
-    border-radius: .3rem;
-    border: none;
-    font-weight: bolder;
-    color: rgb(255, 119, 0);
-    transition: all .3s ease-in-out;
+    margin-top: 1.5rem;
 }
-#addCar button:hover{
-    background-color: #143044;
-}
-select{
-    padding: .4rem;
+.addUser div form button{
+    margin: 1.5rem;
+    padding: .5rem;
+    background-color: #212153;
+    color: rgba(0, 255, 255, 0.877);
     border: none;
     border-radius: .2rem;
-}
-div{
-    display: inline;
-}
-a{
-    background-color: #c1e952;
-    margin: 0 .3rem 0 0;
-    padding: .2rem;
-}
-.cars{
-    margin: .5rem;
-    
-}
-ul{
-    list-style: none;
-    font-size: 1.2rem;
-    width: 100%;
-    color:rgb(167, 167, 167);
-    
-}
-ul li{
-    position: relative;
-    padding: 1rem 1rem 1rem 1rem;
-    background-color: #212153;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: nowrap;
-    
-}
-ul li:hover{
-    background-color: rgb(71, 56, 56);
-    color: #ffffffcc;
-}
-.list{
-    
-    cursor: default;
-}
-ul li div{
-    display: flex;
-    align-items: center;
-}
-ul li:nth-child(odd){
-    background-color: #005290;
-    
-}
-ul li:nth-child(odd):hover{
-    background-color: rgb(71, 56, 56);
-}
-.details{
-    border: none; 
-    width: 100%; 
-    height: 10em; 
-    background-color: #212153;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    padding: 3rem 0 3rem 0;
-    
-}
-.details textarea{
-    padding: .2rem;
+    pointer-events: auto;
     font-weight: bold;
-    cursor: default;
-    background-color: rgb(214, 255, 255);
+    
 }
-.details div{
-    margin: .2rem 1rem .2rem 1rem;
-    display: flex;
-    align-items: center;
+.addUser div form button:hover{
+    cursor: pointer;
+    background-color: #005290;
+    color: #fff;
 }
-.break{
+.addUser div form a{
+  margin-left: 18rem;
+  color: #212153;
+  padding: 0.2rem;
+  transition: all 0.2s ease-in-out;
+  border: black solid 1px;
+  border-radius: 50%;
+}
+.addUser div form a:hover {
+    background-color: #212153;
+    color: aqua;
+    border-radius: 50%;
+    border: black solid .1rem;
+  }
+.addUser div h1{
     flex-basis: 100%;
+    width: 100%;
 }
+.cars {
+  margin: 0.5rem;
+}
+ul {
+  list-style: none;
+  font-size: 1.2rem;
+  width: 100%;
+  color: rgb(167, 167, 167);
+}
+ul li {
+  position: relative;
+  padding: 0.7rem 0.8rem 0.7rem 0.8rem;
+  background-color: #212153;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+}
+ul li:hover {
+  background-color: rgb(71, 56, 56);
+  color: #ffffffcc;
+}
+.list {
+  cursor: default;
+  display: flex;
+  flex-wrap: wrap;
+}
+.list p i{
+    margin:0 .4rem 0 .4rem;
+}
+ul li div {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+ul li:nth-child(odd) {
+  background-color: #005290;
+}
+ul li:nth-child(odd):hover {
+  background-color: rgb(71, 56, 56);
+}
+ul li a {
+  background-color: #c1e952;
+  margin: 0 0.3rem .1rem 0;
+  padding: 0.2rem;
+}
+ul li a:hover {
+  background-color: #b1ec0c;
+}
+.details {
+  border: none;
+  width: 100%;
+  height: 10em;
+  background-color: #212153;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3rem 0 3rem 0;
+}
+.details textarea {
+  padding: 0.2rem;
+  font-weight: bold;
+  cursor: default;
+  background-color: rgb(214, 255, 255);
+}
+.details div {
+  margin: 0.2rem 1rem 0.2rem 1rem;
+  display: flex;
+  align-items: center;
+}
+.details a{
+    background-color: #00ffff;
+    margin: 1rem;
+}
+.break {
+  flex-basis: 100%;
+}
+.modal {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #00000080;
+  color: #fff;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: auto;
+}
+.card {
+  width: 20rem;
+  height: 9rem;
+  border: black solid 0.2rem;
+  border-radius: 0.4rem;
+  position: relative;
+  background-color: #272727;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.card p {
+  margin: 1rem 1rem 1.3rem 1rem;
+  color: aquamarine;
+}
+.card hr {
+  width: 90%;
+  border-color: #00aa2a;
+}
+.close {
+  position: absolute;
+  right: 0.2rem;
+  top: 0.3rem;
+  color: #fff;
+  padding: 0.2rem;
+  transition: all 0.2s ease-in-out;
+}
+.close:hover {
+  background-color: rgba(255, 0, 0, 0.884);
+  border-radius: 50%;
+}
+.btnNot {
+  padding: 0.2rem;
+  transition: all 0.2s ease-in-out;
+  bottom: 0.1rem;
+  margin: 0 1rem 0 1rem;
+  border: solid 1px #ff0000;
+  color: #ff0000;
+  font-weight: bolder;
+}
+.btnNot:hover {
+  background-color: #ff0000;
+  color: #fff;
+  font-weight: normal;
+}
+.btnYes {
+  padding: 0.2rem;
+  transition: all 0.2s ease-in-out;
+  bottom: 0.1rem;
+  margin: 0 1rem 0 1rem;
+  border: solid 1px #00aa2a;
+  color: #00aa2a;
+}
+.btnYes:hover {
+  background-color: #00aa2a;
+  color: #fff;
+  font-weight: normal;
+}
+.dates{
+    background-color: rgba(255, 119, 0, 0.973);
+    padding: .5rem;
+}
+.dates a{
+    background-color: #005290;
+    color:aqua;
+    padding: .2rem;
+    border-radius: .3rem .3rem 0 .3rem;
+}
+
