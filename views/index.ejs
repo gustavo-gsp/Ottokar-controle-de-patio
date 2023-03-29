@@ -46,7 +46,7 @@
     <section class="addUser">
         <div>
             <form action="/createUser" method="post">
-                <a href="/carPage"><i class="bi bi-x-lg"></i></a>
+                <a href="/carPage/a"><i class="bi bi-x-lg"></i></a>
                 <h1>Cadastro De Usuário</h1>
                 <label >Usuário:</label>
                 <input type="text" name="user" id="user" placeholder="Digite o nome de usuario" required><br>
@@ -76,7 +76,7 @@
                 <textarea readonly name="" id="" cols="10" rows="1" ><%= stage %></textarea></div>
                 <div class="break"></div>
                 <div><label for="">Serviços:</label>
-                <textarea readonly placeholder="Serviços" cols="30" rows="5" ><%= services %></textarea></div>
+                <textarea readonly placeholder="Serviços" cols="30" rows="5" ><%= date %></textarea></div>
                 <div><label for="">Peças:</label>
                 <textarea readonly placeholder="peças" cols="30" rows="5"><%= parts %></textarea></div>
                 <div><label>Historico:</label>
@@ -103,10 +103,13 @@
     <% } %>
     <section class="dates">
         <a href="">Hoje</a>
-        <a href="">25/03/2023</a>
-        <a href="">26/03/2023</a>
-        <a href="">27/03/2023</a>
-        <a href="/carPage/addCar">Novo veículo</a>
+        <a href="carPage"><%=date1%></a>
+        <a href=""><%=date2%></a>
+        <a href=""><%=date3%></a>
+        <a href=""><%=date4%></a>
+        <a href="/carPage/hoje/addCar">Novo veículo</a><br>
+        <a href="/carPage/hoje/logout">Sair</a>
+        <label style="color: black;"><%=userName%></label>
     </section>
         
     <section class="cars">    

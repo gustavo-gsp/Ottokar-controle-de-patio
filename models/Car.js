@@ -24,8 +24,7 @@ const carSchema = new mongoose.Schema({
     },parts: {
         type: String,
     },date: {
-        type: Date,
-        default: Date.now(),
+        type: String,
     },specialty: {
         type: String,
         require: true,
