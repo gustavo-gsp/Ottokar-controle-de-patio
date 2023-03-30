@@ -3,6 +3,7 @@ const User = require('../models/User');
 const Bcrypt = require('bcrypt');
 const moment = require('moment');
 
+let carList = [];
 let message = "";
 let userName = "";
 let userFunc = "";
@@ -15,7 +16,6 @@ let date1 = moment().add(1, 'days').format("DD/MM/YYYY");
 let date2 = moment().add(2, 'days').format("DD/MM/YYYY");
 let date3 = moment().add(3, 'days').format("DD/MM/YYYY");
 let date4 = moment().add(4, 'days').format("DD/MM/YYYY");
-
 const home = (req, res) =>{
     message = "";
     return res.render('login',{message});
@@ -29,8 +29,8 @@ const login = async (req, res) => {
             let correct = Bcrypt.compareSync(log.password, user.password);
             if(correct){
                 userName = name; 
-                userFunc = user.func;
-                res.redirect('/carPage/hoje/a')
+                userFunc = user.func; 
+                res.redirect('/carPage/today/a')
             }else{
                 message = 'Usúario ou senha inválidos!';
                 res.render('login', {message});
@@ -44,7 +44,6 @@ const login = async (req, res) => {
 
 const getById = async (req, res) => {
     try{
-        const carList = await Car.find();
         status = req.params.stage;
         const car = await Car.findOne({ _id: req.params.id });
         if(req.params.method == "conclude"){
@@ -68,6 +67,8 @@ const getById = async (req, res) => {
                 parts: car.parts,
                 historic: car.historic,
             });
+        }else if(req.params.method == "assumed"){
+
         }
     }catch (err) {
         res.status(500).send({error: err.message})
@@ -78,13 +79,33 @@ const getAllCars = async (req, res) => {
     try{
 
         if(userName){
+            
             const carListAll = await Car.find();
-            const today = `/^${dateToday.substring(0,2)}/`
-            const carList = await Car.find({date: `${today}`});
-            console.log(today);
-            // if(req.params.day == "hoje"){
-            //     carList = await Car.find({date: dateToday})
-            // }
+            const today =  new RegExp(`^${dateToday.substring(0,2)}`);
+            const dateone =  new RegExp(`^${date1.substring(0,2)}`);
+            const datetwo =  new RegExp(`^${date2.substring(0,2)}`);
+            const datethree =  new RegExp(`^${date3.substring(0,2)}`);
+            const datefour =  new RegExp(`^${date4.substring(0,2)}`);
+            
+            if (req.params.day == "today"){
+                carList = await Car.find({date: {$regex: today}});
+                carListAll.forEach((car)=>{
+                    const data = car.date.substring(0,10);
+                    const date = moment(data, "DD/MM/YYYY");
+                    const today = moment(dateToday, "DD/MM/YYYY");
+                    if(date.isBefore(today)){
+                        carList.push(car);
+                    }
+                });
+            }else if (req.params.day == "date1"){
+                carList = await Car.find({date: {$regex: dateone}});
+            }else if (req.params.day == "date2"){
+                carList = await Car.find({date: {$regex: datetwo}});
+            }else if (req.params.day == "date3"){
+                carList = await Car.find({date: {$regex: datethree}});
+            }else if (req.params.day == "date4"){
+                carList = await Car.find({date: {$regex: datefour}});
+            }
             if(req.params.show == 'addCar'){
                 details = false;
                 addCar = true;
@@ -124,7 +145,7 @@ const createUser = async (req, res) => {
             password: log.password,
             func: log.func,
         })
-        return res.redirect('/carPage/hoje/a');
+        return res.redirect('/carPage/today/a');
     }catch (err) {
         res.status(500).send({error: err.message})
     }
@@ -138,19 +159,19 @@ const createCar = async (req, res) =>{
     }
     try{
         await Car.create({
-            carName: car.carName,
+            carName: car.carName.toUpperCase(),
             plate: car.plate.toUpperCase(),
-            forecast: moment(car.date).format("DD/MM/YYYY HH:mm"),
-            date:  moment(car.forecast).format("DD/MM/YYYY HH:mm"),
+            forecast: moment(car.forecast).format("DD/MM/YYYY HH:mm"),
+            date: moment(car.date).format("DD/MM/YYYY HH:mm"),
             complaint: car.complaint,
             services: car.services,
             parts: car.parts,
-            responsible: car.userName,
+            responsible: car.userName.toUpperCase(),
             specialty: car.specialty,
             historic: `Agendado - (${userName} | ${moment().format("DD/MM/YYYY HH:mm")})`,
         });
         addCar = false;
-        return res.redirect('/carPage/hoje/a');
+        return res.redirect('/carPage/today/a');
     }catch (err) {
         res.status(500).send({error: err.message})
     }
@@ -159,45 +180,57 @@ const createCar = async (req, res) =>{
 const concludeCar = async (req, res) =>{
     try{
         
+        const car = await Car.findOne({_id: req.params.id});
         status = req.params.stage;
         let stages = "";
-        const carList = await Car.find();
+        let history = car.historic;
         if(status == "Agendado"){
             stages = 'Aguardando';
-            await Car.updateOne({_id: req.params.id}, {$set: {stage: stages}});
-        res.redirect('/carPage/hoje/a')
+            history = history + ` | (${userName} concluiu para Aguardando ${moment().format("DD/MM/YYYY HH:mm")})`;
+            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: history}});
+        res.redirect('/carPage/today/a')
         }else if(status == "Aguardando"){
             stages = 'Analisando';
-            await Car.updateOne({_id: req.params.id}, {$set: {stage: stages}});
-        res.redirect('/carPage/hoje/a');
+            history = history + ` | (${userName} concluiu para Analisando ${moment().format("DD/MM/YYYY HH:mm")})`;
+            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: history, responsible: ""}});
+        res.redirect('/carPage/today/a');
         }else if(status == "Analisando"){
             stages = 'Aprovando';
-            await Car.updateOne({_id: req.params.id}, {$set: {stage: stages}});
-        res.redirect('/carPage/hoje/a');
+            history = history + ` | (${userName} concluiu para Aprovando ${moment().format("DD/MM/YYYY HH:mm")})`;
+            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: history, responsible: ""}});
+        res.redirect('/carPage/today/a');
         }else if(status == "Aprovando"){
             stages = 'Comprando';
-            await Car.updateOne({_id: req.params.id}, {$set: {stage: stages}});
-        res.redirect('/carPage/hoje/a');    
+            history = history + ` | (${userName} concluiu para Comprando ${moment().format("DD/MM/YYYY HH:mm")})`;
+            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: history, responsible: ""}});
+        res.redirect('/carPage/today/a');    
         }else if(status == "Comprando"){
             stages = 'Reparando';
-            await Car.updateOne({_id: req.params.id}, {$set: {stage: stages}});
-        res.redirect('/carPage/hoje/a');    
+            history = history + ` | (${userName} concluiu para Reparando ${moment().format("DD/MM/YYYY HH:mm")})`;
+            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: history, responsible: ""}});
+        res.redirect('/carPage/today/a');    
         }else if(status == "Reparando"){
             stages = 'Testando';
-            await Car.updateOne({_id: req.params.id}, {$set: {stage: stages}});
-        res.redirect('/carPage/hoje/a');    
+            history = history + ` | (${userName} concluiu para Testando ${moment().format("DD/MM/YYYY HH:mm")})`;
+            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: history, responsible: ""}});
+        res.redirect('/carPage/today/a');    
         }else if(status == "Testando"){
             stages = 'Vistoriando';
-            await Car.updateOne({_id: req.params.id}, {$set: {stage: stages}});
-        res.redirect('/carPage/hoje/a');    
+            history = history + ` | (${userName} concluiu para Vistoriando ${moment().format("DD/MM/YYYY HH:mm")})`;
+            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: history, responsible: ""}});
+        res.redirect('/carPage/today/a');    
         }else if(status == "Vistoriando"){
             stages = 'Entregando';
-            await Car.updateOne({_id: req.params.id}, {$set: {stage: stages}});
-        res.redirect('/carPage/hoje/a');    
+            history = history + ` | (${userName} concluiu para Entregando ${moment().format("DD/MM/YYYY HH:mm")})`;
+            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: history, responsible: ""}});
+        res.redirect('/carPage/today/a');    
         }else if(status == "Entregando"){
+            stages= 'Entregue';
+            history = history + ` | (${userName} concluiu para Entregue ${moment().format("DD/MM/YYYY HH:mm")}) *`;
+            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: history}});
             stages = '';
-            await Car.deleteOne({_id: req.params.id})
-        res.redirect('/carPage/hoje/a');    
+            await Car.deleteOne({_id: req.params.id});
+        res.redirect('/carPage/today/a');    
         }
     }catch (err) {
         res.status(500).send({error: err.message})

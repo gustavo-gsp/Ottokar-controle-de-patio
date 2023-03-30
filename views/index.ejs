@@ -96,17 +96,17 @@
                 <hr>
                 <div class="confirm">
                     <a class="btnNot" href="/carPage/a">Não</a>
-                    <a class="btnYes" href="/conclude/<%=car._id%>/Entregando">Sim</a>
+                    <a class="btnYes" href="/conclude/<%=car._id%>/<%=status%>">Sim</a>
                 </div>
             </div>
         </section>
     <% } %>
     <section class="dates">
-        <a href="">Hoje</a>
-        <a href="carPage"><%=date1%></a>
-        <a href=""><%=date2%></a>
-        <a href=""><%=date3%></a>
-        <a href=""><%=date4%></a>
+        <a href="/carPage/today/a">Hoje</a>
+        <a href="/carPage/date1/a"><%=date1%></a>
+        <a href="/carPage/date2/a"><%=date2%></a>
+        <a href="/carPage/date3/a"><%=date3%></a>
+        <a href="/carPage/date4/a"><%=date4%></a>
         <a href="/carPage/hoje/addCar">Novo veículo</a><br>
         <a href="/carPage/hoje/logout">Sair</a>
         <label style="color: black;"><%=userName%></label>
@@ -124,10 +124,11 @@
                         </div>
                     <div class="btnList">
                         <a class="btnDetals" href="/getById/<%=car._id%>/details/<%=car.stage%>" title="Detalhes"><i 
-                           class="bi bi-list"></i></a>
-                           <a href="" title="Assumir"><i class="bi bi-person-fill-up"></i></a>
+                            class="bi bi-list"></i></a>
+                        <a href="/getById/<%=car._id%>/assumed/<%=car.stage%>" title="Assumir"><i 
+                            class="bi bi-person-fill-up"></i></a>
                         <a class="btnConclude" href="/getById/<%= car._id%>/conclude/<%= car.stage %>" 
-                           title="Cuncluir tarefa"><i class="bi bi-check-lg"></i></a>
+                            title="Cuncluir tarefa"><i class="bi bi-check-lg"></i></a>
                     </div>
                 </li>
                 <% }) %>
