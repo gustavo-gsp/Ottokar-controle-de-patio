@@ -2,6 +2,9 @@ const Car = require('../models/Car');
 const User = require('../models/User');
 const Bcrypt = require('bcrypt');
 const moment = require('moment');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const session = require('express-session');
 
 let carList = [];
 let message = "";
@@ -16,34 +19,28 @@ let date1 = moment().add(1, 'days').format("DD/MM/YYYY");
 let date2 = moment().add(2, 'days').format("DD/MM/YYYY");
 let date3 = moment().add(3, 'days').format("DD/MM/YYYY");
 let date4 = moment().add(4, 'days').format("DD/MM/YYYY");
-const home = (req, res) =>{
-    message = "";
-    return res.render('login',{message});
+const home = (req, res, next) =>{
+    if(req.query.fail){
+        return res.render('login',{message: 'Usúario ou senha inválidos'});
+    }else{
+        return res.render('login',{message: null});
+    }
+}
+const authent = (req, res, next)=>{
+    if(req.isAuthenticated()) return next();
+    return res.redirect('/home');
 }
 
-const login = async (req, res) => {
-    const log = req.body;
-    const name = log.user;
-    User.findOne({user: name}).then(user => {
-        if(user != undefined){
-            let correct = Bcrypt.compareSync(log.password, user.password);
-            if(correct){
-                userName = name; 
-                userFunc = user.func; 
-                res.redirect('/carPage/today/a')
-            }else{
-                message = 'Usúario ou senha inválidos!';
-                res.render('login', {message});
-            }
-        }else{
-            message = 'Usúario ou senha inválidos!';
-            res.render('login', {message});
-        }    
-    });
-}
-
+const login = passport.authenticate('local', {
+    successRedirect: '/carPage/today/a',
+    failureRedirect: '/home?fail=true',
+    
+});
 const getById = async (req, res) => {
     try{
+        const user = await User.findOne({_id: req.user});
+        userName = user.user.toUpperCase();
+        userFunc = user.func;
         status = req.params.stage;
         const car = await Car.findOne({ _id: req.params.id });
         if(req.params.method == "conclude"){
@@ -66,9 +63,15 @@ const getById = async (req, res) => {
                 services: car.services,
                 parts: car.parts,
                 historic: car.historic,
+                id: car._id,
             });
         }else if(req.params.method == "assumed"){
-
+                if(car.responsible == "" ){
+                    await Car.updateOne({_id: req.params.id},{$set: {responsible: userName}});
+                    return res.redirect('/carPage/today/a')
+                }else{
+                    return res.redirect('/carPage/today/a');
+                }
         }
     }catch (err) {
         res.status(500).send({error: err.message})
@@ -77,10 +80,11 @@ const getById = async (req, res) => {
 
 const getAllCars = async (req, res) => {
     try{
-
-        if(userName){
-            
+            const user = await User.findOne({_id: req.user});
             const carListAll = await Car.find();
+            userName = user.user.toUpperCase();
+            userFunc = user.func;
+            let func = userFunc == "mec"? "Mecanica" : "Funilaria";
             const today =  new RegExp(`^${dateToday.substring(0,2)}`);
             const dateone =  new RegExp(`^${date1.substring(0,2)}`);
             const datetwo =  new RegExp(`^${date2.substring(0,2)}`);
@@ -88,16 +92,32 @@ const getAllCars = async (req, res) => {
             const datefour =  new RegExp(`^${date4.substring(0,2)}`);
             
             if (req.params.day == "today"){
-                carList = await Car.find({date: {$regex: today}});
-                carListAll.forEach((car)=>{
-                    const data = car.date.substring(0,10);
-                    const date = moment(data, "DD/MM/YYYY");
-                    const today = moment(dateToday, "DD/MM/YYYY");
-                    if(date.isBefore(today)){
-                        carList.push(car);
-                    }
-                });
-            }else if (req.params.day == "date1"){
+                if(userFunc == "fun" || userFunc == "mec" ){
+                    carList = await Car.find({date: {$regex: today}, specialty: func});
+                    carListAll.forEach((car)=>{
+                        const data = car.date.substring(0,10);
+                        const date = moment(data, "DD/MM/YYYY");
+                        const today = moment(dateToday, "DD/MM/YYYY");
+                        if(date.isBefore(today)){
+                            if(car.specialty == "Mecanica" && userFunc == "mec"){
+                                carList.push(car);
+                            }else if(car.specialty == "Funilaria" && userFunc == "fun"){
+                                carList.push(car);
+                            }
+                        }
+                    });
+                }else{
+                    carList = await Car.find({date: {$regex: today}});
+                    carListAll.forEach((car)=>{
+                        const data = car.date.substring(0,10);
+                        const date = moment(data, "DD/MM/YYYY");
+                        const today = moment(dateToday, "DD/MM/YYYY");
+                        if(date.isBefore(today)){
+                            carList.push(car);
+                        }
+                    });
+                }
+                }else if (req.params.day == "date1"){
                 carList = await Car.find({date: {$regex: dateone}});
             }else if (req.params.day == "date2"){
                 carList = await Car.find({date: {$regex: datetwo}});
@@ -106,6 +126,7 @@ const getAllCars = async (req, res) => {
             }else if (req.params.day == "date4"){
                 carList = await Car.find({date: {$regex: datefour}});
             }
+
             if(req.params.show == 'addCar'){
                 details = false;
                 addCar = true;
@@ -114,12 +135,10 @@ const getAllCars = async (req, res) => {
                 details, conclude, addCar,
                 date1, date2, date3, date4,
             });
-        }else{
-            if(req.params.show == 'logout'){
+            }else if(req.params.show == 'logout'){
                 userName = "";
                 res.redirect('/home');
-            }else{
-
+            }else{    
                 return res.render('index',
                 {
                     carList, userName, status, details, conclude,
@@ -127,10 +146,7 @@ const getAllCars = async (req, res) => {
                     userFunc,
                 });
             }
-        }
-    }else{
-        return res.redirect('/home');
-    }
+        
     }catch (err) {
         res.status(500).send({error: err.message})
     }
@@ -184,6 +200,16 @@ const concludeCar = async (req, res) =>{
         status = req.params.stage;
         let stages = "";
         let history = car.historic;
+
+        if(req.params.stage == 'forced'){
+            stages= 'Entregue';
+            history = history + ` | (${userName} forçou a conclusão ${moment().format("DD/MM/YYYY HH:mm")}) *`;
+            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: history}});
+            stages = '';
+            await Car.deleteOne({_id: req.params.id});
+            res.redirect('/carPage/today/a')
+        }
+
         if(status == "Agendado"){
             stages = 'Aguardando';
             history = history + ` | (${userName} concluiu para Aguardando ${moment().format("DD/MM/YYYY HH:mm")})`;
@@ -245,4 +271,5 @@ module.exports = {
     createUser,
     getById,
     concludeCar,
+    authent,
 } 
