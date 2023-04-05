@@ -11,8 +11,8 @@
 <body>
     <h1 class="title">CARS-CONTROL</h1>
 
-    <% if(addCar) {%>
-    <section id="addCar">
+    <% if(userFunc != "mec" && userFunc != "fun" && userFunc != "buyer") {%>
+    <section id="<%=addCar%>">
         <div>
             <h1 >Adicionar Veículo</h1>
             <form action="/createCar" method="post">
@@ -46,7 +46,7 @@
     <section class="addUser">
         <div>
             <form action="/createUser" method="post">
-                <a href="/carPage/a"><i class="bi bi-x-lg"></i></a>
+                <a href="/carPage/today/a"><i class="bi bi-x-lg"></i></a>
                 <h1>Cadastro De Usuário</h1>
                 <label >Usuário:</label>
                 <input type="text" name="user" id="user" placeholder="Digite o nome de usuario" required><br>
@@ -70,46 +70,71 @@
                 <textarea readonly readonly name="" id="" cols="10" rows="1"><%= plate %></textarea></div>
                 <div></div><label for="">Reclamação:</label>
                 <textarea readonly name="" id="" cols="30" rows="1"><%= complaint %></textarea></div>
-                <div><label for="">Previsão conclusão:</label>
-                <textarea readonly name="" id="" cols="18" rows="1"><%= forecast %></textarea></div>
+                <div><label for=""><%if(history){%> Data agendamento: <%}else{%>Previsão conclusão:<%}%></label>
+                <textarea readonly cols="18" rows="1"><%if(history){%> <%=date%> <%}else{%> <%=forecast %> <%}%></textarea>
+                </div>
                 <div><label for="">Status:</label>
                 <textarea readonly name="" id="" cols="10" rows="1" ><%= stage %></textarea></div>
                 <div class="break"></div>
                 <div><label for="">Serviços:</label>
-                <textarea readonly placeholder="Serviços" cols="30" rows="5" ><%= date %></textarea></div>
+                <textarea readonly placeholder="Serviços" cols="30" rows="5" ><%= services %></textarea></div>
                 <div><label for="">Peças:</label>
                 <textarea readonly placeholder="peças" cols="30" rows="5"><%= parts %></textarea></div>
                 <div><label>Historico:</label>
                 <textarea readonly placeholder="Historico" cols="50" rows="5"><%= historic %></textarea></div>
-                <div>
-                    <a href="/carPage/today/a">Voltar</a>
-                    <a href="">Pedir peças <i class="bi bi-wrench-adjustable-circle"></i></a>
+                <%if(!history) {%>
+                <div class="detailBtns">
+                    <a href="/carPage/today/a">Fechar</a>
+                    <a href="/getById/<%=id%>/parts/<%=car.stage%>">Pedir peças <i class="bi bi-wrench-adjustable-circle"></i></a>
                     <a href="/getById/<%=id%>/conclude/forced">Forçar conclusão<i class="bi bi-check-lg"></i></a>
                 </div>
+                <% } %>
     </section>
     <% } %>
     <% if(conclude) {%>
         <section class="modal">
             <div class="card">
-                <div style="padding: .5rem;"><a class="close" href="/carPage/a"><i class="bi bi-x"></i></a></div><br>
+                <div style="padding: .5rem;"><a class="close" href="/carPage/today/a"><i class="bi bi-x"></i></a></div><br>
                 <p>Deseja realmente concluir essa etapa?</p><br>
                 <hr>
                 <div class="confirm">
-                    <a class="btnNot" href="/carPage/a">Não</a>
+                    <a class="btnNot" href="/carPage/today/a">Não</a>
                     <a class="btnYes" href="/conclude/<%=car.id%>/<%=status%>">Sim</a>
                 </div>
             </div>
         </section>
     <% } %>
+    <%if(part) { %>
+    <section class="modal">
+        <form action="/parts/<%=car._id%>" method="post">
+            <div class="cardParts">
+                <div style="padding: .5rem;"><a class="close" href="/carPage/today/a"><i class="bi bi-x"></i></a></div><br>
+                <p>Digite as peças e/ou serviços que deseja incluir:</p><br>
+                <input type="text" name="parts" placeholder="Peças"><br>
+                <div>
+                    <input type="text" name="services" placeholder="Serviços"><br>    
+                </div>
+                <button type="submit">Incluir</button>
+            </div>
+        </form>
+    </section>
+    <% } %>
     <section class="dates">
-        <a href="/carPage/today/a">Hoje</a>
-        <a href="/carPage/date1/a"><%=date1%></a>
-        <a href="/carPage/date2/a"><%=date2%></a>
-        <a href="/carPage/date3/a"><%=date3%></a>
-        <a href="/carPage/date4/a"><%=date4%></a>
-        <a href="/carPage/hoje/addCar">Novo veículo</a><br>
-        <a href="/carPage/hoje/logout">Sair</a>
-        <label style="color: black;"><%=userName%></label>
+        <div>
+            <%if(!history) {%>
+            <a href="/carPage/today/a">Hoje</a>
+            <a href="/carPage/date1/a">Amanhã</a>
+            <a href="/carPage/date2/a"><%=date2.substring(0,5)%></a>
+            <a href="/carPage/date3/a"><%=date3.substring(0,5)%></a>
+            <a href="/carPage/date4/a"><%=date4.substring(0,5)%></a>
+            <a href="/carPage/b/historic">Historico de veículos</a>
+            <%}else {%><a href="/carPage/today/a">Sair do Historico</a> <%}%>
+            <!-- <a href="/carPage/hoje/addCar">Novo veículo</a> -->
+        </div>
+        <div>
+            <label><%=userName%></label>
+            <a href="/carPage/hoje/logout">Sair</a>
+        </div>
     </section>
         
     <section class="cars">    
@@ -117,18 +142,25 @@
                 <% carList.forEach((car) =>{ %>
                     <li><div>
                        <div class="list">
-                        <p><%=car.specialty%> <i class="bi bi-tools"></i></p> <p> Veículo: <%= car.carName %> <i class="bi bi-tools"></i></p> 
+                        <%if(!history) {%><p><%=car.date.substring(11, 16)%> <i class="bi bi-tools"></i></p><%}%>
+                        <p><%=car.specialty%> <i class="bi bi-tools"></i></p> <p> Veículo: <%= car.carName %> 
+                            <i class="bi bi-tools"></i></p> 
                         <p> Placa: <%= car.plate %> <i class="bi bi-tools"></i> </p> <p> Status: <%= car.stage%> 
-                        <i class="bi bi-tools"></i> </p> <p name="car._id" >Responsavel: <%= car.responsible%></p>
+                        <i class="bi bi-tools"></i> </p><%if(!history) {%> <p>Responsavel: 
+                            <%= car.responsible%></p><%}else{%> <p>Data Entrega: <%=car.forecast%></p><%}%>
                         </div> 
                         </div>
                     <div class="btnList">
                         <a class="btnDetals" href="/getById/<%=car._id%>/details/<%=car.stage%>" title="Detalhes"><i 
                             class="bi bi-list"></i></a>
+                    <%if(!history) {%>        
                         <a href="/getById/<%=car._id%>/assumed/<%=car.stage%>" title="Assumir"><i 
                             class="bi bi-person-fill-up"></i></a>
+                        <a href="/getById/<%=car._id%>/parts/<%=car.stage%>" title="Pedir Peças">
+                            <i class="bi bi-wrench-adjustable-circle"></i></a>
                         <a class="btnConclude" href="/getById/<%= car._id%>/conclude/<%= car.stage %>" 
                             title="Cuncluir Etapa"><i class="bi bi-check-lg"></i></a>
+                    <% } %>
                     </div>
                 </li>
                 <% }) %>

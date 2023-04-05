@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
-const Historic = require('../models/Historic');
 
-const carSchema = new mongoose.Schema({
+const historicCarSchema = new mongoose.Schema ({
     carName: {
         type: String,
         require: true,
@@ -31,7 +30,7 @@ const carSchema = new mongoose.Schema({
         require: true,
     },historic: {
         type: String,
-    },    
+    },
 });
 
-module.exports = mongoose.model('Car', carSchema);
+module.exports = mongoose.model('Historic', historicCarSchema);

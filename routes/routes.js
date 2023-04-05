@@ -7,6 +7,7 @@ routes.get('/getByid/:id/:method/:stage',CarController.authent, CarController.ge
 routes.get('/carPage/:day/:show',CarController.authent, CarController.getAllCars);
 routes.post('/createCar', CarController.createCar);
 routes.post('/createUser', CarController.createUser);
+routes.post('/parts/:id', CarController.orderParts);
 routes.get('/conclude/:id/:stage',CarController.authent, CarController.concludeCar);
 
 module.exports = routes;
