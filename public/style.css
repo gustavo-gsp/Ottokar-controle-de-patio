@@ -1,9 +1,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Lobster&family=Oswald:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fruktur:ital@1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fruktur:ital@1&family=Lilita+One&display=swap');
 * {
   margin: 0;
   padding: 0;
-  font-family: Roboto, Arial;
+  font-family: Arial, Helvetica, sans-serif;
+  box-sizing: border-box;
 }
 body {
   background-color:#212153;
@@ -30,19 +34,18 @@ div {
 }
 a {
   text-decoration: none;
+  transition: all 0.3s ease-in-out;
 }
 .title {
   color: #212153;
   text-align: center;
   background-color: rgba(255, 119, 0, 0.973);
   margin-bottom: 0.2rem;
-  font-family: "Lobster", cursive;
+  font-family: 'Lilita One', cursive;
   text-shadow: 0 0 .3em #aaffff;
+  flex-basis: 100%;
 }
-.title i{
-  color: #212153;
-}
-#addCar {
+#addCar{
   width: 100%;
   height: 20%;
   background-color: #212153;
@@ -50,19 +53,35 @@ a {
   background-color: #212153;
   text-align: center;
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   color: rgb(167, 167, 167);
 }
-#addCar h1 {
+#addCarPhone{
+  width: 100%;
+  height: 20%;
+  background-color: #212153;
+  padding: 1rem 0 1rem 0;
+  background-color: #212153;
+  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  color: rgb(167, 167, 167);
+}
+#addCar h1, #addCarPhone h1 {
   padding: 0.3rem;
 }
-#addCar button {
+#addCar .btn, #addCarPhone .btn{
+  display: flex;
+  flex-basis: 100%;
+  justify-content: center;
+}
+#addCar .btn button, #addCarPhone .btn button {
   text-align: center;
   padding: 0.3rem;
-  width: 11%;
-  height: 2%;
   background-color: #005290;
   font-size: 1rem;
   cursor: pointer;
@@ -72,8 +91,22 @@ a {
   color: rgb(255, 119, 0);
   transition: all 0.3s ease-in-out;
 }
-#addCar button:hover {
+#addCar button:hover, #addCarPhone button:hover{
   background-color: #143044;
+}
+.addClose{
+  text-align: center;
+  padding: 0.3rem;
+  background-color: #005290;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 0.3rem;
+  border: #005290 solid 1px;
+  font-weight: bolder;
+  color: rgb(255, 119, 0);
+  transition: all 0.3s ease-in-out;
+  margin-right: 2rem;
+  display: none;
 }
 #addCarNone {
   display: none;
@@ -140,9 +173,6 @@ a {
     flex-basis: 100%;
     width: 100%;
 }
-.cars {
-  margin: 0.5rem;
-}
 ul {
   list-style: none;
   font-size: 1.2rem;
@@ -151,7 +181,7 @@ ul {
 }
 ul li {
   position: relative;
-  padding: 0.7rem 0.8rem 0.7rem 0.8rem;
+  padding: 0.7rem .1rem 0.7rem .1rem;
   background-color: #212153;
   display: flex;
   align-items: center;
@@ -168,7 +198,7 @@ ul li:hover {
   flex-wrap: wrap;
 }
 .list p i{
-    margin:0 .4rem 0 .4rem;
+    margin:0 .6rem 0 .4rem;
 }
 ul li div {
   display: flex;
@@ -192,28 +222,42 @@ ul li a:hover {
 .details {
   border: none;
   width: 100%;
-  height: 10em;
+  height: 20%;
   background-color: #212153;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  padding: 3rem 0 3rem 0;
 }
 .details textarea {
   padding: 0.2rem;
   font-weight: bold;
   cursor: default;
-  background-color: rgb(214, 255, 255);
+  background-color: #ffee;
 }
 .details div {
-  margin: 0.2rem 1rem 0.2rem 1rem;
+  margin: 0.4rem 1rem 0.2rem 1rem;
   display: flex;
   align-items: center;
 }
 .details a{
     background-color: #00ffff;
     margin: 1rem;
+    color: #272727;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.details a:hover{
+    background-color: #143044;
+}
+.details label{
+  margin-right: .3rem;
+  margin-left: .3rem;
+}
+.details .bigText{
+  display: flex;
+  justify-content: space-between;
+  flex-basis: 100%;
 }
 .detailBtns{
   display: flex;
@@ -222,8 +266,15 @@ ul li a:hover {
   padding-top: 1rem;
 }
 .detailBtns a{
-  border-radius: .2rem;
-  padding: .2rem;
+  text-align: center;
+  color: rgba(255, 119, 0, 0.973);
+  padding: 0.3rem;
+  background-color: #005290;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 0.3rem;
+  border: #005290 solid 1px;
+  transition: all 0.3s ease-in-out;
 }
 .break {
   flex-basis: 100%;
@@ -245,10 +296,10 @@ ul li a:hover {
 .card {
   width: 20rem;
   height: 9rem;
-  border: rgba(0, 255, 255, 0.877) solid 0.2rem;
+  border: rgba(49, 134, 204, 0.877) solid 0.1rem;
   border-radius: 0.4rem;
   position: relative;
-  background-color: #272727;
+  background-color: #212153;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -262,8 +313,11 @@ ul li a:hover {
   width: 90%;
   border-color: #00aa2a;
 }
+.confirm{
+  margin-bottom: .3rem;
+}
 .cardParts{
-  width: 22rem;
+  width: 24rem;
   height: 14rem;
   border: rgba(49, 134, 204, 0.877) solid 0.1rem;
   border-radius: 0.4rem;
@@ -278,6 +332,21 @@ ul li a:hover {
   display: flex;
   flex-basis: 100%;
   justify-content: center;
+}
+.cardParts button{
+    background-color: #00ffff;
+    color: #272727;
+    font-weight: bolder;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: .2rem;
+    padding: .4rem;
+    margin-bottom: .5rem;
+}
+.cardParts button:hover{
+  background-color: rgb(110, 75, 75);
+  color: #00ffff;
 }
 .close {
   position: absolute;
@@ -317,23 +386,173 @@ ul li a:hover {
   background-color: #00aa2a;
   color: #fff;
   font-weight: normal;
+  
 }
 .dates{
     background-color: rgba(255, 119, 0, 0.973);
     padding: .3rem;
     display: flex;
     justify-content: space-between;
-}
-.dates a{
-    background-color: #005290;
+    align-items: center;
+    height: 2rem;
+    width: 100%;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+  .dates a{
+    background-color: #212153;
     color: rgb(167, 167, 167);
-    padding: .2rem;
+    text-shadow: 0 0r .1rem #0000009c;
+    font-weight: bolder;
+    padding: .2rem .2rem;
     border-radius: 0rem .2rem 0 0rem;
     margin: 0;
-    border: .1rem solid gray
+    border: .1rem solid rgb(92, 92, 92);
+    height: 2rem;
+    transition: all 0.3s ease-in-out;
+}
+.dates a:hover, .dates a.selected{
+  background-color: #323279;
+  cursor: pointer;
 }
 .dates label{
   color: black;
   margin-right: .2rem;
 }
+#btnMenu{
+  color: #eef;
+}
+#btnMenu:hover{
+  cursor: pointer;
+}
+.menuLeft{
+  margin-right: .3rem;
+}
+.togle{
+  width: 14rem;
+  height: auto;
+  background-color: #005290;
+  position: fixed;
+  right: .2rem;
+  top: 5rem;
+  display: none;
+  flex-wrap: wrap;
+  padding: .2rem;
+  z-index: 9999;
+  border-radius: .3rem;
+}
+.togle a{
+  display: flex;
+  flex-basis: 100%;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: .2rem;
+  border-radius: .3rem;
+}
+.logout{
+  display: none;
+}
+@media(min-width: 600px){
+  .btnAdd{
+    display: none;
+  }
+}
+@media(max-width: 600px){
+  #addCar, .menuDates, .pNone, .labelNone{
+    display: none;
+  }
+  #addCarPhone .labelShow{
+    display: flex;
+    justify-content: center;
+    flex-basis: 100%;
+    margin: .5rem;
+  }
+  .addClose{
+    display: inline;
+  }
+  .details div{
+    flex-basis: 100%;
+  }
+  .textDetails{
+    width: 80%;
+  }
+  .details .bigText{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .details .bigText textarea{
+      margin: .3rem .3rem 0 0;
+  }
+  .detailsTop{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: left;
+  }
+  .list i{
+    /* font-size: 1rem; */
+    display: none;
+  }
+  ul li a {
+    margin: 0 0 .3rem 0;
+  }
+  ul li p{
+    margin: 0 .5rem 0 .5rem;
+  }
+  ul li{
+    height: 9rem;
+    padding: 0;
+  }
+  .listBreak{
+    display: block;
+    width: 8rem;
+  }
+  .btnList {
+    display: flex;
+  }
+}
 
+
+/* style tela de Login: */
+.container{
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  color: #fff;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: auto;
+  color: rgba(255, 119, 0, 0.973);
+}
+.container h1{
+  margin: 2rem;
+}
+.login{
+  text-align: center;
+  border: .1rem solid rgba(0, 255, 255, 0.377);
+  padding: 2rem;
+  background-color: rgba(0, 255, 255, 0.096);
+  border-radius: .8rem;
+  font-weight: bolder;
+}
+.login button{
+  text-align: center;
+  text-justify: center;
+  color: rgba(255, 119, 0, 0.973);
+  padding: 0.3rem;
+  background-color: #005290;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 0.3rem;
+  border: #005290 solid 1px;
+  transition: all 0.3s ease-in-out;
+  font-weight: bold;
+  margin: 0;
+}
+.login button:hover{
+  background-color: #212153;
+}

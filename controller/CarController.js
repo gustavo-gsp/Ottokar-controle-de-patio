@@ -4,9 +4,10 @@ const Historic = require('../models/Historic');
 const Bcrypt = require('bcrypt');
 const moment = require('moment');
 const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
+const { format, addDays } = require('date-fns');
 const session = require('express-session');
 const { trusted } = require('mongoose');
+
 
 let carList = [];
 let message = "";
@@ -18,6 +19,8 @@ let conclude = false;
 let part = false;
 let addCar = "addCar";
 let history = false;
+let togle = false;
+let week = [];
 let dateToday = moment().format("DD/MM/YYYY");
 let date1 = moment().add(1, 'days').format("DD/MM/YYYY");
 let date2 = moment().add(2, 'days').format("DD/MM/YYYY");
@@ -48,21 +51,23 @@ const getById = async (req, res) => {
         status = req.params.stage;
         let car = await Car.findOne({ _id: req.params.id });;
         if(req.params.method == "conclude"){
+            togle = false;
             res.render("index", 
             {
                 conclude: true, car, status, carList, userName, userFunc,
                 details, addCar, date1, date2, date3,date4, part: false,
-                history: false,
+                history: false, week, togle,
             });
         }else if(req.params.method == "details"){
             addCar = "addCarNone";
+            togle = false;
             if(history == true){
                 carList = await Historic.find();
                 car = await Historic.findOne({ _id: req.params.id });
             }
             return res.render('index', {
-                userName, userFunc,status, car, carList,conclude:false, 
-                addCar, date1, date2, date3, date4, part: false, history,
+                userName, userFunc,status, car, carList,conclude:false, week,
+                addCar, date1, date2, date3, date4, part: false, history, togle,
                 details: true,
                 model: car.carName, 
                 plate: car.plate,
@@ -76,6 +81,7 @@ const getById = async (req, res) => {
                 id: car._id,
             });
         }else if(req.params.method == "assumed"){
+            togle = false;
                 if(car.responsible == "" ){
                     await Car.updateOne({_id: req.params.id},{$set: {responsible: userName}});
                     return res.redirect('/carPage/today/a')
@@ -83,13 +89,14 @@ const getById = async (req, res) => {
                     return res.redirect('/carPage/today/a');
                 }
         }else if(req.params.method == "parts"){
+            togle = false;
             if(car.stage != "Agendado" && car.stage != "Aguardando" && car.responsible){
                 
             res.render("index", 
             {
                 conclude, car, status, carList, userName, userFunc,
                 details, addCar, date1, date2, date3,date4, part: true,
-                history: false,
+                history: false, week, togle,
             });
         }else{
             res.redirect('/carPage/today/a');
@@ -114,6 +121,14 @@ const getAllCars = async (req, res) => {
             const datethree =  new RegExp(`^${date3.substring(0,2)}`);
             const datefour =  new RegExp(`^${date4.substring(0,2)}`);
             
+            const hoje = new Date();
+            
+            for (let i = 1; i <= 4; i++) {
+                const nextDate = addDays(hoje, i);
+                const dayWeek = format(nextDate, 'eeee', { locale: require('date-fns/locale/pt-BR') });
+                week.push(dayWeek);
+            }
+
             if(req.params.show == "historic"){
                 let list = await Historic.find();
                 let list2 = [];
@@ -124,9 +139,9 @@ const getAllCars = async (req, res) => {
                 history = true;
                 addCar = "addCarNone";
                 return res.render('index', {
-                    carList, userName, userFunc, status,
+                    carList, userName, userFunc, status, togle,
                     details, conclude, addCar,part: false,
-                    date1, date2, date3, date4, history,
+                    date1, date2, date3, date4, history, week,
                 });
             }else{ 
                 
@@ -147,7 +162,7 @@ const getAllCars = async (req, res) => {
                                 }else if(car.specialty == "Funilaria" && userFunc == "fun"){
                                     carList.push(car);
                                 }
-                            }
+                            }   
                         }
                     });
                 }else if(userFunc == "buyer"){
@@ -186,21 +201,39 @@ const getAllCars = async (req, res) => {
         }
             if(req.params.show == 'a' || req.params.show == 'addCar'){
                 details = false;
-                addCar = "addCar";
+                togle = false;
+                if(req.params.show == 'addCar'){
+                    addCar = 'addCarPhone'
+                }else{
+                    addCar = "addCar";
+                }
                 return res.render('index', {
-                carList, userName, userFunc, status,
-                details, conclude, addCar,part: false,
+                carList, userName, userFunc, status, week,
+                details, conclude, addCar,part: false, togle,
                 date1, date2, date3, date4, history: false,
             });
             }else if(req.params.show == 'logout'){
+                togle = false;
                 userName = "";
                 res.redirect('/home');
+            }else if (req.params.show == 'togle') {
+                if(!togle){
+                    togle = true;
+                }else{
+                    togle = false;
+                }
+                return res.render('index',
+                {
+                    carList, userName, status, details, conclude,
+                    addCar, date1, date2, date3, date4, part,
+                    userFunc, history, week, togle,
+                });
             }else{    
                 return res.render('index',
                 {
                     carList, userName, status, details, conclude,
                     addCar, date1, date2, date3, date4, part: false,
-                    userFunc, history: false,
+                    userFunc, history: false, week, togle,
                 });
             }
         
@@ -243,7 +276,7 @@ const createCar = async (req, res) =>{
             specialty: car.specialty,
             historic: `Agendado - (${userName} | ${moment().format("DD/MM/YYYY HH:mm")})`,
         });
-        addCar = false;
+        if(addCar == "addCarPhone") addCar = "addCarNone";
         return res.redirect('/carPage/today/a');
     }catch (err) {
         res.status(500).send({error: err.message})
@@ -255,10 +288,11 @@ const orderParts = async (req, res) =>{
     const service = car.services != undefined ? car.services + " | " + req.body.services +" | ": req.body.services +" | ";
     const parts = car.parts != undefined ? car.parts+ " | " + req.body.parts +" | ": req.body.parts +" | ";
             
-     let history = car.historic;
+    let history = car.historic;
     history = history + ` | (${userName} pediu peças ou serviços ${moment().format("DD/MM/YYYY HH:mm")})`;
 
-    await Car.updateMany({_id: req.params.id}, {$set: {services: service, parts: parts, historic: history, stage: "aprovando"}});
+    await Car.updateMany({_id: req.params.id}, {$set: 
+        {services: service, parts: parts, historic: history, stage: "Aprovando", responsible: ""}});
     part = false;
     res.redirect('/carPage/today/a');
     
@@ -287,7 +321,7 @@ const concludeCar = async (req, res) =>{
             history = history + ` | (${userName} concluiu para Aprovando ${moment().format("DD/MM/YYYY HH:mm")})`;
             await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: history, responsible: ""}});
         res.redirect('/carPage/today/a');
-        }else if(status == "Aprovando"){
+        }else if(status == "Aprovando" || status == "aprovando"){
             stages = 'Comprando';
             history = history + ` | (${userName} concluiu para Comprando ${moment().format("DD/MM/YYYY HH:mm")})`;
             await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: history, responsible: ""}});
@@ -324,6 +358,8 @@ const concludeCar = async (req, res) =>{
             await Car.deleteOne({_id: req.params.id});
             
         res.redirect('/carPage/today/a');    
+        }else{
+            res.redirect("/home")
         }
     }catch (err) {
         res.status(500).send({error: err.message})
