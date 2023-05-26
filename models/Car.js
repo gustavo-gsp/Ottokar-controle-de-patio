@@ -21,16 +21,17 @@ const carSchema = new mongoose.Schema({
     },complaint: {
         type: String,
     },services: {
-        type: String,
-    },parts: {
-        type: String,
+        type: [String],
+    },
+    parts: {
+        type: [String],
     },date: {
         type: String,
     },specialty: {
         type: String,
         require: true,
     },historic: {
-        type: String,
+        type: [String],
     },    
 });
 

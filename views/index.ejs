@@ -16,11 +16,11 @@
             <div>
                 <%if(!history) {%>
                 <a href="/carPage/today/a">Hoje</a>
+                <a href="/carPage/date1/a">Amanhã</a>
                 <% if(userFunc != "mec" && userFunc != "fun" && userFunc != "buyer") {%>
                     <a class="btnAdd" href="/carPage/hoje/addCar">Novo veículo</a>
                 </div>    
                 <div class="menuDates">    
-                <a href="/carPage/date1/a">Amanhã</a>
                 <a href="/carPage/date2/a"><%=week[1]%></a>
                 <a href="/carPage/date3/a"><%=week[2]%></a>
                 <a href="/carPage/date4/a"><%=week[3]%></a>
@@ -89,12 +89,10 @@
             <form action="/createUser" method="post" autocomplete="off">
                 <a href="/carPage/today/a"><i class="bi bi-x-lg"></i></a>
                 <h1>Cadastro De Usuário</h1>
-                <input type="text" style="display: none;">
-                <input type="password" style="display: none;">
                 <label >Usuário:</label>
-                <input type="text" name="user" id="user" placeholder="Digite o nome de usuario" required><br>
+                <input type="text" name="newUser" id="user" placeholder="Digite o nome de usuario" autocomplete="off" required><br>
                 <label style="margin-right: .6rem;">Senha:</label>
-                <input type="password" name="password" id="password" placeholder="Digite a senha" required><br>
+                <input type="password" name="newPassword" id="password" placeholder="Digite a senha" required><br>
                 <label>função:</label>
                 <select name="func" id="func" style="margin: .5rem 5.5rem 0 1.4rem" required>
                     <option value="mec">Mecânico</option> <option value="fun">Funileiro</option>
@@ -107,37 +105,69 @@
     </section >
    
         <% if(details) {%>
-            <section class="details"">
+            <section class="details">
                 <div class="detailsTop">
-                <div style="margin-left: 0;"><div><label  for="">Modelo:</label>
+                <div style="margin-left: 0;"><div><label  >Modelo:</label>
                 <textarea readonly name="" id="" cols="10" rows="1"><%=model%></textarea></div>
-                <div><label for="">Placa:</label>
-                <textarea readonly readonly name="" id="" cols="10" rows="1"><%= plate %></textarea></div></div>
-                <div><label for="">Reclamação:</label>
-                <textarea readonly cols="25" rows="1"><%= complaint %></textarea></div>
-                <div><label for=""><%if(history){%> Data agendamento: <%}else{%>Previsão:<%}%></label>
-                <textarea readonly cols="15" rows="1"><%if(history){%> <%=date%> <%}else{%> <%=forecast %> <%}%></textarea>
-                <label for="">Status:</label>
-                <textarea readonly name="" id="" cols="10" rows="1" ><%= stage %></textarea></div>
+                <div><label >Placa:</label>
+                <textareareadonly name="" id="" cols="10" rows="1"><%= plate %></textarea></div></div>
+                <div><label ><%if(history){%> Data agendamento: <%}else{%>Previsão:<%}%></label>
+                    <textarea readonly cols="15" rows="1"><%if(history){%> <%=date%> <%}else{%> <%=forecast %> <%}%></textarea>
+                    <label >Status:</label>
+                    <textarea readonly name="" id="" cols="10" rows="1" ><%= stage %></textarea></div>
+                    <div><label >Reclamação:</label>
+                    <textarea readonly cols="34" rows="1"><%= complaint %></textarea></div>
+                </div>
+                <div class="bigText">
+                <% if(services != "") {%>    
+                <div>
+                    <label >Serviços:</label>
+                    <ul class="ulServices">
+                        <% services.forEach((service) =>{%>
+                        <li>
+                            <%= service %> <a class="btnCheck" href="/getById/<%= car._id%>/conclude/<%= car.stage %>" 
+                                title="Cuncluir Etapa"><i class="bi bi-check-lg"></i></a>
+                        </li>
+                        <% }) %>
+                    </ul>
                 </div>
                 <div class="listBreak"></div>
-                <div class="bigText"><label for="">Serviços:</label><div class="listBreak"></div>
-                <textarea readonly class="textDetails" placeholder="Serviços" cols="30" rows="4" ><%= services %></textarea>
-                <div class="listBreak"></div>
-                <label for="">Peças:</label><div class="listBreak"></div>
-                <textarea readonly class="textDetails" placeholder="peças" cols="30" rows="4"><%= parts %></textarea>
-                <div class="listBreak"></div>
-                <label>Historico:</label><div class="listBreak"></div>
-                <textarea readonly class="textDetails" placeholder="Historico" cols="40" rows="5"><%= historic %></textarea></div>
-                <%if(!history) {%>
+                <% } %>
+                <% if(parts != "") {%>
+                <div>
+                    <label style="margin-right: 1.5rem;" class="lab">Peças:</label>
+                    <ul class="ulParts">
+                        <% parts.forEach((part) =>{%>
+                        <li>
+                            <%= part %> <a class="btnCheck" href="/getById/<%= car._id%>/conclude/<%= car.stage %>" 
+                                title="Cuncluir Etapa"><i class="bi bi-check-lg"></i></a>
+                        </li>
+                        <% }) %>
+                    </ul>
+                </div>
+                    <% } %>
+                <% if(userFunc != "mec" && userFunc != "fun") { %>
+                    <label>Historico:</label>
+                    <ul class="<% if(parts != '' && services != '') {%> ulHistoric <%}else{%>ulUnic <%} %>">
+                        <% historic.forEach((history) =>{%>
+                        <li>
+                            <%= history %>
+                        </li>
+                        <% }) %>
+                    </ul>
+                    <% } %> 
+                </div>
+                    <%if(!history) {%>
                 <div class="detailBtns">
                     <a href="/carPage/today/a">Fechar</a>
                     <a href="/getById/<%=id%>/parts/<%=car.stage%>">Pedir peças <i class="bi bi-wrench-adjustable-circle"></i></a>
+                    <% if(userFunc != "mec" && userFunc != "fun") { %>
                     <a href="/getById/<%=id%>/conclude/forced">Forçar conclusão<i class="bi bi-check-lg"></i></a>
+                    <% } %>
                 </div>
                 <% } %>
-    </section>
-    <% } %>
+            </section>
+        <% } %>
     <% if(conclude) {%>
         <section class="modal">
             <div class="card">
@@ -153,15 +183,17 @@
     <% } %>
     <%if(part) { %>
     <section class="modal">
-        <form action="/parts/<%=car._id%>" method="post">
+        <form action="/parts/<%=car._id%>" method="post" id="formParts">
             <div class="cardParts">
                 <div style="padding: .5rem;"><a class="close" href="/carPage/today/a"><i class="bi bi-x"></i></a></div><br>
                 <p>Digite as peças e/ou serviços que deseja incluir:</p><br>
-                <input type="text" name="parts" placeholder="Peças"><br>
-                <div>
-                    <input type="text" name="services" placeholder="Serviços"><br>    
-                </div>
-                <button type="submit">Incluir</button>
+                <input type="text" name="parts" id="parts" placeholder="Peças">
+                <button id="includePart" type="button">Incluir</button><br>
+                <ul id="listParts"></ul><br>
+                <input type="text" name="services" id="services" placeholder="Serviços">    
+                <button id="includeService" type="button">Incluir</button>
+                <ul id="listServices"></ul>
+                <div style="margin-top: .5rem;"><button id="btnSend" type="button">Enviar</button></div>
             </div>
         </form>
     </section>
@@ -170,26 +202,25 @@
     <section class="cars">    
         <ul>
                 <% carList.forEach((car) =>{ %>
-                    <li>
-                       <div class="list">
-                        <%if(!history) {%><p><%=car.date.substring(11, 16)%> <i class="bi bi-tools"></i></p><%}%>
-                        <p><%=car.specialty%> <i class="bi bi-tools"></i></p> <div class="listBreak"></div> 
-                        <p class="pNone"> Veículo:</p><p> <%= car.carName %> &nbsp;</p> 
-                        <p> Placa: <%= car.plate %> <i class="bi bi-tools"></i> </p> <p> Status: <%= car.stage%> 
+                    <li onclick="location.href='/getById/<%=car._id%>/details/<%=car.stage%>'">
+                        <div class="list">
+                                <%if(!history) {%><p><%=car.date.substring(11, 16)%> <i class="bi bi-tools"></i></p><%}%>
+                                <p><%=car.specialty%> <i class="bi bi-tools"></i></p> <div class="listBreak"></div> 
+                                <p class="pNone"> Veículo:&nbsp</p><p> <%= car.carName %> &nbsp;</p> 
+                                <p> Placa: <%= car.plate %> <i class="bi bi-tools"></i> </p> <p> Status: <%= car.stage%> 
                         <i class="bi bi-tools"></i> </p><div class="listBreak"></div><%if(!history) {%> <p>Responsavel: 
                             <%= car.responsible%></p><%}else{%> <p>Data Entrega: <%=car.forecast%></p><%}%>
                         </div>
-                    <div class="btnList">
-                        <div><a class="btnDetals" href="/getById/<%=car._id%>/details/<%=car.stage%>" title="Detalhes"><i 
-                            class="bi bi-list"></i></a>
-                    <%if(!history) {%>        
-                        <a href="/getById/<%=car._id%>/assumed/<%=car.stage%>" title="Assumir"><i 
-                            class="bi bi-person-fill-up"></i></a></div>
-                        <a href="/getById/<%=car._id%>/parts/<%=car.stage%>" title="Pedir Peças">
-                            <i class="bi bi-wrench-adjustable-circle"></i></a>
-                        <a class="btnConclude" href="/getById/<%= car._id%>/conclude/<%= car.stage %>" 
-                            title="Cuncluir Etapa"><i class="bi bi-check-lg"></i></a>
-                    <% } %>
+                        <div class="btnList">
+                            
+                            <%if(!history) {%>        
+                                <a href="/getById/<%=car._id%>/parts/<%=car.stage%>" title="Pedir Peças">
+                                    <i class="bi bi-wrench-adjustable-circle"></i></a>
+                                <a href="/getById/<%=car._id%>/assumed/<%=car.stage%>" title="Assumir"><i 
+                                    class="bi bi-person-fill-up"></i></a>
+                                <a class="btnConclude" href="/getById/<%= car._id%>/conclude/<%= car.stage %>" 
+                                    title="Cuncluir Etapa"><i class="bi bi-check-lg"></i></a>
+                                    <% } %>
                     </div>
                 </li>
                 <% }) %>

@@ -29,7 +29,7 @@ const historicCarSchema = new mongoose.Schema ({
         type: String,
         require: true,
     },historic: {
-        type: String,
+        type: [String],
     },
 });
 

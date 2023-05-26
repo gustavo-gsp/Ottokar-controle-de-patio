@@ -4,12 +4,14 @@ const routes = require('./routes/routes')
 const connectToDb = require("./database/db");
 const passport = require('passport');
 const session = require('express-session');
+const bodyParser = require('body-parser');
 const { authenticate } = require('passport');
 const app = express();
 
 require('./auth')(passport);
 connectToDb();
 
+app.use(bodyParser.json());
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded());

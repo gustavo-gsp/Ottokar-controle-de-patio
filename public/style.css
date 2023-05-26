@@ -191,6 +191,10 @@ ul li {
 ul li:hover {
   background-color: rgb(71, 56, 56);
   color: #ffffffcc;
+  cursor: pointer;
+}
+ul li p:hover{
+  cursor: pointer;
 }
 .list {
   cursor: default;
@@ -205,10 +209,10 @@ ul li div {
   align-items: center;
   flex-wrap: wrap;
 }
-ul li:nth-child(odd) {
+.cars ul li:nth-child(odd) {
   background-color: #005290;
 }
-ul li:nth-child(odd):hover {
+.cars ul li:nth-child(odd):hover {
   background-color: rgb(71, 56, 56);
 }
 ul li a {
@@ -220,13 +224,13 @@ ul li a:hover {
   background-color: #b1ec0c;
 }
 .details {
-  border: none;
   width: 100%;
-  height: 20%;
   background-color: #212153;
-  display: flex;
-  flex-wrap: wrap;
+  display:flex;
+  flex-wrap:wrap;
   align-items: center;
+  flex-direction: column;
+  padding: 0;
 }
 .details textarea {
   padding: 0.2rem;
@@ -234,7 +238,7 @@ ul li a:hover {
   cursor: default;
   background-color: #ffee;
 }
-.details div {
+.details .detailsTop div {
   margin: 0.4rem 1rem 0.2rem 1rem;
   display: flex;
   align-items: center;
@@ -252,18 +256,71 @@ ul li a:hover {
 }
 .details label{
   margin-right: .3rem;
-  margin-left: .3rem;
+  /* margin-left: .3rem; */
+}
+.details .detailsTop{
+  flex-basis: 100%;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-left: 0;
+  justify-content: space-between;
 }
 .details .bigText{
   display: flex;
   justify-content: space-between;
   flex-basis: 100%;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.details .ulServices, .details .ulParts{
+  max-height: 10rem;
+  width: 20rem;
+  overflow-y: scroll;
+  border-radius: .3rem;
+  background-color: #212153;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.details ul li{
+  height: auto;
+  padding: 0;
+  /* padding-left:.2rem; */
+  margin: .2rem 0 .2rem 0;
+  background-color: #01467a;
+  color:rgba(0, 255, 255, 0.842);
+  width: 100%;
+} 
+.ulHistoric{
+  font-size: 1rem;
+  max-height: 10rem;
+  max-width: 26rem;
+  overflow-y: scroll;
+  border-radius: .3rem;
+  background-color: #212153;
+}
+.ulHistoric li:hover, .ulUnic li:hover {
+  cursor: unset;
+}
+.ulUnic{
+  font-size: 1rem;
+  max-height: 10rem;
+  width: 40rem;
+  overflow-y: scroll;
+  border-radius: .3rem;
+  background-color: #212153;
+}
+.details .btnCheck{
+  margin: 0;
+  background-color: #c1e952;
+  
 }
 .detailBtns{
   display: flex;
   flex-basis: 100%;
   justify-content: center;
   padding-top: 1rem;
+  flex-wrap: wrap;
 }
 .detailBtns a{
   text-align: center;
@@ -317,8 +374,7 @@ ul li a:hover {
   margin-bottom: .3rem;
 }
 .cardParts{
-  width: 24rem;
-  height: 14rem;
+  width: 26rem;
   border: rgba(49, 134, 204, 0.877) solid 0.1rem;
   border-radius: 0.4rem;
   position: relative;
@@ -327,6 +383,7 @@ ul li a:hover {
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
+  padding: .8rem;
 }
 .cardParts div{
   display: flex;
@@ -334,19 +391,40 @@ ul li a:hover {
   justify-content: center;
 }
 .cardParts button{
-    background-color: #00ffff;
-    color: #272727;
-    font-weight: bolder;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: .2rem;
-    padding: .4rem;
-    margin-bottom: .5rem;
+  text-align: center;
+  padding: 0.1rem;
+  background-color: #005290;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 0.3rem;
+  border: #005290 solid 1px;
+  font-weight: bolder;
+  color: rgb(255, 119, 0);
+  transition: all 0.3s ease-in-out;
+  margin: .5rem;
 }
 .cardParts button:hover{
-  background-color: rgb(110, 75, 75);
-  color: #00ffff;
+  background-color: #143044;
+}
+.cardParts div #btnSend{
+  background-color:#005290;
+  color:rgb(255, 119, 0);
+  padding: .5rem;
+  font-size: 1.2rem;
+}
+.cardParts ul li{
+  font-size: 1rem;
+  height: auto;
+  background-color:transparent;
+  margin: .2rem;
+}
+.cardParts ul{
+  background-color: #005290;
+  border-radius: .2rem;
+  width: 90%;
+}
+.cardParts input{
+  width: 70%;
 }
 .close {
   position: absolute;
@@ -470,16 +548,14 @@ ul li a:hover {
   .addClose{
     display: inline;
   }
-  .details div{
-    flex-basis: 100%;
-  }
   .textDetails{
     width: 80%;
   }
+
   .details .bigText{
     display: flex;
-    flex-wrap: wrap;
     justify-content: center;
+    flex-wrap: wrap;
   }
   .details .bigText textarea{
       margin: .3rem .3rem 0 0;
@@ -490,7 +566,6 @@ ul li a:hover {
     justify-content: left;
   }
   .list i{
-    /* font-size: 1rem; */
     display: none;
   }
   ul li a {
@@ -510,8 +585,32 @@ ul li a:hover {
   .btnList {
     display: flex;
   }
+  .btnList a{
+    padding: .5rem;
+    margin: .3rem;
+  }
+  .cardParts{
+   width: 100%; 
+  }
+  .cardParts input{
+    width: 90%;
+    height: 3rem;
+  }
+  .bigText div{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 0;
+  }
+  .details .ulServices, .details .ulParts, .details .ulHistoric{
+    width: 23rem;
+    margin: .5rem;
+  } 
 }
-
+#user{
+  text-transform: lowercase;
+}
 
 /* style tela de Login: */
 .container{
@@ -555,4 +654,7 @@ ul li a:hover {
 }
 .login button:hover{
   background-color: #212153;
+}
+#user{
+  text-transform: lowercase;
 }

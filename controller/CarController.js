@@ -8,7 +8,6 @@ const { format, addDays } = require('date-fns');
 const session = require('express-session');
 const { trusted } = require('mongoose');
 
-
 let carList = [];
 let message = "";
 let userName = "";
@@ -26,6 +25,7 @@ let date1 = moment().add(1, 'days').format("DD/MM/YYYY");
 let date2 = moment().add(2, 'days').format("DD/MM/YYYY");
 let date3 = moment().add(3, 'days').format("DD/MM/YYYY");
 let date4 = moment().add(4, 'days').format("DD/MM/YYYY");
+
 const home = (req, res, next) =>{
     if(req.query.fail){
         return res.render('login',{message: 'Usúario ou senha inválidos'});
@@ -82,12 +82,16 @@ const getById = async (req, res) => {
             });
         }else if(req.params.method == "assumed"){
             togle = false;
-                if(car.responsible == "" ){
-                    await Car.updateOne({_id: req.params.id},{$set: {responsible: userName}});
-                    return res.redirect('/carPage/today/a')
-                }else{
-                    return res.redirect('/carPage/today/a');
-                }
+            let historic = [...car.historic];
+            let history = "";
+            if(userName != car.responsible){
+            history = `${moment().format("HH:mm DD/MM")} - ${userName} assumiu como responsável.`;
+            historic.push(history)
+            await Car.updateMany({_id: req.params.id},{$set: {responsible: userName, historic: historic}});
+            return res.redirect('/carPage/today/a')
+            }else{
+                return res.redirect('/carPage/today/a')
+            }
         }else if(req.params.method == "parts"){
             togle = false;
             if(car.stage != "Agendado" && car.stage != "Aguardando" && car.responsible){
@@ -247,8 +251,8 @@ const createUser = async (req, res) => {
     log.password = await Bcrypt.hash(log.password, 8);
     try{
         await User.create({
-            user: log.user,
-            password: log.password,
+            user: log.newUser,
+            password: log.newPassword,
             func: log.func,
         })
         return res.redirect('/carPage/today/a');
@@ -283,73 +287,105 @@ const createCar = async (req, res) =>{
     }
 }
 const orderParts = async (req, res) =>{
-    const car = await Car.findOne({_id: req.params.id});
-    
-    const service = car.services != undefined ? car.services + " | " + req.body.services +" | ": req.body.services +" | ";
-    const parts = car.parts != undefined ? car.parts+ " | " + req.body.parts +" | ": req.body.parts +" | ";
-            
-    let history = car.historic;
-    history = history + ` | (${userName} pediu peças ou serviços ${moment().format("DD/MM/YYYY HH:mm")})`;
 
-    await Car.updateMany({_id: req.params.id}, {$set: 
-        {services: service, parts: parts, historic: history, stage: "Aprovando", responsible: ""}});
-    part = false;
-    res.redirect('/carPage/today/a');
+        const car = await Car.findOne({ _id: req.params.id });
+        let services = [];
+        let parts = [];
+        let historic = [...car.historic];
+        let history = ""; 
+        if (car.services) {
+            services = [...car.services]; // Copia os valores atuais para o array
+        }
     
+        if (car.parts) {
+            parts = [...car.parts]; // Copia os valores atuais para o array
+        }
+    
+        if (req.body.servicos) {
+            services.push(...req.body.servicos); // Adiciona os novos valores ao array
+        }
+    
+        if (req.body.pecas) {
+            parts.push(...req.body.pecas); // Adiciona os novos valores ao array
+        }
+        history =`${moment().format("HH:mm DD/MM")} - ${userName} pediu: ${req.body.pecas}; ${req.body.servicos}`;
+        historic.push(history)
+        await Car.updateOne(
+            { _id: req.params.id },
+            {
+                $set: {
+                    services: services,
+                    parts: parts,
+                    historic: historic,
+                    stage: "Aprovando",
+                }
+            }
+        );
+            
+        res.redirect('/carPage/today/a');
 }
 
 const concludeCar = async (req, res) =>{
     try{
-        
         let car = await Car.findOne({_id: req.params.id});
         status = req.params.stage;
         let stages = "";
-        let history = car.historic;
+        let historic = [...car.historic];
+        let history = "";
 
         if(status == "Agendado"){
             stages = 'Aguardando';
-            history = history + ` | (${userName} concluiu para Aguardando ${moment().format("DD/MM/YYYY HH:mm")})`;
-            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: history}});
+            history = `${moment().format("HH:mm DD/MM")} - ${userName} concluiu para ${stages}.`;
+            historic.push(history)
+            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: historic}});
         res.redirect('/carPage/today/a')
         }else if(status == "Aguardando"){
             stages = 'Analisando';
-            history = history + ` | (${userName} concluiu para Analisando ${moment().format("DD/MM/YYYY HH:mm")})`;
-            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: history, responsible: ""}});
+            history = `${moment().format("HH:mm DD/MM")} - ${userName} concluiu para ${stages}.`;
+            historic.push(history)
+            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: historic}});
         res.redirect('/carPage/today/a');
         }else if(status == "Analisando"){
             stages = 'Aprovando';
-            history = history + ` | (${userName} concluiu para Aprovando ${moment().format("DD/MM/YYYY HH:mm")})`;
-            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: history, responsible: ""}});
+            history = `${moment().format("HH:mm DD/MM")} - ${userName} concluiu para ${stages}.`;
+            historic.push(history)
+            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: historic}});
         res.redirect('/carPage/today/a');
-        }else if(status == "Aprovando" || status == "aprovando"){
+        }else if(status == "Aprovando"){
             stages = 'Comprando';
-            history = history + ` | (${userName} concluiu para Comprando ${moment().format("DD/MM/YYYY HH:mm")})`;
-            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: history, responsible: ""}});
+            history = `${moment().format("HH:mm DD/MM")} - ${userName} concluiu para ${stages}.`;
+            historic.push(history)
+            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: historic}});
         res.redirect('/carPage/today/a');    
         }else if(status == "Comprando"){
             stages = 'Reparando';
-            history = history + ` | (${userName} concluiu para Reparando ${moment().format("DD/MM/YYYY HH:mm")})`;
-            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: history, responsible: ""}});
+            history = `${moment().format("HH:mm DD/MM")} - ${userName} concluiu para ${stages}.`;
+            historic.push(history)
+            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: historic}});
         res.redirect('/carPage/today/a');    
         }else if(status == "Reparando"){
             stages = 'Testando';
-            history = history + ` | (${userName} concluiu para Testando ${moment().format("DD/MM/YYYY HH:mm")})`;
-            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: history, responsible: ""}});
+            history = `${moment().format("HH:mm DD/MM")} - ${userName} concluiu para ${stages}.`;
+            historic.push(history)
+            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: historic}});
         res.redirect('/carPage/today/a');    
         }else if(status == "Testando"){
             stages = 'Vistoriando';
-            history = history + ` | (${userName} concluiu para Vistoriando ${moment().format("DD/MM/YYYY HH:mm")})`;
-            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: history, responsible: ""}});
+            history = `${moment().format("HH:mm DD/MM")} - ${userName} concluiu para ${stages}.`;
+            historic.push(history)
+            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: historic}});
         res.redirect('/carPage/today/a');    
         }else if(status == "Vistoriando"){
             stages = 'Entregando';
-            history = history + ` | (${userName} concluiu para Entregando ${moment().format("DD/MM/YYYY HH:mm")})`;
-            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: history, responsible: ""}});
+            history = `${moment().format("HH:mm DD/MM")} - ${userName} concluiu para ${stages}.`;
+            historic.push(history)
+            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: historic}});
         res.redirect('/carPage/today/a');    
         }else if(status == "Entregando" || status == "forced"){
             stages= 'Entregue';
-            history = history + ` | (${userName} concluiu para Entregue ${moment().format("DD/MM/YYYY HH:mm")}) *`;
-            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: history}});
+            history = `${moment().format("HH:mm DD/MM")} - ${userName} concluiu para ${stages}.`;
+            historic.push(history)
+            await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: historic}});
             stages = '';
             car = await Car.findOne({_id: req.params.id});
             car.forecast = moment().format("DD/MM/YYYY HH:mm");
