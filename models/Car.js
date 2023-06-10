@@ -32,7 +32,9 @@ const carSchema = new mongoose.Schema({
         require: true,
     },historic: {
         type: [String],
-    },    
+    },priority: {
+        type: Number, 
+    }    
 });
 
 module.exports = mongoose.model('Car', carSchema);

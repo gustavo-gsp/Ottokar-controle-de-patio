@@ -231,17 +231,22 @@ ul li a:hover {
   align-items: center;
   flex-direction: column;
   padding: 0;
+  justify-content: center;
 }
 .details textarea {
   padding: 0.2rem;
   font-weight: bold;
   cursor: default;
   background-color: #ffee;
+  text-align: center;
 }
 .details .detailsTop div {
-  margin: 0.4rem 1rem 0.2rem 1rem;
+  margin: 0.4rem 0 0.2rem 0;
   display: flex;
   align-items: center;
+}
+.details .detailsTop div label {
+  margin: 0 1rem 0 1rem;
 }
 .details a{
     background-color: #00ffff;
@@ -259,22 +264,32 @@ ul li a:hover {
   /* margin-left: .3rem; */
 }
 .details .detailsTop{
+  display: flex;
   flex-basis: 100%;
   flex-wrap: wrap;
   width: 100%;
   margin-left: 0;
+  margin-bottom: 1rem;
+  align-items: center;
   justify-content: space-between;
 }
 .details .bigText{
+  width: auto;
   display: flex;
-  justify-content: space-between;
   flex-basis: 100%;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem 0 1rem;
+}
+.bigText div{
+  display: flex;
+  align-items: center;
+  
 }
 .details .ulServices, .details .ulParts{
   max-height: 10rem;
-  width: 20rem;
+  width: 22rem;
   overflow-y: scroll;
   border-radius: .3rem;
   background-color: #212153;
@@ -285,11 +300,10 @@ ul li a:hover {
 .details ul li{
   height: auto;
   padding: 0;
-  /* padding-left:.2rem; */
-  margin: .2rem 0 .2rem 0;
+  margin: .2rem;
   background-color: #01467a;
   color:rgba(0, 255, 255, 0.842);
-  width: 100%;
+  width: 98%;
 } 
 .ulHistoric{
   font-size: 1rem;
@@ -310,6 +324,7 @@ ul li a:hover {
   border-radius: .3rem;
   background-color: #212153;
 }
+
 .details .btnCheck{
   margin: 0;
   background-color: #c1e952;
@@ -350,6 +365,20 @@ ul li a:hover {
   align-items: center;
   pointer-events: auto;
 }
+.modalPriority{
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #00000080;
+  color: #fff;
+  z-index: 9999;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  pointer-events: auto;
+}
 .card {
   width: 20rem;
   height: 9rem;
@@ -358,6 +387,18 @@ ul li a:hover {
   position: relative;
   background-color: #212153;
   display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.cardPriority {
+  width: 20rem;
+  height: 9rem;
+  border: rgba(49, 134, 204, 0.877) solid 0.1rem;
+  border-radius: 0.4rem;
+  position: relative;
+  background-color: #212153;
+  display: none;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
@@ -417,6 +458,11 @@ ul li a:hover {
   height: auto;
   background-color:transparent;
   margin: .2rem;
+  cursor: unset;
+  padding: .2rem;
+}
+#listParts:hover, #listServices:hover{
+  cursor: unset;
 }
 .cardParts ul{
   background-color: #005290;
@@ -530,6 +576,61 @@ ul li a:hover {
 .logout{
   display: none;
 }
+.message{
+  padding: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  width: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.priorityList{
+  background-color:#272727;
+  color:rgb(255, 208, 0);
+  padding: .1rem;
+}
+.filter{
+  background-color: rgba(255, 119, 0, 0.973);
+  padding: .3rem;
+  display: flex;
+  align-items: center;
+  height: auto;
+  width: 100%;
+  /* justify-content: end; */
+}
+.filter label{
+  color: black;
+}
+.filter select{
+  background-color: #212153;
+  color:#00ffff;
+  font-weight: bold;
+  border: none;
+  text-align: center;
+  width: 10rem;
+  font-size: 1rem;
+}
+.filter button{
+  background-color: #01467a;
+  color: #00ffff;
+  border: none;
+  border-radius: .2rem;
+  padding: .5rem;
+  transition: all 0.3s ease-in-out;
+}
+.filter button:hover{
+  cursor: pointer;
+  background-color: #212153;
+}
+.filter form{
+  display: flex;
+  align-items: center;
+}
 @media(min-width: 600px){
   .btnAdd{
     display: none;
@@ -545,6 +646,12 @@ ul li a:hover {
     flex-basis: 100%;
     margin: .5rem;
   }
+  #addCarPhone .btn{
+    margin: .8rem;
+  }
+  #addCarPhone h1{
+    padding: 0;
+  }
   .addClose{
     display: inline;
   }
@@ -556,6 +663,7 @@ ul li a:hover {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
+    padding: 0;
   }
   .details .bigText textarea{
       margin: .3rem .3rem 0 0;
@@ -564,6 +672,29 @@ ul li a:hover {
     display: flex;
     flex-wrap: wrap;
     justify-content: left;
+  }
+  .details .detailsTop {
+    margin: 0.4rem 0 0.2rem 0;
+    display: flex;
+    flex-basis: 100%;
+    align-items: center;
+    justify-content: center;
+  }
+  .details .detailsTop div{
+    display: flex;
+    flex-basis: 100%;
+    align-items: center;
+  }
+  .details .detailsTop .priorityDetails{
+    display: flex;
+    justify-content: center;
+  }
+  .details .ulServices, .details .ulParts, .details .ulHistoric{
+    width: 23rem;
+    margin: .5rem;
+  } 
+  .details .detailsTop div label {
+    margin: 0 .3rem 0 .3rem;
   }
   .list i{
     display: none;
@@ -603,11 +734,19 @@ ul li a:hover {
     justify-content: center;
     margin: 0;
   }
-  .details .ulServices, .details .ulParts, .details .ulHistoric{
-    width: 23rem;
-    margin: .5rem;
-  } 
+  .ulUnic{
+    width: 90%;
+  }
+  .filter form{
+    display: flex;
+    flex-basis: 100%;
+    justify-content: space-between;
+  }
+  .filter{
+    padding-right: 1rem;
+  }
 }
+
 #user{
   text-transform: lowercase;
 }

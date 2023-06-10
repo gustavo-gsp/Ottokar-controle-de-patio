@@ -25,7 +25,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(routes);
 
-
 app.listen(9090, ()=> 
 console.log(`Servidor iniciado em http://localhost:9090`)
 );
