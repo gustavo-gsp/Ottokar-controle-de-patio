@@ -290,7 +290,7 @@ ul li a:hover {
 .details .ulServices, .details .ulParts{
   max-height: 10rem;
   width: 22rem;
-  overflow-y: scroll;
+  overflow-y:scroll;
   border-radius: .3rem;
   background-color: #212153;
   display: flex;
@@ -351,6 +351,21 @@ ul li a:hover {
 .break {
   flex-basis: 100%;
 }
+.loading{
+  display: flex;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #00000080;
+  color:#00ffff;
+  z-index: 9999;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  pointer-events: auto;
+}
 .modal {
   position: fixed;
   top: 0;
@@ -403,11 +418,11 @@ ul li a:hover {
   align-items: center;
   flex-wrap: wrap;
 }
-.card p {
+.card p, .cardPriority p {
   margin: 1rem 1rem 1.3rem 1rem;
   color: aquamarine;
 }
-.card hr {
+.card hr, .cardPriority hr {
   width: 90%;
   border-color: #00aa2a;
 }
@@ -483,6 +498,7 @@ ul li a:hover {
 .close:hover {
   background-color: rgba(255, 0, 0, 0.884);
   border-radius: 50%;
+  cursor: pointer;
 }
 .btnNot {
   padding: 0.2rem;
@@ -496,7 +512,6 @@ ul li a:hover {
 .btnNot:hover {
   background-color: #ff0000;
   color: #fff;
-  font-weight: normal;
 }
 .btnYes {
   padding: 0.2rem;
@@ -509,8 +524,7 @@ ul li a:hover {
 .btnYes:hover {
   background-color: #00aa2a;
   color: #fff;
-  font-weight: normal;
-  
+  cursor: pointer;
 }
 .dates{
     background-color: rgba(255, 119, 0, 0.973);
@@ -593,6 +607,7 @@ ul li a:hover {
   background-color:#272727;
   color:rgb(255, 208, 0);
   padding: .1rem;
+  margin: 0 .3rem 0 .2rem;
 }
 .filter{
   background-color: rgba(255, 119, 0, 0.973);
@@ -627,9 +642,87 @@ ul li a:hover {
   cursor: pointer;
   background-color: #212153;
 }
+.filter a{
+  background-color: #01467a;
+  color: #00ffff;
+  border: none;
+  border-radius: .2rem;
+  padding: .4rem;
+  transition: all 0.3s ease-in-out;
+}
 .filter form{
   display: flex;
   align-items: center;
+}
+.filter input{
+  margin: 0 .4rem 0 .4rem;
+  padding: .5rem;
+  width: 6rem;
+  text-transform: uppercase;
+}
+#modalUser{
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #00000050;
+  color: #fff;
+  z-index: 9999;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  pointer-events: auto;
+}
+#controlUser{
+  width: 30rem;
+  height: 30rem;
+  background-color: #212153;
+  overflow-y: scroll;
+  justify-content: center;
+  color: #00ffff;
+  padding: .2rem;
+  border-radius: .2rem;
+}
+#controlUser #closeUser {
+  display: flex;
+  flex-basis: 100%;
+  justify-content: right;
+  width: 28.5rem;
+}
+#controlUser #closeUser a{
+  color: #00ffff;
+  margin: .3rem .2rem .3rem .3rem;
+  background-color: #272727;
+  border-radius: 50%;
+  padding: .3rem;
+  position: fixed;
+  z-index: 9999;
+}
+#controlUser #btnUser{
+  display: flex;
+  flex-basis:100%;
+  background-color: rgb(255, 119, 0);
+  justify-content: right;
+  padding: .2rem;
+}
+.newUser{
+  background-color:#143044;
+  padding: .5rem;
+  border-radius: .2rem;
+}
+.newUser:hover{
+  cursor: pointer;
+}
+#controlUser ul li{
+  padding: .3rem 0;
+  justify-content: space-between;
+}
+#controlUser ul li:nth-child(odd) {
+  background-color: #005290;
+}
+#controlUser ul li:nth-child(odd):hover {
+  background-color: rgb(71, 56, 56);
 }
 @media(min-width: 600px){
   .btnAdd{
@@ -745,12 +838,21 @@ ul li a:hover {
   .filter{
     padding-right: 1rem;
   }
+  #controlUser{
+    width: 95%;
+    height: 90%;
+  }
+  #controlUser ul li{
+    padding: 0;
+    height: 3rem;
+  }
+  #controlUser #updateUser a{
+    margin: 0 .1rem;
+  }
+  #controlUser #closeUser {
+    width: 100%;
 }
-
-#user{
-  text-transform: lowercase;
 }
-
 /* style tela de Login: */
 .container{
   position: fixed;

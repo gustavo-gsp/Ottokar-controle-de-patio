@@ -13,9 +13,6 @@ const userSchema = new mongoose.Schema ({
         type: String,
         require: true,
     },
-    carsToday: {
-        type: [mongoose.Schema.Types.Mixed]
-    },
 });
 
 module.exports = mongoose.model('User', userSchema);

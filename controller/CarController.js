@@ -8,6 +8,7 @@ const { format, addDays } = require('date-fns');
 const session = require('express-session');
 const { trusted } = require('mongoose');
 
+let users = [];
 let carList = [];
 let responsibles = [];
 let message = "";
@@ -61,20 +62,21 @@ const getById = async (req, res) => {
             res.render("index", 
             {
                 conclude: true, car, status, carList, userName, userFunc,message,
-                details, addCar, date1, date2, date3,date4, part: false,
+                details, addCar, date1, date2, date3,date4, part: false,users,
                 history: false, week, togle, responsibles, carListAll,
             });
         }else if(req.params.method == "details"){
             addCar = "addCarNone";
             togle = false;
+            
             if(history == true){
-                carList = await Historic.find();
+                // carList = await Historic.find();
                 car = await Historic.findOne({ _id: req.params.id });
             }
             return res.render('index', {
                 userName, userFunc,status, car, carList,conclude:false, week,
                 addCar, date1, date2, date3, date4, part: false, history, togle,
-                responsibles, carListAll, message,
+                responsibles, carListAll, message, users,
                 details: true,
                 model: car.carName, 
                 plate: car.plate,
@@ -89,15 +91,61 @@ const getById = async (req, res) => {
                 priority: car.priority,
             });
         }else if(req.params.method == "assumed"){
-            togle = false;
+            let carDetails = await Car.findOne({_id: req.params.id})
+            let carUpdate = await Car.find({responsible: carDetails.responsible});
+            const data = (carDetails.date).substring(0,10);
+            const date = moment(data, "DD/MM/YYYY");
+            const today = moment(dateToday, "DD/MM/YYYY");
+
             let historic = [...car.historic];
             let history = "";
+        
             if(userName != car.responsible){
-            history = `${moment().format("HH:mm DD/MM")} - ${userName} assumiu como responsável.`;
-            historic.push(history)
-            await Car.updateMany({_id: req.params.id},{$set: {responsible: userName, historic: historic}});
-            return res.redirect('/carPage/today/a')
+                history = `${moment().format("HH:mm DD/MM")} - ${userName} assumiu como responsável.`;
+                historic.push(history)
+
+                carUpdate.forEach(async(carResponsible)=>{
+                    const carData = (carResponsible.date).substring(0,10);
+                    const carDate = moment(carData, "DD/MM/YYYY");
+                    if(date.isSameOrBefore(today) && carDate.isSameOrBefore(today)){
+                        if(carResponsible.plate !== carDetails.plate && carResponsible.priority > carDetails.priority){
+                            let newPriority = carResponsible.priority-1;
+                            await Car.updateOne({_id: carResponsible._id}, {$set: {priority: newPriority}});
+                        }
+                    }else if(date.isSame(carDate)){
+                        if(carResponsible.plate !== carDetails.plate && carResponsible.priority > carDetails.priority){
+                            let newPriority = carResponsible.priority-1;
+                            await Car.updateOne({_id: carResponsible._id}, {$set: {priority: newPriority}});
+                        }
+                    }
+                });
+
+                await Car.updateMany({_id: req.params.id},{$set: {responsible: userName.toLowerCase(), historic: historic, priority: 1}});
+
+                carDetails = await Car.findOne({_id: req.params.id});
+                carUpdate = await Car.find({responsible: carDetails.responsible});
+
+                carUpdate.forEach(async(carResponsible)=>{
+                    const carData = (carResponsible.date).substring(0,10);
+                    const carDate = moment(carData, "DD/MM/YYYY");
+                    if(date.isSameOrBefore(today) && carDate.isSameOrBefore(today)){
+                        if(carResponsible.plate !== carDetails.plate){
+                            let newPriority = carResponsible.priority+1;
+                            await Car.updateOne({_id: carResponsible._id}, {$set: {priority: newPriority}});
+                        }
+                    }else if(date.isSame(carDate)){
+                        if(carResponsible.plate !== carDetails.plate){
+                            let newPriority = carResponsible.priority+1;
+                            await Car.updateOne({_id: carResponsible._id}, {$set: {priority: newPriority}});
+                        }
+                    }
+                });
+                
+                togle = false;
+                message = 'Troca realizada com sucesso!'
+                return res.redirect('/carPage/today/a')
             }else{
+                message = 'Erro, você ja é responsavel por esse veículo.'
                 return res.redirect('/carPage/today/a')
             }
         }else if(req.params.method == "parts"){
@@ -106,7 +154,7 @@ const getById = async (req, res) => {
             res.render("index", 
             {
                 conclude, car, status, carList, userName, userFunc, message,
-                details, addCar, date1, date2, date3,date4, part: true,
+                details, addCar, date1, date2, date3,date4, part: true,users,
                 history: false, week, togle, responsibles, carListAll,
             });
         }else{
@@ -114,14 +162,51 @@ const getById = async (req, res) => {
             res.redirect('/carPage/today/a');
         }
         
-    }
+        }else if(req.params.method == "concludePart"){
+            const stageIndex = parseInt(req.params.stage);
+            let conclude = false;
+            let historic = [...car.historic];
+            let history = "";
+            if(!car.parts[stageIndex].conclude){
+                history = `${moment().format("HH:mm DD/MM")} - ${userName} Concluiu o/a (${car.parts[stageIndex].part}).`;
+                conclude = true;
+            }else{
+                history = `${moment().format("HH:mm DD/MM")} - ${userName} Revogou a conclusão do/a (${car.parts[stageIndex].part}).`;
+                conclude = false;
+            }
+            historic.push(history)
+            await Car.updateMany(
+                    { _id: car._id },
+                    { $set: { [`parts.${stageIndex}.conclude`]: conclude, historic: historic } }
+                    );
+            return res.redirect(`/getById/${car._id}/details/${car.stage}`) 
+        }else if(req.params.method == "concludeService"){
+            const stageIndex = parseInt(req.params.stage);
+            let conclude = false;
+            let historic = [...car.historic];
+            let history = "";
+            if(!car.services[stageIndex].conclude){
+                history = `${moment().format("HH:mm DD/MM")} - ${userName} Concluiu o/a (${car.services[stageIndex].service}).`;
+                conclude = true;
+            }else{
+                history = `${moment().format("HH:mm DD/MM")} - ${userName} Revogou a conclusão do/a (${car.services[stageIndex].service}).`;
+                conclude = false;
+            }
+            historic.push(history)
+            await Car.updateMany(
+                    { _id: car._id },
+                    { $set: { [`services.${stageIndex}.conclude`]: conclude, historic: historic } }
+                    );
+            return res.redirect(`/getById/${car._id}/details/${car.stage}`)   
+        }
     }catch (err) {
         res.status(500).send({error: err.message})
     }
 }
-
+// Falta deletar os carros e os usuarios, para gravar o video
 const getAllCars = async (req, res) => {
     try{
+            users = await User.find();
             const user = await User.findOne({_id: req.user});
             const carListAll = await Car.find();
             responsibles = await User.find({func: {$in:["mec", "fun"]} });
@@ -144,8 +229,20 @@ const getAllCars = async (req, res) => {
                 const dayWeek = format(nextDate, 'eeee', { locale: require('date-fns/locale/pt-BR') });
                 week.push(dayWeek);
             }
-            
-            if(req.params.show == "historic"){
+            users.forEach(user => {
+                if(user.func == "mec"){
+                    user.func = "Mecanico";
+                }else if(user.func == "fun"){
+                    user.func = "Funileiro";
+                }else if(user.func == "buyer"){
+                    user.func = "Comprador";
+                }else if(user.func == "seller"){
+                    user.func = "Vendedor";
+                }else if(user.func == "manager"){
+                    user.func = "Gerente";
+                }
+            })
+            if(req.params.day == "historic"){
                 let list = await Historic.find();
                 let list2 = [];
                 for(let i = list.length; i >0; i--){
@@ -154,11 +251,6 @@ const getAllCars = async (req, res) => {
                 carList = list2.slice();
                 history = true;
                 addCar = "addCarNone";
-                return res.render('index', {
-                    carList, userName, userFunc, status, togle,
-                    details, conclude, addCar,part: false, responsibles,
-                    date1, date2, date3, date4, history, week,
-                });
             }else{ 
             if (req.params.day == "today"){
                 history = false;
@@ -212,21 +304,6 @@ const getAllCars = async (req, res) => {
                             carList.push(car);
                         }
                     });
-                    // let order = [];
-                    // const responsible = await User.findOne({_id: "647e89684f4ccc3665789b64"});
-                    // const carPriority = await Car.findOne({plate: "GDR5E13"});
-                    // if(responsible.carsToday.length > 0){
-                    //     order = [];
-                    //     order.push(responsible.carsToday);
-                    //     order.push(carPriority);
-                    // }else{
-                    //     order = [carPriority]
-                    // }
-                    //console.log(order)
-                    //await User.updateOne({_id: responsible._id}, {$set: {carsToday: order}});
-
-                    // const carsToday = await Car.find({responsible: "teste4"})
-                    // await User.updateOne({user: "teste4"}, {$set: {carsToday: carsToday}})
                 }
             }else if (req.params.day == "date1"){
                 if(userFunc == "fun" || userFunc == "mec" ){
@@ -243,7 +320,8 @@ const getAllCars = async (req, res) => {
             }else if (req.params.day == "date4"){
                 carList = await Car.find({date: {$regex: datefour}});
             }
-            
+            carList.sort((a, b) => a.priority - b.priority);
+
         }
             if(req.params.show == 'a' || req.params.show == 'addCar'){
                 details = false;
@@ -254,7 +332,7 @@ const getAllCars = async (req, res) => {
                     addCar = "addCar";
                 }
                 return res.render('index', {
-                carList, userName, userFunc, status, week, responsibles,
+                carList, userName, userFunc, status, week, responsibles,users,
                 details, conclude, addCar,part: false, togle,carListAll,
                 date1, date2, date3, date4, history: false, yourCars,message
             });
@@ -270,11 +348,11 @@ const getAllCars = async (req, res) => {
                 }
                 return res.render('index',
                 {
-                    carList, userName, status, details, conclude, message,
+                    carList, userName, status, details, conclude, message,users,
                     addCar, date1, date2, date3, date4, part, responsibles,
                     userFunc, history, week, togle, yourCars, carListAll,
                 });
-            }else if(req.param.show == "all"){
+            }else if(req.params.show == "all"){
                 carList = await Car.find({
                     date: {$regex: today}, specialty: func, stage: { $in: ["Analisando", "Reparando", "Entregando"] 
                 }})
@@ -292,27 +370,46 @@ const getAllCars = async (req, res) => {
                         }
                     }   
                 }
-
             });
+            carList.sort((a, b) => a.priority - b.priority);
                 return res.render('index',
                 {
-                    carList, userName, status, details, conclude, message,
+                    carList, userName, status, details, conclude, message,users,
                     addCar, date1, date2, date3, date4, part, responsibles,
                     userFunc, history, week, togle, yourCars, carListAll,
                 });
             }else if(req.params.show == "responsible"){
-                const responsibleList = req.query.responsibleList
+                const responsibleList = req.query.responsibleList;
                 if(responsibleList != "all"){
                     carList = carList.filter((car) => car.responsible == req.query.responsibleList);
                 }
+                carList.sort((a, b) => a.priority - b.priority);
                     return res.render('index',
                     {
-                        carList, userName, status, details, conclude, message,
+                        carList, userName, status, details, conclude, message,users,
                         addCar, date1, date2, date3, date4, part, responsibles,
                         userFunc, history, week, togle, yourCars, carListAll,
                     });
                 
-            }else{    
+            }else if(req.params.show == "plate"){  
+                console.log('0')
+                if(req.query.plateFilter){
+                    console.log('1')
+                carList = await Historic.find({plate: new RegExp(`^${req.query.plateFilter.toUpperCase()}`)});
+                return res.render('index', {
+                    carList, userName, userFunc, status, togle, carListAll,
+                    details, conclude, addCar,part: false, responsibles,
+                    date1, date2, date3, date4, history, week, message,users,
+                });
+                }else{
+                    return res.render('index', {
+                        carList, userName, userFunc, status, togle, carListAll,
+                        details, conclude, addCar,part: false, responsibles,users,
+                        date1, date2, date3, date4, history, week, message
+                    });
+                    
+                }
+            }else{
                 return res.redirect('/');
             }
         
@@ -322,14 +419,17 @@ const getAllCars = async (req, res) => {
 }
 
 const createUser = async (req, res) => {
-    const log = req.body;
-    log.newPassword = await Bcrypt.hash(log.newPassword, 8);
     try{
+        const log = req.body;
+        
+        log.newPassword = await Bcrypt.hash(log.newPassword, 8);
+        
         await User.create({
-            user: log.newUser,
+            user: log.newUser.toLowerCase,
             password: log.newPassword,
             func: log.func,
-        })
+        });
+        message = 'Usuário criado com sucesso!';
         return res.redirect('/carPage/today/a');
     }catch (err) {
         res.status(500).send({error: err.message})
@@ -356,31 +456,42 @@ const createCar = async (req, res) =>{
             specialty: car.specialty,
             historic: `${moment().format("HH:mm DD/MM")} - ${userName} Agendou o veículo para ${moment(car.date).format("DD/MM/YYYY HH:mm")}`,
             priority: car.priority
-        });
+        });       
         
-        // const respName = responsible.user;
-        //  carPriority.priority = ` ${carPriority.priority}`;
-        //console.log(carPriority)
-        //await User.updateOne({_id: "647e7005b10981bfd533e742"}, {$push: {carsToday: carPriority}});
-        
-        
-        const responsible = await User.findOne({_id: resp[1]});
-        const carsToday = responsible.carsToday;
-        const newCar = await Car.findOne({plate: car.plate.toUpperCase()});
-        const index = newCar.priority-1;
+        const carDetails = await Car.findOne({plate: car.plate.toUpperCase()});
+        const cars = await Car.find({responsible: carDetails.responsible});
+        console.log(carDetails)
+        const data = (carDetails.date).substring(0,10);
+        const date = moment(data, "DD/MM/YYYY");
+        const today = moment(dateToday, "DD/MM/YYYY");
 
-        if(carsToday[index]) {
-
-            for(let i = index; i < carsToday.length; i++){
-                console.log(carsToday[i].priority)
-                carsToday[i].priority = i+2;
-                await Car.updateOne({_id: carsToday[i]._id}, {$set: {priority: (i+2)}});                
+        cars.forEach(async(carResponsible)=>{
+            const carData = (carResponsible.date).substring(0,10);
+            const carDate = moment(carData, "DD/MM/YYYY");
+            console.log(date+" | "+today)
+            if(date.isSameOrBefore(today) && carDate.isSameOrBefore(today)){
+                console.log("today")//esta com erro ao entrar nesse if, não sei por que não esta entrando
+                if(carResponsible.plate !== carDetails.plate){
+                    console.log("plate")
+                    if(carResponsible.priority >= carDetails.priority){
+                        console.log("cl >= cd")
+                        let newPriority = carResponsible.priority+1;
+                        await Car.updateOne({_id: carResponsible._id}, {$set: {priority: newPriority}})
+                        }    
+                }
+            }else if(date.isSame(carDate)){
+                console.log("outra data")
+                if(carResponsible.plate !== carDetails.plate){
+                    if(carResponsible.priority >= carDetails.priority){
+                        let newPriority = carResponsible.priority+1;
+                        await Car.updateOne({_id: carResponsible._id}, {$set: {priority: newPriority}})
+                        }    
+                }
+            }else{
+                console.log("não entrou")
             }
-        }
-        carsToday.splice(index,0, newCar);
-
-        await User.updateOne({_id: resp[1]}, {$set: {carsToday: carsToday}});
-
+        });
+        message = 'Veículo adicionado com sucesso!'
         if(addCar == "addCarPhone") addCar = "addCarNone";
         return res.redirect('/carPage/today/a');
     }catch (err) {
@@ -388,26 +499,39 @@ const createCar = async (req, res) =>{
     }
 }
 const orderParts = async (req, res) =>{
+    try{
 
         const car = await Car.findOne({ _id: req.params.id });
         let services = [];
         let parts = [];
+        let servicesUpd = [];
+        let partsUpd = [];
         let historic = [...car.historic];
         let history = ""; 
+
         if (car.services) {
-            services = [...car.services]; // Copia os valores atuais para o array
+            services = [...car.services];
         }
-    
         if (car.parts) {
-            parts = [...car.parts]; // Copia os valores atuais para o array
+            parts = [...car.parts];
         }
-    
         if (req.body.servicos) {
-            services.push(...req.body.servicos); // Adiciona os novos valores ao array
+            req.body.servicos.forEach((serv, index) =>{
+                servicesUpd[index] = {
+                    service: serv,
+                    conclude: false
+                }
+            })
+            services.push(...servicesUpd);
         }
-    
         if (req.body.pecas) {
-            parts.push(...req.body.pecas); // Adiciona os novos valores ao array
+            req.body.pecas.forEach((part, index) =>{
+                partsUpd[index] = {
+                    part: part,
+                    conclude: false
+                }
+            })
+            parts.push(...partsUpd);
         }
         history =`${moment().format("HH:mm DD/MM")} - ${userName} pediu: ${req.body.pecas}; ${req.body.servicos}`;
         historic.push(history)
@@ -421,15 +545,60 @@ const orderParts = async (req, res) =>{
                     stage: "Aprovando",
                 }
             }
-        );
-        res.redirect('/carPage/today/a');
+            );
+            message = 'Peças e/ou serviços adicionados com sucesso!'
+            res.redirect('/carPage/today/a');
+        }catch (err){
+            res.status(500).send({error: err.message})
+        }
 }
 const updatePriority = async (req, res) =>{
-    const cars = await Car.find({responsible: req.params.resp});
-    const car = await Car.find({_id: req.params.id});
-    //preciso da data do carro, preciso fazer a busca e alterar os que tem a mesma data do carro alterado
-
+    try{
+        const cars = await Car.find({responsible: req.params.resp});
+        const carDetails = await Car.findOne({_id: req.params.id});
+        //preciso da data do carro, preciso fazer a busca e alterar os que tem a mesma data do carro alterado
+        const data = (carDetails.date).substring(0,10);
+        const date = moment(data, "DD/MM/YYYY");
+        const today = moment(dateToday, "DD/MM/YYYY");
+        const priority = parseInt(req.body.priorityValue);
+        
+        cars.forEach(async(carResponsible)=>{
+            const carData = (carResponsible.date).substring(0,10);
+            const carDate = moment(carData, "DD/MM/YYYY");
+            if(date.isSameOrBefore(today) && carDate.isSameOrBefore(today)){
+                if(carResponsible.plate !== carDetails.plate){
+                    if(carDetails.priority < priority){
+                        if(carResponsible.priority > carDetails.priority && carResponsible.priority <= priority){ 
+                            let newPriority = carResponsible.priority-1;
+                            await Car.updateOne({_id: carResponsible._id}, {$set: {priority: newPriority}})
+                        }
+                    }else if(carResponsible.priority < carDetails.priority && carResponsible.priority >= priority){ 
+                        let newPriority = carResponsible.priority+1;
+                        await Car.updateOne({_id: carResponsible._id}, {$set: {priority: newPriority}})
+                        }    
+                }
+            }else if(date.isSame(carDate)){
+                if(carResponsible.plate !== carDetails.plate){
+                    if(carDetails.priority < priority){
+                        if(carResponsible.priority > carDetails.priority && carResponsible.priority <= priority){ 
+                            let newPriority = carResponsible.priority-1;
+                            await Car.updateOne({_id: carResponsible._id}, {$set: {priority: newPriority}})
+                        }
+                    }else if(carResponsible.priority < carDetails.priority && carResponsible.priority >= priority){ 
+                        let newPriority = carResponsible.priority+1;
+                        await Car.updateOne({_id: carResponsible._id}, {$set: {priority: newPriority}})
+                    }    
+                }
+            }
+        });
+        await Car.updateOne({_id: carDetails._id}, {$set: {priority: priority}})
+        message = 'Prioridade alterada com sucesso!';
+        return res.redirect(`/carPage/today/responsible?responsibleList=${carDetails.responsible}`)
+    }catch(err){
+    res.status(500).send({error: err.message})
+    }
 }
+
 const concludeCar = async (req, res) =>{
     try{
         let car = await Car.findOne({_id: req.params.id});
@@ -437,7 +606,7 @@ const concludeCar = async (req, res) =>{
         let stages = "";
         let historic = [...car.historic];
         let history = "";
-
+        message = 'Etapa concluida com sucesso!';
         if(status == "Agendado"){
             stages = 'Aguardando';
             history = `${moment().format("HH:mm DD/MM")} - ${userName} concluiu para ${stages}.`;
@@ -517,4 +686,5 @@ module.exports = {
     concludeCar,
     authent,
     orderParts,
+    updatePriority
 } 

@@ -9,5 +9,6 @@ routes.post('/createCar', CarController.createCar);
 routes.post('/createUser', CarController.createUser);
 routes.post('/parts/:id', CarController.orderParts);
 routes.get('/conclude/:id/:stage',CarController.authent, CarController.concludeCar);
+routes.post('/priority/:id/:resp',CarController.updatePriority);
 
 module.exports = routes;

@@ -26,7 +26,7 @@ if (closeMessage){
   });
   setTimeout(()=>{
     message.style.display = 'none';
-  },7000);
+  },5000);
 }
 
 
@@ -48,12 +48,35 @@ if(userFunc != "mec" && userFunc != "fun" && userFunc != "buyer"){
     });
     
     newUser.addEventListener("click", () =>{
-        document.getElementById("user").value = ""; 
-        document.getElementById("password").value = ""; 
-        addUser.style.display = 'flex';
+      document.getElementById("password").value = ""; 
+      addUser.style.display = 'flex';
+      document.getElementById("user").value = ""; 
+      document.getElementById("user").setAttribute('readonly', 'true');
+
+      // Remove o atributo "readonly" imediatamente
+      setTimeout(() => {
+        document.getElementById("user").removeAttribute('readonly');
+      }, 1);
+
     });
+    function close (element) {
+      document.querySelector(element).style.display = 'none';
+    }
     
-}
+    document.getElementById('user').addEventListener('input', function() {
+      let inputUser = this.value;
+      if(inputUser == "ottokar"){
+        inputUser = "";
+      }
+      const userExists = users.some(name => name.user === inputUser);
+      const errorMessage = document.getElementById('errorMessage');
+
+      errorMessage.style.display = inputUser && userExists ? 'block' : 'none';
+    });
+    document.querySelector('.openControl').addEventListener("click", ()=>{
+      document.getElementById('modalUser').style.display = "flex";
+    })
+} 
 
 if(part){
 
@@ -67,21 +90,21 @@ if(part){
   incPart.addEventListener('click', (event) => {
       event.preventDefault();
       const parts = document.getElementById("parts");
-      const partValue = parts.value.trim();
+      const partValue = parts.value.trim()
       
       if (partValue) {
           pecas.push(partValue);
           parts.value = '';
           addItem('listParts', partValue);
       }
-
+      console.log(pecas)
   });
 
   incServ.addEventListener('click', (event) => {
     event.preventDefault();
     const services = document.getElementById("services");
     const serviceValue = services.value.trim();
-
+    
     if (serviceValue) {
       servicos.push(serviceValue);
       services.value = '';
@@ -100,8 +123,8 @@ if(part){
 
 
   btnSend.addEventListener('click', (event) => {
+    document.querySelector('.loading').style.display = "flex";
     event.preventDefault();
-
     const data = {
       pecas: pecas,
       servicos: servicos
@@ -117,6 +140,7 @@ if(part){
     .then(response => {
       if (response.ok) {
         window.location.href = '/carPage/today/a';
+        document.querySelector('.loading').style.display = "none";
       }
     })
     .catch(error => {
@@ -125,7 +149,7 @@ if(part){
   });
 
 }
-
+  
   async function showPriority() {
     const nameSelect = document.getElementById('responsible');
     const priority = document.getElementById('priority');
@@ -166,6 +190,7 @@ if(part){
   }
 
 if(details){
+
   function updatePriority(){
     const select = document.getElementById("detailPriority");
     const cars = [];
@@ -179,7 +204,7 @@ if(details){
       currentDate.setHours(0, 0, 0, 0);
       
       if (car.responsible == carDetails.responsible) {
-        if(detailsDate < currentDate){
+        if(detailsDate <= currentDate){
           if (carDate <= currentDate) {
             cars.push(car);
           }
@@ -190,7 +215,7 @@ if(details){
     });
 
 
-      for (let i = 0; i <= cars.length; i++) {
+      for (let i = 0; i < cars.length; i++) {
         const option = document.createElement('option');
         option.text = (i + 1).toString();
         option.value = (i + 1).toString();
@@ -199,9 +224,35 @@ if(details){
   }
   updatePriority();
 
+  let selectedValue = "";
   document.getElementById("detailPriority").addEventListener("change", function() {
-    const selectedValue = this.value;
+    selectedValue = this.value;
     document.querySelector('.modalPriority').style.display = "flex";
     document.querySelector('.cardPriority').style.display = "flex";
+    ejsSelectedValue = selectedValue;
   });
+
+  function sendPriority(id, resp){
+    document.querySelector('.loading').style.display = "flex";
+    fetch(`/priority/${id}/${resp}`,{
+      method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ priorityValue: selectedValue })
+    })
+    .then(response=>{
+      window.location.href = `/carPage/today/responsible?responsibleList=${carDetails.responsible}`;
+      document.querySelector('.loading').style.display = "none";
+    })
+    .catch(error => {
+      console.error('Erro:', error);
+    });
+  }
+
+  document.querySelector(".close").addEventListener("click",  () =>{
+
+    document.querySelector(".modalPriority").style.display = "none";
+
+  })
 }

@@ -21,10 +21,10 @@ const carSchema = new mongoose.Schema({
     },complaint: {
         type: String,
     },services: {
-        type: [String],
+        type: [mongoose.Schema.Types.Mixed],
     },
     parts: {
-        type: [String],
+        type: [mongoose.Schema.Types.Mixed],
     },date: {
         type: String,
     },specialty: {

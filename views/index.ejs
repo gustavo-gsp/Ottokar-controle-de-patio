@@ -48,8 +48,8 @@
             <a href="/carPage/date2/a"><%=week[1]%></a>
             <a href="/carPage/date3/a"><%=week[2]%></a>
             <a href="/carPage/date4/a"><%=week[3]%></a>
-            <a href="/carPage/b/historic">Historico de Veículos</a>
-            <a class="newUser">Criar Usúario</a>
+            <a href="/carPage/historic/plate">Historico de Veículos</a>
+            <a class="openControl">Controle de Usúarios</a>
             <a class="logout" href="/carPage/hoje/logout">Sair</a>
         </div>
         
@@ -103,14 +103,38 @@
     </section>
     <%}%>
 
+    <section id="modalUser">
+        <div id="controlUser">
+            <div id="closeUser">
+                <a href="javascript:close('#modalUser')" ><i class="bi bi-x-lg"></i></a>
+            </div>
+            
+            <h1 style="margin: .5rem; color: orange;">Controle de Usúarios</h1>
+        <div id="btnUser"><a class="newUser">Novo Usúario</a></div>
+        <ul>
+            <%users.forEach(users => {%>
+                <li>
+                    <p>Nome: <%=users.user%></p><p><%=users.func%></p>
+                    <div id="updateUser">
+                        <a href=""><i class="bi bi-pencil-fill"></i></a>
+                        <a href=""><i class="bi bi-trash"></i></a>
+                    </div>
+                </li>
+            <%})%>
+        </ul>
+        </div>
+        
+    </section>
         
     <section class="addUser">
         <div>
             <form action="/createUser" method="post" autocomplete="off">
-                <a href="/carPage/today/a"><i class="bi bi-x-lg"></i></a>
+                <a href="javascript:close('.addUser')" ><i class="bi bi-x-lg"></i></a>
                 <h1>Cadastro De Usuário</h1>
                 <label >Usuário:</label>
                 <input type="text" name="newUser" id="user" placeholder="Digite o nome de usuario" autocomplete="off" required><br>
+                <input type="hidden" id="hiddenUser">
+                <p id="errorMessage" style="display: none; font-size: .9rem;">Este nome de Usúario ja existe.</p>
                 <label style="margin-right: .6rem;">Senha:</label>
                 <input type="password" name="newPassword" id="password" placeholder="Digite a senha" required><br>
                 <label>função:</label>
@@ -130,29 +154,36 @@
                 <div style="margin-left: 0;"><div><label  >Modelo:</label>
                 <textarea readonly name="" id="" cols="10" rows="1"><%=model%></textarea></div>
                 <div><label >Placa:</label>
-                <textarea readonly name="" id="" cols="10" rows="1"><%= plate %></textarea></div></div>
+                <textarea readonlycols="10" rows="1"><%= plate %></textarea></div></div>
                 <div><div><label ><%if(history){%> Data agendamento: <%}else{%>Previsão:<%}%></label>
-                    <textarea readonly cols="10" rows="1"><%if(history){%> <%=date%> <%}else{%> <%=forecast %> <%}%></textarea></div>
+                    <textarea readonly cols=<%if(history){%>"15"<%}else{%>"10"<%}%> rows="1"
+                        ><%if(history){%> <%=date%> <%}else{%> <%=forecast %> <%}%></textarea></div>
                     <div><label >Status:</label>
                     <textarea readonly name="" id="" cols="10" rows="1" ><%= stage %></textarea></div></div>
+                <%if(!history){%>
                     <div class="priorityDetails">
                         <label>Prioridade: </label>
-                        <select name="" id="detailPriority">
+                        
+                        <select id="detailPriority" <% if(userFunc == "mec" || userFunc == "fun") { %> style = "display: none;"<%}%>>
                             <option value=""><%= priority %></option>
                         </select>
+                        <% if(userFunc == "mec" || userFunc == "fun") { %>
+                            <textarea readonly cols="1" rows="1"><%= priority %></textarea>
+                        <% } %>
                     </div>
+                <% }%>
                     <div>
                     <label >Reclamação:</label>
                     <textarea readonly cols="34" rows="1"><%= complaint %></textarea></div>
                 </div>
                 <div class="bigText">
-                <% if(services != "") {%>    
+                <% if(services != "" && !history) {%>    
                 <div>
                     <label >Serviços:</label>
                     <ul class="ulServices">
-                        <% services.forEach((service) =>{%>
-                        <li>
-                            <%= service %> <a class="btnCheck" href="/getById/<%= car._id%>/conclude/<%= car.stage %>" 
+                        <% services.forEach((service, index) =>{%>
+                        <li <%if(service.conclude){%>style=" text-decoration: line-through;"<% } %> >
+                            <%= service.service %> <a class="btnCheck" href="/getById/<%=car._id%>/concludeService/<%= index %>" 
                                 title="Cuncluir Etapa"><i class="bi bi-check-lg"></i></a>
                         </li>
                         <% }) %>
@@ -160,13 +191,13 @@
                 </div>
                 <div class="listBreak"></div>
                 <% } %>
-                <% if(parts != "") {%>
+                <% if(parts != "" && !history) {%>
                 <div>
                     <label style="margin-right: 1.5rem;" class="lab">Peças:</label>
                     <ul class="ulParts">
-                        <% parts.forEach((part) =>{%>
-                        <li>
-                            <%= part %> <a class="btnCheck" href="/getById/<%= car._id%>/conclude/<%= car.stage %>" 
+                        <% parts.forEach((part, index) =>{%>
+                        <li <%if(part.conclude){%>style=" text-decoration: line-through;"<% } %>>
+                            <%= part.part %> <a class="btnCheck" href="/getById/<%=car._id%>/concludePart/<%= index %>" 
                                 title="Cuncluir Etapa"><i class="bi bi-check-lg"></i></a>
                         </li>
                         <% }) %>
@@ -197,19 +228,22 @@
                 <% } %>
             </section>
         <% } %>
+
+        <%if(details) {%>
         <section class="modalPriority">
             <div class="cardPriority">
-                <div style="padding: .5rem;"><a class="close" ><i class="bi bi-x"></i></a></div><br>
-                <p>Deseja realmente alterar a prioridade?</p><br>
+                <div style="padding: .5rem;"><a class="close"><i class="bi bi-x"></i></a></div><br>
+                <p>Deseja realmente alterar a prioridade do <%=car.carName%>?</p><br>
                 <hr>
                 <div class="confirm">
                     <a class="btnNot" href="/carPage/today/a">Não</a>
-                    <a class="btnYes" href="/carPage/today/a">Sim</a>
+                    <a class="btnYes" onclick="sendPriority('<%=id%>','<%=car.responsible%>')">Sim</a>
                 </div>
             </div>
         </section>    
-                
+        <%}%>        
     <% if(userFunc != "mec" && userFunc != "fun" && userFunc != "buyer") {%>
+        <%if(!history) {%>
         <section class="filter">
                 <form action="/carPage/today/responsible" method="get">
                     <label>Filtrar Responsavel: </label>
@@ -222,6 +256,16 @@
                         <button> <i class="bi bi-search"></i> </button>
                 </form>
         </section>
+            <%}else {%>
+                <section class="filter">
+                    <form action="/carPage/historic/plate" method="get">
+                        <label>Filtrar por placa: </label>
+                        <input type="text" name="plateFilter" id="plateFilter" placeholder="ex. ABC1A123" required>
+                            <button> <i class="bi bi-search"></i> </button>
+                            <a style="margin:0 .3rem 0 .3rem;" href="/carPage/historic/plate"><i class="bi bi-arrow-clockwise"></i></a>
+                    </form>
+            </section>
+                <%}%>
         <% } %>
 
 
@@ -261,7 +305,6 @@
                 <% carList.forEach((car) =>{ %>
                     <li onclick="location.href='/getById/<%=car._id%>/details/<%=car.stage%>'">
                         <div class="list">
-                            <!-- <table style="border: 2px solid black; background-color: chartreuse;"><tr><td><%= car.priority %></td></tr></table> -->
                             <p class="priorityList"><%= car.priority %></p>    
                             <%if(!history) {%>
                                 <p><%= car.responsible%> <i class="bi bi-tools"></i></p><%}%>
@@ -285,34 +328,9 @@
                 </li>
                 <% }) %>
             </ul>
-
-            <!-- <table style="border: 2px solid black;"">
-                <tr style="display: none;">
-                    <td>Prioridade</td><td>Agendamento</td><td>Especialidade</td><td>Veículo</td><td>Placa</td><td>Status</td><td>Responsável</td>
-                </tr>
-                <% carList.forEach((car) =>{ %>
-                    <tr>
-                        <td><%= car.priority %></td> <td><%=car.date.substring(11, 16)%></td> <td><%=car.specialty%></td> 
-                        <td><%= car.carName %></td><td><%= car.plate %></td> <td><%= car.stage%></td><td><%= car.responsible%></td>
-                        <td>
-                            <div class="btnList">
-                            
-                                <%if(!history) {%>        
-                                    <a href="/getById/<%=car._id%>/parts/<%=car.stage%>" title="Pedir Peças">
-                                        <i class="bi bi-wrench-adjustable-circle"></i></a>
-                                    <a href="/getById/<%=car._id%>/assumed/<%=car.stage%>" title="Assumir"><i 
-                                        class="bi bi-person-fill-up"></i></a>
-                                    <a class="btnConclude" href="/getById/<%= car._id%>/conclude/<%= car.stage %>" 
-                                        title="Cuncluir Etapa"><i class="bi bi-check-lg"></i></a>
-                                        <% } %>
-                        </div>
-                        </td>
-                    </tr>
-                    
-                    <% }) %>
-                </table> -->
                 
         </section>
+        <section class="loading"> <p>Carregando...</p> </section>
     <script>
         let responsibles = <%- JSON.stringify(responsibles) %>;
         let carList = <%- JSON.stringify(carListAll) %>;
@@ -322,6 +340,7 @@
         <%if(details){ %>
             let carDetails = <%- JSON.stringify(car) %>;
         <%}%>
+        let users = <%- JSON.stringify(users) %>; 
       </script>
 
     <script src="/script.js"></script>
