@@ -380,7 +380,7 @@ ul li a:hover {
   align-items: center;
   pointer-events: auto;
 }
-.modalPriority{
+.modalPassword {
   position: fixed;
   top: 0;
   bottom: 0;
@@ -394,7 +394,21 @@ ul li a:hover {
   align-items: center;
   pointer-events: auto;
 }
-.card {
+.modalDeleteUser{
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #00000080;
+  color: #fff;
+  z-index: 9999;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  pointer-events: auto;
+}
+.card{
   width: 20rem;
   height: 9rem;
   border: rgba(49, 134, 204, 0.877) solid 0.1rem;
@@ -406,28 +420,69 @@ ul li a:hover {
   align-items: center;
   flex-wrap: wrap;
 }
-.cardPriority {
+.cardPassword {
   width: 20rem;
+  height: 15rem;
+  border: rgba(49, 134, 204, 0.877) solid 0.1rem;
+  border-radius: 0.4rem;
+  position: relative;
+  background-color: #212153;
+  display: none, flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  color: #00ffff;
+  text-align: center;
+}
+.cardDeleteUser{
+  width: 25rem;
   height: 9rem;
   border: rgba(49, 134, 204, 0.877) solid 0.1rem;
   border-radius: 0.4rem;
   position: relative;
   background-color: #212153;
-  display: none;
+  display: flex;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
 }
-.card p, .cardPriority p {
+.confirm a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.card p {
   margin: 1rem 1rem 1.3rem 1rem;
   color: aquamarine;
 }
-.card hr, .cardPriority hr {
+.card hr, .cardPassword hr, .cardDeleteUser hr {
   width: 90%;
   border-color: #00aa2a;
 }
+.cardPassword hr {
+  margin-left: 5%;
+  margin-top: 1rem;
+}
 .confirm{
+  display: flex;
+  flex-basis: 100%;
+  justify-content: center;
   margin-bottom: .3rem;
+}
+.confirm button{
+  padding: .7rem;
+  margin: 1rem .5rem;
+  background-color:#323279;
+  color: rgba(255, 119, 0, 0.973);
+  border: 0;
+  border-radius: .3rem;
+  font-weight: bolder;
+  font-size: 1rem;
+  transition: all 0.3s ease-in-out;
+}
+.confirm button:hover{
+  cursor: pointer;
+  background-color:#143044;
 }
 .cardParts{
   width: 26rem;
@@ -693,11 +748,13 @@ ul li a:hover {
 #controlUser #closeUser a{
   color: #00ffff;
   margin: .3rem .2rem .3rem .3rem;
-  background-color: #272727;
   border-radius: 50%;
   padding: .3rem;
   position: fixed;
   z-index: 9999;
+}
+#controlUser #closeUser a:hover{
+  background-color: red;  
 }
 #controlUser #btnUser{
   display: flex;
@@ -851,6 +908,9 @@ ul li a:hover {
   }
   #controlUser #closeUser {
     width: 100%;
+}
+.cardPassword{
+  width: 95%;
 }
 }
 /* style tela de Login: */

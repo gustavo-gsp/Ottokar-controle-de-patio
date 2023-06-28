@@ -28,7 +28,7 @@ let date2 = moment().add(2, 'days').format("DD/MM/YYYY");
 let date3 = moment().add(3, 'days').format("DD/MM/YYYY");
 let date4 = moment().add(4, 'days').format("DD/MM/YYYY");
 
-const home = (req, res, next) =>{
+const home =async (req, res, next) =>{
     if(req.query.fail){
         return res.render('login',{message: 'Usúario ou senha inválidos'});
     }else{
@@ -89,6 +89,7 @@ const getById = async (req, res) => {
                 historic: car.historic,
                 id: car._id,
                 priority: car.priority,
+                resp: car.responsible
             });
         }else if(req.params.method == "assumed"){
             let carDetails = await Car.findOne({_id: req.params.id})
@@ -203,7 +204,6 @@ const getById = async (req, res) => {
         res.status(500).send({error: err.message})
     }
 }
-// Falta deletar os carros e os usuarios, para gravar o video
 const getAllCars = async (req, res) => {
     try{
             users = await User.find();
@@ -242,6 +242,7 @@ const getAllCars = async (req, res) => {
                     user.func = "Gerente";
                 }
             })
+
             if(req.params.day == "historic"){
                 let list = await Historic.find();
                 let list2 = [];
@@ -392,9 +393,7 @@ const getAllCars = async (req, res) => {
                     });
                 
             }else if(req.params.show == "plate"){  
-                console.log('0')
                 if(req.query.plateFilter){
-                    console.log('1')
                 carList = await Historic.find({plate: new RegExp(`^${req.query.plateFilter.toUpperCase()}`)});
                 return res.render('index', {
                     carList, userName, userFunc, status, togle, carListAll,
@@ -425,7 +424,7 @@ const createUser = async (req, res) => {
         log.newPassword = await Bcrypt.hash(log.newPassword, 8);
         
         await User.create({
-            user: log.newUser.toLowerCase,
+            user: log.newUser.toLowerCase(),
             password: log.newPassword,
             func: log.func,
         });
@@ -436,13 +435,35 @@ const createUser = async (req, res) => {
     }
 }
 
+const updateUser = async (req, res) => {
+    const idUser = req.params.id;
+    const method = req.params.method;
+    if(method == "password"){
+        try{
+            const newPassword = await Bcrypt.hash(req.query.passwordNew, 8);  
+            await User.updateOne({_id: idUser}, {$set: {password: newPassword}});
+            message = "Senha alterada com sucesso!"
+            return res.redirect('/carPage/today/a')
+        }catch (err) {
+            res.status(500).send({error: err.message})
+        }
+    }else if(method == "delete"){
+        try{
+            await User.deleteOne({_id: idUser});
+            message = "Usúario deletado com sucesso!"
+            return res.redirect('/carPage/today/a')
+        }catch (err) {
+            res.status(500).send({error: err.message})
+        }
+    }else{
+        res.redirect('/');
+    }
+}
+
 const createCar = async (req, res) =>{
     const car = req.body;
     const resp = (car.responsible).split('|');
 
-    if(!car.carName){
-        return res.redirect('/');
-    }
     try{
         await Car.create({
             carName: car.carName.toUpperCase(),
@@ -460,7 +481,6 @@ const createCar = async (req, res) =>{
         
         const carDetails = await Car.findOne({plate: car.plate.toUpperCase()});
         const cars = await Car.find({responsible: carDetails.responsible});
-        console.log(carDetails)
         const data = (carDetails.date).substring(0,10);
         const date = moment(data, "DD/MM/YYYY");
         const today = moment(dateToday, "DD/MM/YYYY");
@@ -468,27 +488,20 @@ const createCar = async (req, res) =>{
         cars.forEach(async(carResponsible)=>{
             const carData = (carResponsible.date).substring(0,10);
             const carDate = moment(carData, "DD/MM/YYYY");
-            console.log(date+" | "+today)
             if(date.isSameOrBefore(today) && carDate.isSameOrBefore(today)){
-                console.log("today")//esta com erro ao entrar nesse if, não sei por que não esta entrando
                 if(carResponsible.plate !== carDetails.plate){
-                    console.log("plate")
                     if(carResponsible.priority >= carDetails.priority){
-                        console.log("cl >= cd")
                         let newPriority = carResponsible.priority+1;
                         await Car.updateOne({_id: carResponsible._id}, {$set: {priority: newPriority}})
                         }    
                 }
             }else if(date.isSame(carDate)){
-                console.log("outra data")
                 if(carResponsible.plate !== carDetails.plate){
                     if(carResponsible.priority >= carDetails.priority){
                         let newPriority = carResponsible.priority+1;
                         await Car.updateOne({_id: carResponsible._id}, {$set: {priority: newPriority}})
                         }    
                 }
-            }else{
-                console.log("não entrou")
             }
         });
         message = 'Veículo adicionado com sucesso!'
@@ -682,6 +695,7 @@ module.exports = {
     createCar,
     login,
     createUser,
+    updateUser,
     getById,
     concludeCar,
     authent,

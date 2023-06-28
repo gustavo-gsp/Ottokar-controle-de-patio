@@ -108,7 +108,6 @@
             <div id="closeUser">
                 <a href="javascript:close('#modalUser')" ><i class="bi bi-x-lg"></i></a>
             </div>
-            
             <h1 style="margin: .5rem; color: orange;">Controle de Usúarios</h1>
         <div id="btnUser"><a class="newUser">Novo Usúario</a></div>
         <ul>
@@ -116,16 +115,41 @@
                 <li>
                     <p>Nome: <%=users.user%></p><p><%=users.func%></p>
                     <div id="updateUser">
-                        <a href=""><i class="bi bi-pencil-fill"></i></a>
-                        <a href=""><i class="bi bi-trash"></i></a>
+                        <a href="javascript:updatePassword('<%=users._id%>')"><i class="bi bi-pencil-fill"></i></a>
+                        <a href="javascript:deleteUser('<%=users._id%>','<%=users.user%>')"><i class="bi bi-trash"></i></a>
                     </div>
                 </li>
             <%})%>
         </ul>
         </div>
-        
     </section>
-        
+    <section class="modalPassword">
+        <div class="cardPassword">
+            <div style="padding: .5rem;"><a class="close" href="/carPage/today/a"><i class="bi bi-x"></i></a></div><br>
+            <h2>Alterar Senha</h2>
+            <form id="formPassword" method="get">
+                <label>Nova senha:</label>
+                <input type="password" name="passwordNew">
+                <hr>
+                <div class="confirm">
+                    <button class="btnConfirmPassword">Confirmar</a>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section class="modalDeleteUser">
+            <div class="cardDeleteUser">
+                <div style="padding: .5rem; width: 100%;"><a class="close" href="/carPage/today/a" ><i class="bi bi-x"></i></a></div><br>
+                <p>Deseja realmente deletar o usúario <i class="nameUser"></i>?</p><br>
+                <hr>
+                <div class="confirm">
+                    <a class="btnNot" href="/carPage/today/a">Não</a>
+                    <a class="btnYes" id="btnDelete">Sim</a>
+                </div>
+            </div>
+        </section>
+
     <section class="addUser">
         <div>
             <form action="/createUser" method="post" autocomplete="off">
@@ -163,7 +187,6 @@
                 <%if(!history){%>
                     <div class="priorityDetails">
                         <label>Prioridade: </label>
-                        
                         <select id="detailPriority" <% if(userFunc == "mec" || userFunc == "fun") { %> style = "display: none;"<%}%>>
                             <option value=""><%= priority %></option>
                         </select>
@@ -205,6 +228,9 @@
                 </div>
                     <% } %>
                 <% if(userFunc != "mec" && userFunc != "fun") { %>
+                <%if(history) {%>
+                    <label style="margin: 0 3rem;">Último responsavel: <%=resp%></label>
+                <%}%>
                 <div>    
                     <label>Historico:</label>
                     <ul class="<% if(parts != '' && services != '') {%> ulHistoric <%}else{%>ulUnic <%} %>">
@@ -229,19 +255,6 @@
             </section>
         <% } %>
 
-        <%if(details) {%>
-        <section class="modalPriority">
-            <div class="cardPriority">
-                <div style="padding: .5rem;"><a class="close"><i class="bi bi-x"></i></a></div><br>
-                <p>Deseja realmente alterar a prioridade do <%=car.carName%>?</p><br>
-                <hr>
-                <div class="confirm">
-                    <a class="btnNot" href="/carPage/today/a">Não</a>
-                    <a class="btnYes" onclick="sendPriority('<%=id%>','<%=car.responsible%>')">Sim</a>
-                </div>
-            </div>
-        </section>    
-        <%}%>        
     <% if(userFunc != "mec" && userFunc != "fun" && userFunc != "buyer") {%>
         <%if(!history) {%>
         <section class="filter">
@@ -305,9 +318,8 @@
                 <% carList.forEach((car) =>{ %>
                     <li onclick="location.href='/getById/<%=car._id%>/details/<%=car.stage%>'">
                         <div class="list">
-                            <p class="priorityList"><%= car.priority %></p>    
-                            <%if(!history) {%>
-                                <p><%= car.responsible%> <i class="bi bi-tools"></i></p><%}%>
+                            <%if(!history) {%><p class="priorityList"><%= car.priority %></p> <%}%>   
+                                <p><%= car.responsible%> <i class="bi bi-tools"></i></p>
                                 <p><%=car.specialty%> <i class="bi bi-tools"></i></p> <div class="listBreak"></div> 
                                 <p class="pNone"> Veículo:&nbsp</p><p> <%= car.carName %> &nbsp;</p> 
                                 <p> Placa: <%= car.plate %> <i class="bi bi-tools"></i> </p> <p> Status: <%= car.stage%> 

@@ -20,9 +20,10 @@ const historicCarSchema = new mongoose.Schema ({
     },complaint: {
         type: String,
     },services: {
-        type: String,
-    },parts: {
-        type: String,
+        type: [mongoose.Schema.Types.Mixed],
+    },
+    parts: {
+        type: [mongoose.Schema.Types.Mixed],
     },date: {
         type: String,
     },specialty: {
@@ -30,7 +31,9 @@ const historicCarSchema = new mongoose.Schema ({
         require: true,
     },historic: {
         type: [String],
-    },
+    },priority: {
+        type: Number, 
+    }
 });
 
 module.exports = mongoose.model('Historic', historicCarSchema);

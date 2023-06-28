@@ -140,7 +140,7 @@ if(part){
     .then(response => {
       if (response.ok) {
         window.location.href = '/carPage/today/a';
-        document.querySelector('.loading').style.display = "none";
+        document.querySelector('.loading').style.display = "none=";
       }
     })
     .catch(error => {
@@ -224,17 +224,10 @@ if(details){
   }
   updatePriority();
 
-  let selectedValue = "";
   document.getElementById("detailPriority").addEventListener("change", function() {
-    selectedValue = this.value;
-    document.querySelector('.modalPriority').style.display = "flex";
-    document.querySelector('.cardPriority').style.display = "flex";
-    ejsSelectedValue = selectedValue;
-  });
-
-  function sendPriority(id, resp){
+    const selectedValue = this.value;
     document.querySelector('.loading').style.display = "flex";
-    fetch(`/priority/${id}/${resp}`,{
+    fetch(`/priority/${carDetails._id}/${carDetails.responsible}`,{
       method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -248,11 +241,23 @@ if(details){
     .catch(error => {
       console.error('Erro:', error);
     });
-  }
+  });
 
   document.querySelector(".close").addEventListener("click",  () =>{
 
     document.querySelector(".modalPriority").style.display = "none";
 
   })
+}
+
+function updatePassword(id){
+  document.querySelector(".modalPassword").style.display = "flex";
+  document.querySelector(".cardPassword").style.display = "flex";
+  document.querySelector("#formPassword").action = `/updateUser/${id}/password`;
+}
+function deleteUser(id, userName){
+  document.querySelector(".modalDeleteUser").style.display = "flex";
+  document.querySelector(".cardDeleteUser").style.display = "flex";
+  document.querySelector(".nameUser").innerHTML = (userName).toUpperCase();
+  document.querySelector("#btnDelete").href = `/updateUser/${id}/delete`;
 }
