@@ -224,6 +224,46 @@ const getAllCars = async (req, res) => {
                 message = "";
               }, 2000);
             
+            //   const sinespApi = require('sinesp-api');
+            //   sinespApi.configure({
+            //     host: 'apicarros.com',
+            //     endpoint: 'consulta',
+            //     serviceVersion: 'v3.0.0',
+            //     timeout: 0,
+            //     maximumRetry: 0,
+            //     proxy: {},
+            //   });
+              
+            //   // Faz a busca pelo veículo
+            //   let vehicle = await sinespApi.search('GHR5E88');
+            // // console.log(vehicle);  
+            const puppeteer = require('puppeteer');
+
+            (async () => {
+              const browser = await puppeteer.launch();
+              const page = await browser.newPage();
+              
+              // Navegue até a página com a tabela
+              await page.goto('https://www.keplaca.com/placa/GHR5E88');
+            
+              // Seletor para encontrar a tabela
+              const tableSelector = '.fipeTablePriceDetail';
+            
+              // Encontre todas as linhas da tabela
+              const rows = await page.$$(`${tableSelector} tr`);
+            
+              // Extrair os dados da segunda linha (modelo do veículo)
+              const segundaLinha = await rows[1].$eval('td:nth-child(2)', td => td.textContent.trim());
+              
+              // Extrair os dados da quinta linha (ano modelo)
+              const quintaLinha = await rows[4].$eval('td:nth-child(2)', td => td.textContent.trim());
+            
+              console.log('Modelo:', segundaLinha);
+              console.log('Ano Modelo:', quintaLinha);
+            
+              await browser.close();
+            })();
+            
             for (let i = 1; i <= 4; i++) {
                 const nextDate = addDays(hoje, i);
                 const dayWeek = format(nextDate, 'eeee', { locale: require('date-fns/locale/pt-BR') });

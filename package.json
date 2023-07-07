@@ -10,6 +10,7 @@
   "author": "Gustavo Dos Santos Pinho",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.4.0",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
     "date-fns": "^2.29.3",
@@ -20,6 +21,8 @@
     "mongoose": "^7.0.1",
     "nodemon": "^2.0.21",
     "passport": "^0.6.0",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "puppeteer": "^20.8.0",
+    "sinesp-api": "^3.0.0"
   }
 }
