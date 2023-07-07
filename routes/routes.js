@@ -10,6 +10,7 @@ routes.post('/createUser', CarController.createUser);
 routes.get('/updateUser/:id/:method', CarController.authent, CarController.updateUser);
 routes.post('/parts/:id', CarController.orderParts);
 routes.get('/conclude/:id/:stage',CarController.authent, CarController.concludeCar);
+routes.get('/getCarModel/:plate',CarController.authent, CarController.getCarModel);
 routes.post('/priority/:id/:resp',CarController.updatePriority);
 
 module.exports = routes;

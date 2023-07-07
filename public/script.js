@@ -262,8 +262,19 @@ function deleteUser(id, userName){
   document.querySelector("#btnDelete").href = `/updateUser/${id}/delete`;
 }
 
+const plateInput = document.getElementById('plate');
 
-
+plateInput.addEventListener('blur',()=> {
+  plate = plateInput.value;
+  if(plate.length == 7){
+    document.querySelector('.loading').style.display = "flex";
+    fetch(`/getCarModel/${plate}`)
+    .then(() => window.location.href = `/carPage/today/a`)
+    .catch(error => {
+      console.error(error);
+    });
+  }
+  })
 // const url = "https://cluster.apigratis.com/api/v1/vehicles/dados";
 // const data = JSON.stringify({
 //   "email": "gustavo.s.pinho@hotmail.com",

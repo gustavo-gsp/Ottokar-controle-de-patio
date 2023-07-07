@@ -7,6 +7,8 @@ const passport = require('passport');
 const { format, addDays } = require('date-fns');
 const session = require('express-session');
 const { trusted } = require('mongoose');
+process.env.PUPPETEER_SKIP_DOWNLOAD = 'true';
+const puppeteer = require('puppeteer-core');
 
 let users = [];
 let carList = [];
@@ -15,6 +17,7 @@ let message = "";
 let userName = "";
 let userFunc = "";
 let status = "";
+let carModel = "";
 let details = false;
 let conclude = false;
 let part = false;
@@ -63,7 +66,7 @@ const getById = async (req, res) => {
             {
                 conclude: true, car, status, carList, userName, userFunc,message,
                 details, addCar, date1, date2, date3,date4, part: false,users,
-                history: false, week, togle, responsibles, carListAll,
+                history: false, week, togle, responsibles, carListAll,carModel,
             });
         }else if(req.params.method == "details"){
             addCar = "addCarNone";
@@ -76,7 +79,7 @@ const getById = async (req, res) => {
             return res.render('index', {
                 userName, userFunc,status, car, carList,conclude:false, week,
                 addCar, date1, date2, date3, date4, part: false, history, togle,
-                responsibles, carListAll, message, users,
+                responsibles, carListAll, message, users, carModel,
                 details: true,
                 model: car.carName, 
                 plate: car.plate,
@@ -156,7 +159,7 @@ const getById = async (req, res) => {
             {
                 conclude, car, status, carList, userName, userFunc, message,
                 details, addCar, date1, date2, date3,date4, part: true,users,
-                history: false, week, togle, responsibles, carListAll,
+                history: false, week, togle, responsibles, carListAll,carModel,
             });
         }else{
             message = "O veículo ainda não esta em fase de pedir peças";
@@ -222,47 +225,9 @@ const getAllCars = async (req, res) => {
             let func = userFunc == "mec"? "Mecanica" : "Funilaria";
             setTimeout(() => {
                 message = "";
-              }, 2000);
-            
-            //   const sinespApi = require('sinesp-api');
-            //   sinespApi.configure({
-            //     host: 'apicarros.com',
-            //     endpoint: 'consulta',
-            //     serviceVersion: 'v3.0.0',
-            //     timeout: 0,
-            //     maximumRetry: 0,
-            //     proxy: {},
-            //   });
-              
-            //   // Faz a busca pelo veículo
-            //   let vehicle = await sinespApi.search('GHR5E88');
-            // // console.log(vehicle);  
-            const puppeteer = require('puppeteer');
+              }, 2000); 
 
-            (async () => {
-              const browser = await puppeteer.launch();
-              const page = await browser.newPage();
-              
-              // Navegue até a página com a tabela
-              await page.goto('https://www.keplaca.com/placa/GHR5E88');
             
-              // Seletor para encontrar a tabela
-              const tableSelector = '.fipeTablePriceDetail';
-            
-              // Encontre todas as linhas da tabela
-              const rows = await page.$$(`${tableSelector} tr`);
-            
-              // Extrair os dados da segunda linha (modelo do veículo)
-              const segundaLinha = await rows[1].$eval('td:nth-child(2)', td => td.textContent.trim());
-              
-              // Extrair os dados da quinta linha (ano modelo)
-              const quintaLinha = await rows[4].$eval('td:nth-child(2)', td => td.textContent.trim());
-            
-              console.log('Modelo:', segundaLinha);
-              console.log('Ano Modelo:', quintaLinha);
-            
-              await browser.close();
-            })();
             
             for (let i = 1; i <= 4; i++) {
                 const nextDate = addDays(hoje, i);
@@ -374,7 +339,7 @@ const getAllCars = async (req, res) => {
                 }
                 return res.render('index', {
                 carList, userName, userFunc, status, week, responsibles,users,
-                details, conclude, addCar,part: false, togle,carListAll,
+                details, conclude, addCar,part: false, togle,carListAll,carModel,
                 date1, date2, date3, date4, history: false, yourCars,message
             });
             }else if(req.params.show == 'logout'){
@@ -390,7 +355,7 @@ const getAllCars = async (req, res) => {
                 return res.render('index',
                 {
                     carList, userName, status, details, conclude, message,users,
-                    addCar, date1, date2, date3, date4, part, responsibles,
+                    addCar, date1, date2, date3, date4, part, responsibles,carModel,
                     userFunc, history, week, togle, yourCars, carListAll,
                 });
             }else if(req.params.show == "all"){
@@ -416,7 +381,7 @@ const getAllCars = async (req, res) => {
                 return res.render('index',
                 {
                     carList, userName, status, details, conclude, message,users,
-                    addCar, date1, date2, date3, date4, part, responsibles,
+                    addCar, date1, date2, date3, date4, part, responsibles,carModel,
                     userFunc, history, week, togle, yourCars, carListAll,
                 });
             }else if(req.params.show == "responsible"){
@@ -428,7 +393,7 @@ const getAllCars = async (req, res) => {
                     return res.render('index',
                     {
                         carList, userName, status, details, conclude, message,users,
-                        addCar, date1, date2, date3, date4, part, responsibles,
+                        addCar, date1, date2, date3, date4, part, responsibles,carModel,
                         userFunc, history, week, togle, yourCars, carListAll,
                     });
                 
@@ -437,14 +402,14 @@ const getAllCars = async (req, res) => {
                 carList = await Historic.find({plate: new RegExp(`^${req.query.plateFilter.toUpperCase()}`)});
                 return res.render('index', {
                     carList, userName, userFunc, status, togle, carListAll,
-                    details, conclude, addCar,part: false, responsibles,
+                    details, conclude, addCar,part: false, responsibles,carModel,
                     date1, date2, date3, date4, history, week, message,users,
                 });
                 }else{
                     return res.render('index', {
                         carList, userName, userFunc, status, togle, carListAll,
                         details, conclude, addCar,part: false, responsibles,users,
-                        date1, date2, date3, date4, history, week, message
+                        date1, date2, date3, date4, history, week,carModel, message
                     });
                     
                 }
@@ -455,6 +420,36 @@ const getAllCars = async (req, res) => {
     }catch (err) {
         res.status(500).send({error: err.message})
     }
+}
+
+const getCarModel = async (req,res) => {
+    const plate = req.params.plate.toUpperCase();
+    const carListAll = await Car.find();
+    const browser = await puppeteer.launch({
+        headless: 'new',
+        executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+    });
+    const page = await browser.newPage();
+
+    await page.goto(`https://www.keplaca.com/placa/${plate}`);
+
+    const tableSelector = '.fipeTablePriceDetail';
+
+    const rows = await page.$$(`${tableSelector} tr`);
+
+    const model = await rows[1].$eval('td:nth-child(2)', td => td.textContent.trim());
+
+    const yearModel = await rows[4].$eval('td:nth-child(2)', td => td.textContent.trim());
+        
+    carModel = `${model} ${yearModel}`
+      
+    await browser.close();
+
+    return res.render('index', {
+        carList, userName, userFunc, status, togle, carListAll,
+        details, conclude, addCar,part: false, responsibles,users,
+        date1, date2, date3, date4, history, week, message,carModel,
+    });
 }
 
 const createUser = async (req, res) => {
@@ -740,5 +735,6 @@ module.exports = {
     concludeCar,
     authent,
     orderParts,
-    updatePriority
+    updatePriority,
+    getCarModel
 } 

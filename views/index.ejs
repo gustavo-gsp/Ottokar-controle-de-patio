@@ -60,12 +60,12 @@
         <div>
             <h1 >Adicionar Veículo</h1>
             <form action="/createCar" method="post">
-                <label class="labelNone">Modelo:</label>
-                <input type="text" name="carName" id="carName" placeholder="Modelo do veículo" required>
                 <div>
                     <label class="labelNone">Placa:</label>
                     <input type="text" name="plate" id="plate" placeholder="Placa" required>
                 </div>
+                <label class="labelNone">Modelo:</label>
+                <input type="text" name="carName" id="carName" value="<%=carModel%>" required>
                 <div>
                     <label class="labelNone">Reclamação:</label>
                     <input type="text" name="complaint" id="complaint" placeholder="Reclamação do cliente" required>

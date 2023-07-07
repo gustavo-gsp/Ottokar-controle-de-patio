@@ -13,16 +13,16 @@
     "axios": "^1.4.0",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
-    "date-fns": "^2.29.3",
-    "ejs": "^3.1.8",
+    "date-fns": "^2.30.0",
+    "ejs": "^3.1.9",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
     "moment": "^2.29.4",
-    "mongoose": "^7.0.1",
-    "nodemon": "^2.0.21",
+    "mongoose": "^7.3.2",
+    "nodemon": "^2.0.22",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
-    "puppeteer": "^20.8.0",
+    "puppeteer-core": "^20.8.0",
     "sinesp-api": "^3.0.0"
   }
 }
