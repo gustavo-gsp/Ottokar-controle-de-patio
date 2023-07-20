@@ -2,6 +2,7 @@ const Car = require('../models/Car');
 const User = require('../models/User');
 const Historic = require('../models/Historic');
 const Bcrypt = require('bcrypt');
+const axios = require('axios')
 const moment = require('moment');
 const passport = require('passport');
 const { format, addDays } = require('date-fns');
@@ -18,6 +19,7 @@ let userName = "";
 let userFunc = "";
 let status = "";
 let carModel = "";
+let plateAddCar = "";
 let details = false;
 let conclude = false;
 let part = false;
@@ -65,13 +67,12 @@ const getById = async (req, res) => {
             res.render("index", 
             {
                 conclude: true, car, status, carList, userName, userFunc,message,
-                details, addCar, date1, date2, date3,date4, part: false,users,
+                details, addCar, date1, date2, date3,date4, part: false,users,plateAddCar,
                 history: false, week, togle, responsibles, carListAll,carModel,
             });
         }else if(req.params.method == "details"){
             addCar = "addCarNone";
             togle = false;
-            
             if(history == true){
                 // carList = await Historic.find();
                 car = await Historic.findOne({ _id: req.params.id });
@@ -79,7 +80,7 @@ const getById = async (req, res) => {
             return res.render('index', {
                 userName, userFunc,status, car, carList,conclude:false, week,
                 addCar, date1, date2, date3, date4, part: false, history, togle,
-                responsibles, carListAll, message, users, carModel,
+                responsibles, carListAll, message, users, carModel,plateAddCar,
                 details: true,
                 model: car.carName, 
                 plate: car.plate,
@@ -97,6 +98,7 @@ const getById = async (req, res) => {
         }else if(req.params.method == "assumed"){
             let carDetails = await Car.findOne({_id: req.params.id})
             let carUpdate = await Car.find({responsible: carDetails.responsible});
+            let allCarDetails;
             const data = (carDetails.date).substring(0,10);
             const date = moment(data, "DD/MM/YYYY");
             const today = moment(dateToday, "DD/MM/YYYY");
@@ -157,7 +159,7 @@ const getById = async (req, res) => {
             if(car.stage != "Agendado" && car.stage != "Aguardando" && car.responsible){
             res.render("index", 
             {
-                conclude, car, status, carList, userName, userFunc, message,
+                conclude, car, status, carList, userName, userFunc, message,plateAddCar,
                 details, addCar, date1, date2, date3,date4, part: true,users,
                 history: false, week, togle, responsibles, carListAll,carModel,
             });
@@ -202,6 +204,35 @@ const getById = async (req, res) => {
                     { $set: { [`services.${stageIndex}.conclude`]: conclude, historic: historic } }
                     );
             return res.redirect(`/getById/${car._id}/details/${car.stage}`)   
+        }else if(req.params.method == "detailsDocument"){
+            try{
+                    const url = "https://cluster.apigratis.com/api/v1/vehicles/dados";
+                    const body = JSON.stringify({
+                        "placa": car.plate
+                    });
+                        
+                    const options = {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "SecretKey": process.env.SECRETKEY,
+                            "PublicToken": process.env.PUBLICTOKEN,
+                            "DeviceToken": process.env.DEVICETOKEN,
+                            "Authorization": process.env.AUTHORIZATION
+                        },
+                        data: body
+                    };
+                        
+                    const response = await axios(url, options);
+                    allCarDetails = response.data.response.extra;
+
+                    await Car.updateOne({_id: car._id}, {$set: {documentDetails: allCarDetails}})
+                    message = "Dados Consultados Com Sucesso!"
+                    res.redirect(`/getById/${car._id}/details/${car.stage}`)
+            }catch{
+                message = "Impossivél Encontrar Dados Dessa Placa."
+                res.redirect(`/getById/${car._id}/details/${car.stage}`)
+            }
         }
     }catch (err) {
         res.status(500).send({error: err.message})
@@ -338,7 +369,7 @@ const getAllCars = async (req, res) => {
                     addCar = "addCar";
                 }
                 return res.render('index', {
-                carList, userName, userFunc, status, week, responsibles,users,
+                carList, userName, userFunc, status, week, responsibles,users,plateAddCar,
                 details, conclude, addCar,part: false, togle,carListAll,carModel,
                 date1, date2, date3, date4, history: false, yourCars,message
             });
@@ -356,7 +387,7 @@ const getAllCars = async (req, res) => {
                 {
                     carList, userName, status, details, conclude, message,users,
                     addCar, date1, date2, date3, date4, part, responsibles,carModel,
-                    userFunc, history, week, togle, yourCars, carListAll,
+                    userFunc, history, week, togle, yourCars, carListAll,plateAddCar,
                 });
             }else if(req.params.show == "all"){
                 carList = await Car.find({
@@ -382,7 +413,7 @@ const getAllCars = async (req, res) => {
                 {
                     carList, userName, status, details, conclude, message,users,
                     addCar, date1, date2, date3, date4, part, responsibles,carModel,
-                    userFunc, history, week, togle, yourCars, carListAll,
+                    userFunc, history, week, togle, yourCars, carListAll,plateAddCar,
                 });
             }else if(req.params.show == "responsible"){
                 const responsibleList = req.query.responsibleList;
@@ -394,20 +425,20 @@ const getAllCars = async (req, res) => {
                     {
                         carList, userName, status, details, conclude, message,users,
                         addCar, date1, date2, date3, date4, part, responsibles,carModel,
-                        userFunc, history, week, togle, yourCars, carListAll,
+                        userFunc, history, week, togle, yourCars, carListAll,plateAddCar,
                     });
                 
             }else if(req.params.show == "plate"){  
                 if(req.query.plateFilter){
                 carList = await Historic.find({plate: new RegExp(`^${req.query.plateFilter.toUpperCase()}`)});
                 return res.render('index', {
-                    carList, userName, userFunc, status, togle, carListAll,
+                    carList, userName, userFunc, status, togle, carListAll,plateAddCar,
                     details, conclude, addCar,part: false, responsibles,carModel,
                     date1, date2, date3, date4, history, week, message,users,
                 });
                 }else{
                     return res.render('index', {
-                        carList, userName, userFunc, status, togle, carListAll,
+                        carList, userName, userFunc, status, togle, carListAll,plateAddCar,
                         details, conclude, addCar,part: false, responsibles,users,
                         date1, date2, date3, date4, history, week,carModel, message
                     });
@@ -423,8 +454,10 @@ const getAllCars = async (req, res) => {
 }
 
 const getCarModel = async (req,res) => {
-    const plate = req.params.plate.toUpperCase();
+
     const carListAll = await Car.find();
+try{
+    const plate = req.params.plate.toUpperCase();
     const browser = await puppeteer.launch({
         headless: 'new',
         executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
@@ -434,22 +467,28 @@ const getCarModel = async (req,res) => {
     await page.goto(`https://www.keplaca.com/placa/${plate}`);
 
     const tableSelector = '.fipeTablePriceDetail';
-
     const rows = await page.$$(`${tableSelector} tr`);
-
     const model = await rows[1].$eval('td:nth-child(2)', td => td.textContent.trim());
-
     const yearModel = await rows[4].$eval('td:nth-child(2)', td => td.textContent.trim());
         
     carModel = `${model} ${yearModel}`
       
     await browser.close();
 
+    plateAddCar = plate;
+
+    return res.json({carModel})
+}catch{
+    plateAddCar = req.params.plate.toUpperCase();
+    carModel = "";
+    message = "Veículo Não Encontrado!"
     return res.render('index', {
-        carList, userName, userFunc, status, togle, carListAll,
+        carList, userName, userFunc, status, togle, carListAll,plateAddCar,
         details, conclude, addCar,part: false, responsibles,users,
         date1, date2, date3, date4, history, week, message,carModel,
     });
+}
+
 }
 
 const createUser = async (req, res) => {

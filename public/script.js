@@ -15,10 +15,12 @@ const hour = ('0' + currentDate.getHours()).slice(-2);
 const minutes = ('0' + currentDate.getMinutes()).slice(-2);
 const closeMessage = document.querySelector("#close-message");
 const message = document.querySelector(".message");
+const loadingCircle = document.querySelector('.circle');
 
 togle.style.display = 'none';
 
 if(dateInput) dateInput.value = `${year}-${month}-${day}T${hour}:${minutes}`;
+
 
 if (closeMessage){
   closeMessage.addEventListener("click", () =>{
@@ -29,6 +31,14 @@ if (closeMessage){
   },5000);
 }
 
+function showLoading() {
+  loadingCircle.style.display = 'flex';
+}
+
+function hideLoading() {
+  loadingCircle.style.display = 'none';
+}  
+hideLoading();
 
 if(userFunc != "mec" && userFunc != "fun" && userFunc != "buyer"){
 
@@ -248,6 +258,14 @@ if(details){
     document.querySelector(".modalPriority").style.display = "none";
 
   })
+  if(carDetails.documentDetails == undefined) {
+    const consultLink = document.getElementById('consultDetails');
+    consultLink.addEventListener('click', (event) => {
+      event.preventDefault(); 
+      showLoading(); 
+      window.location.href = event.target.href; // Redireciona para a rota
+    });
+  }
 }
 
 function updatePassword(id){
@@ -266,61 +284,26 @@ const plateInput = document.getElementById('plate');
 
 plateInput.addEventListener('blur',()=> {
   plate = plateInput.value;
+
   if(plate.length == 7){
-    document.querySelector('.loading').style.display = "flex";
-    fetch(`/getCarModel/${plate}`)
-    .then(() => window.location.href = `/carPage/today/a`)
-    .catch(error => {
-      console.error(error);
-    });
+    $.ajax({
+      url: `/getCarModel/${plate}`,
+      type: 'GET',
+      success: function (response) {
+        $('#carName').val(response.carModel); 
+      },
+      error: function (error) {
+        console.error(error);
+      }
+    })
   }
   })
-// const url = "https://cluster.apigratis.com/api/v1/vehicles/dados";
-// const data = JSON.stringify({
-//   "email": "gustavo.s.pinho@hotmail.com",
-//   "password":"mcbola8x5157"
-// });
 
-// const options = {
-//   method: "POST",
-//   headers: {
-//     "Content-Type": "application/json", 
-//   },
-//   body: data
-// };
 
-// fetch(url, options)
-//   .then(response => response.json())
-//   .then(data => {
-//     console.log(data);
-//   })
-//   .catch(error => {
-//     console.error(error);
-//   });
-
-// const url = "https://cluster.apigratis.com/api/v1/vehicles/dados";
-// const data = JSON.stringify({
-//   "placa": "GHR5E88"
-// });
-
-// const options = {
-//   method: "POST",
-//   headers: {
-//     "Content-Type": "application/json", 
-//     "SecretKey": "193b1f11-49ae-4a43-80bc-8b3349651632", 
-//     "PublicToken": "a2743b52063cd87a65d1633f5c74f5", 
-//     "DeviceToken": "126037d5-1de7-4cd7-9feb-dbe6edb9c1aa", 
-//     "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3BsYXRhZm9ybWEuYXBpYnJhc2lsLmNvbS5ici9hdXRoL2xvZ2luIiwiaWF0IjoxNjg4MDQ3NTg3LCJleHAiOjE3MTk1ODM1ODcsIm5iZiI6MTY4ODA0NzU4NywianRpIjoiOGROQnNKYUpkNVlqZ1I5cSIsInN1YiI6IjM3NDUiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.8Z-dCc3pMssCAS7FWM0OAqGc7Jgphwej7lRa6o7vAco"
-//   },
-//   body: data
-// };
-
-// fetch(url, options)
-//   .then(response => response.json())
-//   .then(data => {
-//     alert(data.response.extra.chassi)
-//     console.log(data);
-//   })
-//   .catch(error => {
-//     console.error(error);
-//   });
+function documentDetails (option){
+  if(option == "open"){
+    document.querySelector(".detailsDocument").style.display = "flex";
+  }else{
+    document.querySelector(".detailsDocument").style.display = "none";
+  }
+}

@@ -19,10 +19,14 @@
     "express-session": "^1.17.3",
     "moment": "^2.29.4",
     "mongoose": "^7.3.2",
+    "node-fetch": "^3.3.1",
     "nodemon": "^2.0.22",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
     "puppeteer-core": "^20.8.0",
     "sinesp-api": "^3.0.0"
+  },
+  "devDependencies": {
+    "dotenv": "^16.3.1"
   }
 }

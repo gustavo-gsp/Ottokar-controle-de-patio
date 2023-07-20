@@ -33,6 +33,8 @@ const historicCarSchema = new mongoose.Schema ({
         type: [String],
     },priority: {
         type: Number, 
+    },documentDetails: {
+        type: {},
     }
 });
 

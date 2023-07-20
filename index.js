@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path'); 
 const routes = require('./routes/routes')
@@ -7,7 +8,7 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const { authenticate } = require('passport');
 const app = express();
-
+const port = process.env.PORT;
 require('./auth')(passport);
 connectToDb();
 
@@ -25,6 +26,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(routes);
 
-app.listen(9090, ()=> 
-console.log(`Servidor iniciado em http://localhost:9090`)
+app.listen(port, ()=> 
+console.log(`Servidor iniciado em http://localhost:${port}`)
 );

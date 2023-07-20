@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <title>Controle de patio</title>
 </head>
 <body>
@@ -25,7 +26,7 @@
                 <a href="/carPage/date1/a">Amanhã</a>
                 <%if(userFunc == "mec" || userFunc == "fun"){ %> <a href="/carPage/today/all">Todos</a> <% } %>
                 <% if(userFunc != "mec" && userFunc != "fun" && userFunc != "buyer") {%>
-                <a class="btnAdd" href="/carPage/hoje/addCar">Novo veículo</a>
+                <a class="btnAdd" href="/carPage/today/addCar">Novo veículo</a>
             </div>    
                 <div class="menuDates">    
                 <a href="/carPage/date2/a"><%=week[1]%></a>
@@ -62,10 +63,10 @@
             <form action="/createCar" method="post">
                 <div>
                     <label class="labelNone">Placa:</label>
-                    <input type="text" name="plate" id="plate" placeholder="Placa" required>
+                    <input type="text" name="plate" id="plate" placeholder="Placa" value="" required>
                 </div>
                 <label class="labelNone">Modelo:</label>
-                <input type="text" name="carName" id="carName" value="<%=carModel%>" required>
+                <input type="text" name="carName" id="carName" required>
                 <div>
                     <label class="labelNone">Reclamação:</label>
                     <input type="text" name="complaint" id="complaint" placeholder="Reclamação do cliente" required>
@@ -175,10 +176,11 @@
         <% if(details) {%>
             <section class="details">
                 <div class="detailsTop">
-                <div style="margin-left: 0;"><div><label  >Modelo:</label>
-                <textarea readonly name="" id="" cols="10" rows="1"><%=model%></textarea></div>
+                <div style="margin-left: 0;">
+                <div><label>Modelo:</label>
+                <textarea readonly name="" id="" cols="20" rows="1"><%=model%></textarea></div>
                 <div><label >Placa:</label>
-                <textarea readonlycols="10" rows="1"><%= plate %></textarea></div></div>
+                <textarea readonly cols="7" rows="1"><%= plate %></textarea></div></div>
                 <div><div><label ><%if(history){%> Data agendamento: <%}else{%>Previsão:<%}%></label>
                     <textarea readonly cols=<%if(history){%>"15"<%}else{%>"10"<%}%> rows="1"
                         ><%if(history){%> <%=date%> <%}else{%> <%=forecast %> <%}%></textarea></div>
@@ -197,7 +199,7 @@
                 <% }%>
                     <div>
                     <label >Reclamação:</label>
-                    <textarea readonly cols="34" rows="1"><%= complaint %></textarea></div>
+                    <textarea readonly cols="30" rows="1"><%= complaint %></textarea></div>
                 </div>
                 <div class="bigText">
                 <% if(services != "" && !history) {%>    
@@ -243,20 +245,53 @@
                 </div>    
                     <% } %> 
                 </div>
-                    <%if(!history) {%>
+                <%if(!history) {%>
                 <div class="detailBtns">
                     <a href="/carPage/today/a">Fechar</a>
-                    <a href="/getById/<%=id%>/parts/<%=car.stage%>">Pedir peças <i class="bi bi-wrench-adjustable-circle"></i></a>
+                    <a href="/getById/<%=id%>/parts/<%=car.stage%>">Pedir Peças &nbsp;<i class="bi bi-wrench-adjustable-circle"></i></a>
                     <% if(userFunc != "mec" && userFunc != "fun") { %>
-                    <a href="/getById/<%=id%>/conclude/forced">Forçar conclusão<i class="bi bi-check-lg"></i></a>
-                    <% } %>
+                    <a href="/getById/<%=id%>/conclude/forced">Forçar Conclusão<i class="bi bi-check-lg"></i></a>
+
+                    <%if(car.documentDetails == undefined) {%>
+                        <a href="/getById/<%=id%>/detailsDocument/car.stage" id="consultDetails">*Consultar Dados Avançados* &nbsp;<i class="bi bi-search"></i></a>
+                    <% }else{ %>
+                        <a href="javascript:documentDetails('open')">Mostrar Dados Avançados</a>
+                    <%}%>
+                <% } %>
                 </div>
                 <% } %>
             </section>
-        <% } %>
-
-    <% if(userFunc != "mec" && userFunc != "fun" && userFunc != "buyer") {%>
-        <%if(!history) {%>
+            <section class="detailsDocument">
+                <div class="cardDocument">
+                    <div style="padding: .5rem;" id="closeUser"><a href="javascript:documentDetails('close')"><i class="bi bi-x"></i></a></div>
+                    <h2>Detalhes de Documento</h2>
+                    <%if(car.documentDetails != undefined) {%>
+                    <div>
+                        <label>Marca: </label>
+                        <textarea cols="15" rows="1" readonly><%=car.documentDetails.marca_modelo.marca%></textarea>
+                        <label >Ano Fabricação: </label>
+                        <textarea cols="5" rows="1" readonly><%=car.documentDetails.ano_fabricacao%></textarea>
+                    </div>
+                    <div>
+                        <label >Cor: </label>
+                        <textarea cols="10" rows="1" readonly><%=car.documentDetails.cor_veiculo.cor%></textarea>
+                        <label >Combustivél:</label>
+                        <textarea cols="15" rows="1" readonly><%=car.documentDetails.combustivel.combustivel%></textarea>
+                    </div>
+                    <div>
+                        <p> 
+                        <p><label >Renavan:</label>
+                        <textarea cols="15" rows="1"readonly><%=car.documentDetails.renavam%></textarea></p>
+                        <p><label >Chassi:</label>
+                        <textarea cols="20" rows="1"readonly><%=car.documentDetails.chassi%></textarea></p>
+                        </p>
+                        </div>
+                    <% } %>    
+                </div>
+            </section>
+            <% } %>
+                    <% if(userFunc != "mec" && userFunc != "fun" && userFunc != "buyer") {%>
+                        <%if(!history) {%>
         <section class="filter">
                 <form action="/carPage/today/responsible" method="get">
                     <label>Filtrar Responsavel: </label>
@@ -318,14 +353,15 @@
                 <% carList.forEach((car) =>{ %>
                     <li onclick="location.href='/getById/<%=car._id%>/details/<%=car.stage%>'">
                         <div class="list">
-                            <%if(!history) {%><p class="priorityList"><%= car.priority %></p> <%}%>   
+                            <p class="rowsList"><%if(!history) {%><p class="priorityList"><%= car.priority %></p> <%}%>   
                                 <p><%= car.responsible%> <i class="bi bi-tools"></i></p>
-                                <p><%=car.specialty%> <i class="bi bi-tools"></i></p> <div class="listBreak"></div> 
-                                <p class="pNone"> Veículo:&nbsp</p><p> <%= car.carName %> &nbsp;</p> 
-                                <p> Placa: <%= car.plate %> <i class="bi bi-tools"></i> </p> <p> Status: <%= car.stage%> 
-                                <i class="bi bi-tools"></i> </p><div class="listBreak"></div><%if(!history) {%>
-                            <p><%=car.date.substring(11, 16)%> </p> <%}else{%> <p>Data Entrega: <%=car.forecast%></p><%}%>
-                        </div>
+                                <p><%=car.specialty%> <i class="bi bi-tools"></i></p> </p>
+                                <p class="rowsList"><p class="pNone"> Veículo:&nbsp</p><p> <%= car.carName %> &nbsp;</p> 
+                                <p> Placa: <%= car.plate %> <i class="bi bi-tools"></i> </p></p> <p class="rowsList"> <p> Status: <%= car.stage%> 
+                                <i class="bi bi-tools"></i> </p><%if(!history && car.stage == "Agendado") {%>
+                            <p><%=car.date.substring(11, 16)%> </p> <%}else{%>
+                                <p><%if(!history){%>Previsão:<%}else{%>Data entrega: <%}%> <%=car.forecast%></p> <% } %></p>
+                        </div> 
                         <div class="btnList">
                             
                             <%if(!history) {%>        
@@ -342,7 +378,11 @@
             </ul>
                 
         </section>
-        <section class="loading"> <p>Carregando...</p> </section>
+        <section class="loading"> <p>Carregando, por favor aguarde...</p> </section>
+        <section class="circle">
+            <div id="loading-circle"></div>
+            <p>Aguarde...</p>
+        </section>
     <script>
         let responsibles = <%- JSON.stringify(responsibles) %>;
         let carList = <%- JSON.stringify(carListAll) %>;
@@ -354,7 +394,6 @@
         <%}%>
         let users = <%- JSON.stringify(users) %>; 
       </script>
-
     <script src="/script.js"></script>
 </body>
 </html>
