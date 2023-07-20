@@ -57,51 +57,51 @@
     </section>
 
     <% if(userFunc != "mec" && userFunc != "fun" && userFunc != "buyer") {%>
-    <section id="<%=addCar%>">
-        <div>
-            <h1 >Adicionar Veículo</h1>
-            <form action="/createCar" method="post">
-                <div>
-                    <label class="labelNone">Placa:</label>
-                    <input type="text" name="plate" id="plate" placeholder="Placa" value="" required>
-                </div>
-                <label class="labelNone">Modelo:</label>
-                <input type="text" name="carName" id="carName" required>
-                <div>
-                    <label class="labelNone">Reclamação:</label>
-                    <input type="text" name="complaint" id="complaint" placeholder="Reclamação do cliente" required>
-                    <label class="labelShow">Especialidade:</label>
-                    <select name="specialty" id="specialty">
-                        <option value="Mecanica">Mecanica</option>
-                        <option value="Funilaria">Funilaria</option>
+        <section id="<%=addCar%>">
+            <div>
+                <h1 >Adicionar Veículo</h1>
+                <form action="/createCar" method="post">
+                    <div>
+                        <label class="labelNone">Placa:</label>
+                        <input type="text" name="plate" id="plate" placeholder="Placa" minlength="7" maxlength="7" required>
+                    </div>
+                    <label class="labelNone">Modelo:</label>
+                    <input type="text" name="carName" id="carName" maxlength="40" required>
+                    <div>
+                        <label class="labelNone">Reclamação:</label>
+                        <input type="text" name="complaint" id="complaint" placeholder="Reclamação do cliente" maxlength="100" required>
+                        <label class="labelShow">Especialidade:</label>
+                        <select name="specialty" id="specialty">
+                            <option value="Mecanica">Mecanica</option>
+                            <option value="Funilaria">Funilaria</option>
+                        </select>
+                    </div><br>
+                    <label class="labelShow">Responsável:</label>
+                    <select id="responsible" name="responsible" onchange="showPriority()">
+                        <option value=""> </option>
+                        <% responsibles.forEach((resp) => { %>
+                            <option value="<%=resp.user%>|<%=resp._id%>"><%=resp.user.toUpperCase()%></option>
+                            <%})%>
                     </select>
-                </div><br>
-                <label class="labelShow">Responsável:</label>
-                <select id="responsible" name="responsible" onchange="showPriority()">
-                    <option value=""> </option>
-                    <% responsibles.forEach((resp) => { %>
-                        <option value="<%=resp.user%>|<%=resp._id%>"><%=resp.user.toUpperCase()%></option>
-                        <%})%>
-                </select>
-                <label class="labelShow">Data agendamento:</label>
-                <input type="datetime-local" name="date" id="date" onchange="showPriority()" required>
-                <input type="hidden" value="<%= userName %>" name="userName">
-                <label class="labelShow">Previsão conclusão:</label>
-                <input type="datetime-local" name="forecast" id="forecast" required>
-                <div class="labelShow">
-                <label >Prioridade:</label>
-                    <select id="priority" name="priority">
-                        <option value="1">1</option>
-                    </select>
-                </div>
-                <div class="btn">
-                    <a class="addClose" href="/carPage/today/a">Cancelar</a>
-                    <button id="addButton" type="submit">Adicionar</button>
-                </div>
-            </form>
-        </div>
-       
-    </section>
+                    <label class="labelShow">Data agendamento:</label>
+                    <input type="datetime-local" name="date" id="date" onchange="showPriority()" required>
+                    <input type="hidden" value="<%= userName %>" name="userName">
+                    <label class="labelShow">Previsão conclusão:</label>
+                    <input type="datetime-local" name="forecast" id="forecast" required>
+                    <div class="labelShow">
+                    <label >Prioridade:</label>
+                        <select id="priority" name="priority">
+                            <option value="1">1</option>
+                        </select>
+                    </div>
+                    <div class="btn">
+                        <a class="addClose" href="/carPage/today/a">Cancelar</a>
+                        <button id="addButton" type="submit">Adicionar</button>
+                    </div>
+                </form>
+            </div>
+           
+        </section>
     <%}%>
 
     <section id="modalUser">

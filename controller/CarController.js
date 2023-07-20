@@ -458,10 +458,7 @@ const getCarModel = async (req,res) => {
     const carListAll = await Car.find();
 try{
     const plate = req.params.plate.toUpperCase();
-    const browser = await puppeteer.launch({
-        headless: 'new',
-        executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-    });
+    const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
     await page.goto(`https://www.keplaca.com/placa/${plate}`);
@@ -478,10 +475,10 @@ try{
     plateAddCar = plate;
 
     return res.json({carModel})
-}catch{
+}catch(err){
     plateAddCar = req.params.plate.toUpperCase();
     carModel = "";
-    message = "Veículo Não Encontrado!"
+    message ="Veículo Não Encontrado!"
     return res.render('index', {
         carList, userName, userFunc, status, togle, carListAll,plateAddCar,
         details, conclude, addCar,part: false, responsibles,users,

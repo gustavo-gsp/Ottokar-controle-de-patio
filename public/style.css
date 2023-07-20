@@ -238,7 +238,7 @@ ul li p:hover{
 .list p i{
     margin:0 .6rem 0 .4rem;
 }
-ul li div {
+.cars ul li div {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -338,6 +338,8 @@ ul li a:hover {
   background-color: #01467a;
   color:rgba(0, 255, 255, 0.842);
   width: 98%;
+  display: flex;
+  justify-content: space-between;
 } 
 .ulHistoric{
   font-size: 1rem;
