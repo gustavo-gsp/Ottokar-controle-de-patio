@@ -461,7 +461,7 @@ try{
     const browser = await puppeteer.launch({
         headless: 'new',
         args: ['--no-sandbox'],
-        executablePath: '/opt/google/chrome/chrome'
+        executablePath: '/opt/google/chrome/google-chrome'
     });
     const page = await browser.newPage();
 
