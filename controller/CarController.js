@@ -9,7 +9,7 @@ const { format, addDays } = require('date-fns');
 const session = require('express-session');
 const { trusted } = require('mongoose');
 process.env.PUPPETEER_SKIP_DOWNLOAD = 'true';
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
 
 let users = [];
 let carList = [];
@@ -460,7 +460,7 @@ try{
     const plate = req.params.plate.toUpperCase();
     const browser = await puppeteer.launch({
         headless: 'new',
-        executablePath: '/opt/google/chrome/chron/google-chrome'
+        executablePath: '/opt/google/chrome/google-chrome'
     });
     const page = await browser.newPage();
 
