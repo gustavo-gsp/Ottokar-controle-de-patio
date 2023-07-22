@@ -481,7 +481,7 @@ try{
 }catch(err){
     plateAddCar = req.params.plate.toUpperCase();
     carModel = "";
-    message ="Veículo Não Encontrado!"
+    message =err.message+"Veículo Não Encontrado!"
     return res.render('index', {
         carList, userName, userFunc, status, togle, carListAll,plateAddCar,
         details, conclude, addCar,part: false, responsibles,users,
