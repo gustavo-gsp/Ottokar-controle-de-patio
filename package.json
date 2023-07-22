@@ -24,6 +24,7 @@
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
     "puppeteer": "^20.9.0",
+    "puppeteer-core": "^20.9.0",
     "sinesp-api": "^3.0.0"
   },
   "devDependencies": {
