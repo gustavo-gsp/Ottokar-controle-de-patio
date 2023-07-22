@@ -460,7 +460,7 @@ try{
     const plate = req.params.plate.toUpperCase();
     const browser = await puppeteer.launch({
         headless: 'new',
-        executablePath: '/opt/google/chrome/google-chrome --no-sandbox'
+        executablePath: '/opt/google/chrome/chrome'
     });
     const page = await browser.newPage();
 
