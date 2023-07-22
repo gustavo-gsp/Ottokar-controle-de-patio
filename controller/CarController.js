@@ -9,7 +9,7 @@ const { format, addDays } = require('date-fns');
 const session = require('express-session');
 const { trusted } = require('mongoose');
 process.env.PUPPETEER_SKIP_DOWNLOAD = 'true';
-const puppeteer = require('puppeteer-core');
+const puppeteer = require('puppeteer');
 
 let users = [];
 let carList = [];
@@ -458,7 +458,10 @@ const getCarModel = async (req,res) => {
     const carListAll = await Car.find();
 try{
     const plate = req.params.plate.toUpperCase();
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+        headless: 'new',
+        executablePath: '/opt/google/chrome/google-chrome'
+    });
     const page = await browser.newPage();
 
     await page.goto(`https://www.keplaca.com/placa/${plate}`);
