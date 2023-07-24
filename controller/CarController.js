@@ -9,6 +9,7 @@ const { format, addDays } = require('date-fns');
 const session = require('express-session');
 const { trusted } = require('mongoose');
 const puppeteer = require('puppeteer');
+const cheerio = require('cheerio');
 
 let users = [];
 let carList = [];
@@ -458,19 +459,18 @@ const getCarModel = async (req,res) => {
 try{
     const plate = req.params.plate.toUpperCase();
     const browser = await puppeteer.launch({
-        headless: 'true',
+        headless: "new",
         args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
     const page = await browser.newPage();
 
     await page.goto(`https://www.keplaca.com/placa/${plate}`);
 
-    const tableSelector = '.fipeTablePriceDetail';
-    const rows = await page.$$(`${tableSelector} tr`);
-    const model = await rows[1].$eval('td:nth-child(2)', td => td.textContent.trim());
-    const yearModel = await rows[4].$eval('td:nth-child(2)', td => td.textContent.trim());
-        
-    carModel = `${model} ${yearModel}`
+    const carModel = await page.evaluate(() => {
+        const model = document.querySelector('.fipeTablePriceDetail tr:nth-child(2) td:nth-child(2)').textContent.trim();
+        const yearModel = document.querySelector('.fipeTablePriceDetail tr:nth-child(5) td:nth-child(2)').textContent.trim();
+        return `${model} ${yearModel}`;
+    });
       
     await browser.close();
 
