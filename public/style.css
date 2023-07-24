@@ -127,6 +127,9 @@ a {
 #addCar button:hover, #addCarPhone button:hover{
   background-color: #143044;
 }
+#addCar input, #addCarPhone input {
+  font-weight: bold;
+}
 .addClose{
   text-align: center;
   padding: 0.3rem;

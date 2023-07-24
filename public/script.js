@@ -286,6 +286,7 @@ plateInput.addEventListener('blur',()=> {
   plate = plateInput.value;
 
   if(plate.length == 7){
+    $('#carName').val('Buscando...');
     $.ajax({
       url: `/getCarModel/${plate}`,
       type: 'GET',
