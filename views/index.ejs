@@ -112,12 +112,12 @@
             <h1 style="margin: .5rem; color: orange;">Controle de Usúarios</h1>
         <div id="btnUser"><a class="newUser">Novo Usúario</a></div>
         <ul>
-            <%users.forEach(users => {%>
+            <%users.forEach(usr => {%>
                 <li>
-                    <p>Nome: <%=users.user%></p><p><%=users.func%></p>
+                    <p>Nome: <%=usr.user%></p><p><%=usr.func%></p>
                     <div id="updateUser">
-                        <a href="javascript:updatePassword('<%=users._id%>')"><i class="bi bi-pencil-fill"></i></a>
-                        <a href="javascript:deleteUser('<%=users._id%>','<%=users.user%>')"><i class="bi bi-trash"></i></a>
+                        <a href="javascript:updatePassword('<%=usr._id%>')" title="Alterar senha" ><i class="bi bi-pencil-fill"></i></a>
+                        <a href="javascript:deleteUser('<%=usr._id%>','<%=usr.user%>')" title="Deletar usúario"><i class="bi bi-trash"></i></a>
                     </div>
                 </li>
             <%})%>
@@ -126,7 +126,7 @@
     </section>
     <section class="modalPassword">
         <div class="cardPassword">
-            <div style="padding: .5rem;"><a class="close" href="/carPage/today/a"><i class="bi bi-x"></i></a></div><br>
+            <div style="padding: .5rem;"><a class="closePassword" href="javascript:close('.modalPassword')"><i class="bi bi-x"></i></a></div><br>
             <h2>Alterar Senha</h2>
             <form id="formPassword" method="get">
                 <label>Nova senha:</label>

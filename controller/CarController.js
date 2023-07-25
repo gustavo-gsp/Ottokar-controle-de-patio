@@ -10,6 +10,7 @@ const session = require('express-session');
 const { trusted } = require('mongoose');
 const puppeteer = require('puppeteer');
 const cheerio = require('cheerio');
+const { arMA } = require('date-fns/locale');
 
 let users = [];
 let carList = [];
@@ -34,6 +35,7 @@ let date3 = moment().add(3, 'days').format("DD/MM/YYYY");
 let date4 = moment().add(4, 'days').format("DD/MM/YYYY");
 
 const home =async (req, res, next) =>{
+
     if(req.query.fail){
         return res.render('login',{message: 'Usúario ou senha inválidos'});
     }else{
@@ -254,11 +256,11 @@ const getAllCars = async (req, res) => {
             const datefour =  new RegExp(`^${date4.substring(0,2)}`);
             const hoje = new Date();
             let func = userFunc == "mec"? "Mecanica" : "Funilaria";
+            
             setTimeout(() => {
                 message = "";
-              }, 2000); 
+            }, 2000); 
 
-              
             for (let i = 1; i <= 4; i++) {
                 const nextDate = addDays(hoje, i);
                 const dayWeek = format(nextDate, 'eeee', { locale: require('date-fns/locale/pt-BR') });

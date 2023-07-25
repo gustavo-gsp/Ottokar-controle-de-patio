@@ -581,7 +581,7 @@ ul li a:hover {
 .cardParts input{
   width: 70%;
 }
-.close {
+.close, .closePassword {
   position: absolute;
   right: 0.2rem;
   top: 0.3rem;
@@ -589,7 +589,7 @@ ul li a:hover {
   padding: 0.2rem;
   transition: all 0.2s ease-in-out;
 }
-.close:hover {
+.close:hover, .closePassword:hover {
   background-color: rgba(255, 0, 0, 0.884);
   border-radius: 50%;
   cursor: pointer;
@@ -812,6 +812,7 @@ ul li a:hover {
   cursor: pointer;
 }
 #controlUser ul li{
+  display: flex;
   padding: .3rem 0;
   justify-content: space-between;
 }
@@ -1087,6 +1088,6 @@ ul li a:hover {
 .login button:hover{
   background-color: #212153;
 }
-#user{
+#user, #password{
   text-transform: lowercase;
 }

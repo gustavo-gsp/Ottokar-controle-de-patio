@@ -63,10 +63,10 @@ if(userFunc != "mec" && userFunc != "fun" && userFunc != "buyer"){
       document.getElementById("user").value = ""; 
       document.getElementById("user").setAttribute('readonly', 'true');
 
-      // Remove o atributo "readonly" imediatamente
       setTimeout(() => {
         document.getElementById("user").removeAttribute('readonly');
-      }, 1);
+        document.getElementById("user").value = "";
+      }, 1500);
 
     });
     function close (element) {
@@ -78,7 +78,8 @@ if(userFunc != "mec" && userFunc != "fun" && userFunc != "buyer"){
       if(inputUser == "ottokar"){
         inputUser = "";
       }
-      const userExists = users.some(name => name.user === inputUser);
+      console.log(inputUser)
+      const userExists = users.some(name => name.user === inputUser.toLowerCase());
       const errorMessage = document.getElementById('errorMessage');
 
       errorMessage.style.display = inputUser && userExists ? 'block' : 'none';
