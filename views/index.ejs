@@ -113,6 +113,7 @@
         <div id="btnUser"><a class="newUser">Novo Usúario</a></div>
         <ul>
             <%users.forEach(usr => {%>
+                <%if(usr.user != "devmaster") { %>
                 <li>
                     <p>Nome: <%=usr.user%></p><p><%=usr.func%></p>
                     <div id="updateUser">
@@ -120,6 +121,7 @@
                         <a href="javascript:deleteUser('<%=usr._id%>','<%=usr.user%>')" title="Deletar usúario"><i class="bi bi-trash"></i></a>
                     </div>
                 </li>
+                <% } %>
             <%})%>
         </ul>
         </div>
