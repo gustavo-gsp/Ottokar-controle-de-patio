@@ -229,8 +229,8 @@ const getById = async (req, res) => {
                     await Car.updateOne({_id: car._id}, {$set: {documentDetails: allCarDetails}})
                     message = "Dados Consultados Com Sucesso!"
                     res.redirect(`/getById/${car._id}/details/${car.stage}`)
-            }catch{
-                message = "Impossivél Encontrar Dados Dessa Placa."
+            }catch(err){
+                message = err.message+"Impossivél Encontrar Dados Dessa Placa."
                 res.redirect(`/getById/${car._id}/details/${car.stage}`)
             }
         }
@@ -258,8 +258,7 @@ const getAllCars = async (req, res) => {
                 message = "";
               }, 2000); 
 
-            
-            
+              
             for (let i = 1; i <= 4; i++) {
                 const nextDate = addDays(hoje, i);
                 const dayWeek = format(nextDate, 'eeee', { locale: require('date-fns/locale/pt-BR') });
