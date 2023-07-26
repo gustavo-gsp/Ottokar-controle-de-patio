@@ -36,6 +36,9 @@ const carSchema = new mongoose.Schema({
         type: Number, 
     },documentDetails: {
         type: {},
+    },
+    observation: {
+        type: String
     }    
 });
 

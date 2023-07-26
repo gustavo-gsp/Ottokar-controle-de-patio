@@ -11,6 +11,7 @@ routes.get('/updateUser/:id/:method', CarController.authent, CarController.updat
 routes.post('/parts/:id', CarController.orderParts);
 routes.get('/conclude/:id/:stage',CarController.authent, CarController.concludeCar);
 routes.get('/getCarModel/:plate',CarController.authent, CarController.getCarModel);
+routes.post('/updateDetail/:id/:change', CarController.updateDetail);
 routes.post('/priority/:id/:resp',CarController.updatePriority);
 
 module.exports = routes;

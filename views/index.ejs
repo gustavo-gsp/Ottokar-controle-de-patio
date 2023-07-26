@@ -190,18 +190,36 @@
                     <textarea readonly name="" id="" cols="10" rows="1" ><%= stage %></textarea></div></div>
                 <%if(!history){%>
                     <div class="priorityDetails">
-                        <label>Prioridade: </label>
+                        <label>Prioridade:</label>
                         <select id="detailPriority" <% if(userFunc == "mec" || userFunc == "fun") { %> style = "display: none;"<%}%>>
                             <option value=""><%= priority %></option>
                         </select>
                         <% if(userFunc == "mec" || userFunc == "fun") { %>
-                            <textarea readonly cols="1" rows="1"><%= priority %></textarea>
+                        <textarea readonly cols="1" rows="1"><%= priority %></textarea>
                         <% } %>
                     </div>
                 <% }%>
                     <div>
-                    <label >Reclamação:</label>
-                    <textarea readonly cols="30" rows="2"><%= complaint %></textarea></div>
+                        <label>Especialidade:</label>
+                        <select id="specialtyDetails" onchange="updateDetail('<%=id%>', 'specialty','specialtyDetails')" 
+                            <% if(userFunc == "mec" || userFunc == "fun") { %> style = "display: none;"<%}%>>
+                            <option ><%= specialty %></option>
+                            <% if (specialty == "Mecanica") {%>
+                                <option value="Funilaria">Funilaria</option>
+                            <%} else{%>
+                                <option value="Mecanica">Mecanica</option> 
+                            <% } %>    
+                        </select>
+                    </div>
+                    <div>
+                        <label>Responsável:</label>
+                        <select id="responsibleDetails" onchange="updateDetail('<%=id%>', 'responsible','responsibleDetails')">
+                            <option > <%=resp.toUpperCase()%> </option>
+                            <% responsibles.forEach((resp) => { %>
+                                <option value="<%=resp.user%>"><%=resp.user.toUpperCase()%></option>
+                                <%})%>
+                        </select>
+                    </div>
                 </div>
                 <div class="bigText">
                 <% if(services != "" && !history) {%>    
@@ -209,7 +227,7 @@
                     <label >Serviços:</label>
                     <ul class="ulServices">
                         <% services.forEach((service, index) =>{%>
-                        <li <%if(service.conclude){%>style=" text-decoration: line-through;"<% } %> >
+                        <li <% if(service.conclude){%>style=" text-decoration: line-through;"<% } %> >
                             <%= service.service %> <a class="btnCheck" href="/getById/<%=car._id%>/concludeService/<%= index %>" 
                                 title="Cuncluir Etapa"><i class="bi bi-check-lg"></i></a>
                         </li>
@@ -246,6 +264,18 @@
                     </ul>
                 </div>    
                     <% } %> 
+                </div>
+                <div>
+                    <div>
+                    <label >Reclamação:</label>
+                    <textarea id="complaintDetails" <% if(userFunc == "mec" || userFunc == "fun") {%> readonly <%}%>cols="30" rows="2"
+                        onchange="updateDetail('<%=id%>', 'complaint','complaintDetails' )"><%= complaint %></textarea>
+                </div>
+                <div>
+                    <label> Observações: </label>
+                    <textarea id="observationDetails" onchange="updateDetail('<%=id%>', 'observation', 'observationDetails')"
+                         cols="30" rows="3"><%=observation%></textarea>
+                </div>
                 </div>
                 <%if(!history) {%>
                 <div class="detailBtns">

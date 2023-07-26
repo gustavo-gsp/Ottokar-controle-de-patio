@@ -13,9 +13,9 @@
         <form action="/login" method="post" class="login">
         <h1>Efetue o login:</h1>
         <label>Usúario:</label><br>
-        <input type="text" name="user" id="user" placeholder="Usúario" maxlength="30" required autocapitalize="off"><br>
+        <input type="text" name="user" id="user" placeholder="Usúario" maxlength="30" oninput="lowerCase(this)" required autocapitalize="off"><br>
         <label>Senha:</label><br>
-        <input type="password" name="password" id="password" placeholder="Senha" minlength="6" maxlength="15" required ><br>
+        <input type="password" name="password" id="password" placeholder="Senha" minlength="6" maxlength="15" oninput="lowerCase(this)" required ><br>
         <% if(message != "") {%>
             <label> <%= message %> </label><br>
         <% } %>
@@ -23,5 +23,6 @@
         <label name="erro"></label>
         </form>
     </div>
+    <script src="/scriptLogin.js"></script>
 </body>
 </html>

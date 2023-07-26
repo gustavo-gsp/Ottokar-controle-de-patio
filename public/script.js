@@ -134,7 +134,7 @@ if(part){
 
 
   btnSend.addEventListener('click', (event) => {
-    document.querySelector('.loading').style.display = "flex";
+    showLoading()
     event.preventDefault();
     const data = {
       pecas: pecas,
@@ -151,7 +151,7 @@ if(part){
     .then(response => {
       if (response.ok) {
         window.location.href = '/carPage/today/a';
-        document.querySelector('.loading').style.display = "none=";
+        hideLoading();
       }
     })
     .catch(error => {
@@ -237,7 +237,7 @@ if(details){
 
   document.getElementById("detailPriority").addEventListener("change", function() {
     const selectedValue = this.value;
-    document.querySelector('.loading').style.display = "flex";
+    showLoading()
     fetch(`/priority/${carDetails._id}/${carDetails.responsible}`,{
       method: "POST",
     headers: {
@@ -247,7 +247,7 @@ if(details){
     })
     .then(response=>{
       window.location.href = `/carPage/today/responsible?responsibleList=${carDetails.responsible}`;
-      document.querySelector('.loading').style.display = "none";
+      hideLoading()
     })
     .catch(error => {
       console.error('Erro:', error);
@@ -270,6 +270,7 @@ if(details){
 }
 
 function updatePassword(id){
+  console.log(id)
   document.querySelector(".modalPassword").style.display = "flex";
   document.querySelector(".cardPassword").style.display = "flex";
   document.querySelector("#formPassword").action = `/updateUser/${id}/password`;
@@ -295,6 +296,7 @@ plateInput.addEventListener('blur',()=> {
         $('#carName').val(response.carModel); 
       },
       error: function (error) {
+        $('#carName').val("");
         console.error(error);
       }
     })
@@ -308,4 +310,35 @@ function documentDetails (option){
   }else{
     document.querySelector(".detailsDocument").style.display = "none";
   }
+}
+function updateDetail(id, change, selector){
+  //pegar get id, e value, depois enviar via fetch
+  showLoading()
+  changeValue = document.getElementById(selector).value
+  const data = {
+    changeValue: changeValue
+  };
+  fetch(`/updateDetail/${id}/${change}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  })
+  .then(response => {
+    if (response.ok) {
+      return response.json();
+    } else {
+      throw new Error('Network response was not ok.');
+    }
+  })
+  .then(data => {
+    console.log('Update successful');
+    location.reload();
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    location.reload();
+  });
+
 }

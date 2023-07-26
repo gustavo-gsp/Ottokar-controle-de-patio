@@ -35,7 +35,10 @@ const historicCarSchema = new mongoose.Schema ({
         type: Number, 
     },documentDetails: {
         type: {},
-    }
+    },
+    observation: {
+        type: String
+    } 
 });
 
 module.exports = mongoose.model('Historic', historicCarSchema);

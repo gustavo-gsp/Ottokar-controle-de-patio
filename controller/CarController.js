@@ -35,7 +35,6 @@ let date3 = moment().add(3, 'days').format("DD/MM/YYYY");
 let date4 = moment().add(4, 'days').format("DD/MM/YYYY");
 
 const home =async (req, res, next) =>{
-
     if(req.query.fail){
         return res.render('login',{message: 'Usúario ou senha inválidos'});
     }else{
@@ -95,7 +94,9 @@ const getById = async (req, res) => {
                 historic: car.historic,
                 id: car._id,
                 priority: car.priority,
-                resp: car.responsible
+                resp: car.responsible,
+                specialty: car.specialty,
+                observation: car.observation
             });
         }else if(req.params.method == "assumed"){
             let carDetails = await Car.findOne({_id: req.params.id})
@@ -474,19 +475,13 @@ try{
         
     carModel = `${model} ${yearModel}`
 
-    // const carModel = await page.evaluate(() => {
-    //     const model = document.querySelector('.fipeTablePriceDetail tr:nth-child(2) td:nth-child(2)').textContent.trim();
-    //     const yearModel = document.querySelector('.fipeTablePriceDetail tr:nth-child(5) td:nth-child(2)').textContent.trim();
-    //     return `${model} ${yearModel}`;
-    // });
-      
     await browser.close();
 
     plateAddCar = plate;
 
     return res.json({carModel})
 }catch(err){
-    plateAddCar = req.params.plate.toUpperCase();
+    plateAddCar = (req.params.plate).toUpperCase();
     carModel = "";
     message =err.message+"Veículo Não Encontrado!"
     return res.render('index', {
@@ -501,12 +496,12 @@ try{
 const createUser = async (req, res) => {
     try{
         const log = req.body;
-        
-        log.newPassword = await Bcrypt.hash(log.newPassword, 8);
+        let password = log.newPassword.toLowerCase().trim();
+        password = await Bcrypt.hash(password, 8);
         
         await User.create({
-            user: log.newUser.toLowerCase(),
-            password: log.newPassword,
+            user: log.newUser.toLowerCase().trim(),
+            password: password,
             func: log.func,
         });
         message = 'Usuário criado com sucesso!';
@@ -521,7 +516,8 @@ const updateUser = async (req, res) => {
     const method = req.params.method;
     if(method == "password"){
         try{
-            const newPassword = await Bcrypt.hash(req.query.passwordNew, 8);  
+            let newPassword = (req.params.passwordNew).toLowerCase().trim();
+            newPassword = await Bcrypt.hash(newPassword, 8);  
             await User.updateOne({_id: idUser}, {$set: {password: newPassword}});
             message = "Senha alterada com sucesso!"
             return res.redirect('/carPage/today/a')
@@ -538,6 +534,23 @@ const updateUser = async (req, res) => {
         }
     }else{
         res.redirect('/');
+    }
+}
+
+const updateDetail = async (req, res) =>{
+    try{
+        const idCar = req.params.id;
+        const change = req.params.change;
+        const newValue = req.body.changeValue;
+        const updateField = {};
+        updateField[change] = newValue;
+
+        await Car.updateOne({_id: idCar}, {$set: updateField})
+        message = "Alteração realizada com sucesso!"
+        res.redirect(`/getById/${idCar}/details/Analisando`)
+    }catch(err){
+        message = "Erro deconhecido: "+err;
+        console.log(err)
     }
 }
 
@@ -650,7 +663,6 @@ const updatePriority = async (req, res) =>{
     try{
         const cars = await Car.find({responsible: req.params.resp});
         const carDetails = await Car.findOne({_id: req.params.id});
-        //preciso da data do carro, preciso fazer a busca e alterar os que tem a mesma data do carro alterado
         const data = (carDetails.date).substring(0,10);
         const date = moment(data, "DD/MM/YYYY");
         const today = moment(dateToday, "DD/MM/YYYY");
@@ -782,5 +794,6 @@ module.exports = {
     authent,
     orderParts,
     updatePriority,
-    getCarModel
+    getCarModel,
+    updateDetail
 } 

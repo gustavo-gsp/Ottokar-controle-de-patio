@@ -3,8 +3,7 @@ const User = require('./models/User');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
-const name ="";
-const func = "";
+
 module.exports = function(passport){
     async function findUSer (user){
         return await User.findOne({user: user})
