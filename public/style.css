@@ -163,13 +163,14 @@ a {
 }
 .addUser div{
     width: 21rem;
-    height: 18rem;
+    height: auto;
     background-color: rgba(255, 119, 0, 0.973);
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: .5rem;
     color: #212153;
+    padding: .5rem;
 }
 .addUser div form{
     text-align: center;
@@ -186,10 +187,21 @@ a {
     font-weight: bold;
     
 }
+.addUser input{
+  text-transform: lowercase ;
+}
+.addUser div form button:disabled{
+  opacity: .4;
+  cursor: default;
+}
 .addUser div form button:hover{
     cursor: pointer;
     background-color: #005290;
     color: #fff;
+}
+.addUser div form button:disabled:hover{
+  background-color: #212153;
+  cursor: default;
 }
 .addUser div form a{
   margin-left: 18rem;
@@ -321,8 +333,7 @@ ul li a:hover {
 }
 .bigText div{
   display: flex;
-  align-items: center;
-  
+  align-items: center;  
 }
 .details .ulServices, .details .ulParts{
   max-height: 10rem;
@@ -344,6 +355,22 @@ ul li a:hover {
   display: flex;
   justify-content: space-between;
 } 
+.detailsBotton{
+  display: flex;
+  flex-basis: 100%;
+  justify-content: space-between;
+  align-items: center;
+  width: 80%;
+  margin: 1rem 0;
+}
+.detailsBotton div{
+  display: flex;
+  align-items: center;
+}
+.detailsBotton div textarea{
+  width: 25rem;
+  text-align:left;
+}
 .ulHistoric{
   font-size: 1rem;
   max-height: 10rem;
@@ -449,7 +476,8 @@ ul li a:hover {
 }
 .card{
   width: 20rem;
-  height: 9rem;
+  height: auto;
+  padding: .5rem;
   border: rgba(49, 134, 204, 0.877) solid 0.1rem;
   border-radius: 0.4rem;
   position: relative;
@@ -460,8 +488,9 @@ ul li a:hover {
   flex-wrap: wrap;
 }
 .cardPassword {
-  width: 20rem;
-  height: 15rem;
+  width: 25rem;
+  height: auto;
+  padding: .5rem;
   border: rgba(49, 134, 204, 0.877) solid 0.1rem;
   border-radius: 0.4rem;
   position: relative;
@@ -501,6 +530,18 @@ ul li a:hover {
 .cardPassword hr {
   margin-left: 5%;
   margin-top: 1rem;
+}
+.cardPassword button:disabled {
+  opacity: .4;
+  cursor: default;
+}
+.cardPassword button:disabled:hover{
+  cursor: default;
+  background-color:#01467a;
+}
+.cardPassword input{
+  text-transform: lowercase;
+  
 }
 .confirm{
   display: flex;
@@ -954,6 +995,9 @@ ul li a:hover {
   .details .detailsTop div label {
     margin: 0 .3rem 0 .3rem;
   }
+  .details .detailsTop textarea{
+    width: auto;
+  }
   .list i{
     display: none;
   }
@@ -1043,8 +1087,26 @@ ul li a:hover {
 .rowsList {
   min-width: 100%;
   flex-basis: 100%;
+  justify-content: center;
+}
+.detailsBotton{
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.detailsBotton div{
+  flex-basis: 100%;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.detailsBotton div textarea{
+  width: 90%;
+}
+.menuRight label{
+  display: none;
 }
 }
+
 /* style tela de Login: */
 .container{
   position: fixed;

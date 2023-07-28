@@ -20,7 +20,7 @@
     
     <section class="dates">
         <div class="menuLeft">
-            <div>
+            <div class="optionsPhone">
                 <%if(!history) {%>
                 <a href="/carPage/today/a">Hoje</a>
                 <a href="/carPage/date1/a">Amanhã</a>
@@ -37,7 +37,7 @@
             </div>
         </div>
         <div class="menuRight">
-            <label><%=userName%></label>
+            <label style="font-weight: bolder;"><%=userName%></label>
             <a class="btnLogout" href="/carPage/hoje/logout">Sair</a>
             <% if(userFunc != "mec" && userFunc != "fun" && userFunc != "buyer") {%>
             <a id="btnMenu"><i id="btnMenu" class="bi bi-list"></i></a>
@@ -132,10 +132,13 @@
             <h2>Alterar Senha</h2>
             <form id="formPassword" method="get">
                 <label>Nova senha:</label>
-                <input type="password" name="passwordNew">
+                <input type="password" name="passwordNew" id="passwordNew" minlength="6" maxlength="20" placeholder="digite sua nova senha">
+                <label style="color: #212153;">Nova senha:</label>
+                <input type="password" id="verifyPasswordNew" oninput="checkPassword('passwordNew','verifyPasswordNew','btnConfirm')" placeholder="confirme a senha" minlength="6" maxlength="20" required>
+                <p style="color: rgba(255, 119, 0, 0.712);">A senha deve conter no mínimo 6 digitos.</p>
                 <hr>
                 <div class="confirm">
-                    <button class="btnConfirmPassword">Confirmar</a>
+                    <button disabled class="btnConfirmPassword" id="btnConfirm">Confirmar</a>
                 </div>
             </form>
         </div>
@@ -159,18 +162,21 @@
                 <a href="javascript:close('.addUser')" ><i class="bi bi-x-lg"></i></a>
                 <h1>Cadastro De Usuário</h1>
                 <label >Usuário:</label>
-                <input type="text" name="newUser" id="user" placeholder="Digite o nome de usuario" autocomplete="off" required><br>
+                <input type="text" name="newUser" id="user" placeholder="Digite o nome de usuario" autocomplete="off" maxlength="30" required><br>
                 <input type="hidden" id="hiddenUser">
                 <p id="errorMessage" style="display: none; font-size: .9rem;">Este nome de Usúario ja existe.</p>
                 <label style="margin-right: .6rem;">Senha:</label>
-                <input type="password" name="newPassword" id="password" placeholder="Digite a senha" required><br>
+                <input type="password" name="newPassword" id="password" placeholder="Digite a senha" minlength="6" maxlength="20" required><br>
+                <label style="margin-right: .6rem; color: rgba(255, 119, 0, 0.973);">Senha:</label>
+                <input type="password" id="verifyPassword" oninput="checkPassword('password', 'verifyPassword', 'btnAddUser')" placeholder="confirme a senha" minlength="6" maxlength="20" required>
+                <p style="color: #212153ab; font-size: .8rem;">A senha deve conter no mínimo 6 digitos.</p>
                 <label>função:</label>
                 <select name="func" id="func" style="margin: .5rem 5.5rem 0 1.4rem" required>
                     <option value="mec">Mecânico</option> <option value="fun">Funileiro</option>
                     <option value="buyer">Comprador</option> <option value="seller">Vendedor</option>
                     <option value="manager">Gerente</option>
                 </select><br>
-                <button type="submit">Cadastrar</button>
+                <button type="submit" id="btnAddUser" disabled>Cadastrar</button>
             </form>
         </div>
     </section >
@@ -182,43 +188,55 @@
                 <div><label>Modelo:</label>
                 <textarea readonly name="" id="" cols="20" rows="1"><%=model%></textarea></div>
                 <div><label >Placa:</label>
-                <textarea readonly cols="7" rows="1"><%= plate %></textarea></div></div>
+                <textarea readonly cols="8" rows="1"><%= plate %></textarea></div></div>
                 <div><div><label ><%if(history){%> Data agendamento: <%}else{%>Previsão:<%}%></label>
                     <textarea readonly cols=<%if(history){%>"15"<%}else{%>"10"<%}%> rows="1"
                         ><%if(history){%> <%=date%> <%}else{%> <%=forecast %> <%}%></textarea></div>
                     <div><label >Status:</label>
                     <textarea readonly name="" id="" cols="10" rows="1" ><%= stage %></textarea></div></div>
-                <%if(!history){%>
                     <div class="priorityDetails">
-                        <label>Prioridade:</label>
-                        <select id="detailPriority" <% if(userFunc == "mec" || userFunc == "fun") { %> style = "display: none;"<%}%>>
-                            <option value=""><%= priority %></option>
-                        </select>
-                        <% if(userFunc == "mec" || userFunc == "fun") { %>
-                        <textarea readonly cols="1" rows="1"><%= priority %></textarea>
-                        <% } %>
-                    </div>
-                <% }%>
-                    <div>
                         <label>Especialidade:</label>
                         <select id="specialtyDetails" onchange="updateDetail('<%=id%>', 'specialty','specialtyDetails')" 
                             <% if(userFunc == "mec" || userFunc == "fun") { %> style = "display: none;"<%}%>>
                             <option ><%= specialty %></option>
                             <% if (specialty == "Mecanica") {%>
                                 <option value="Funilaria">Funilaria</option>
-                            <%} else{%>
-                                <option value="Mecanica">Mecanica</option> 
-                            <% } %>    
-                        </select>
+                                <%} else{%>
+                                    <option value="Mecanica">Mecanica</option> 
+                                    <% } %>    
+                                </select>
+                            </div>
+                            <div class="priorityDetails">
+                                <label>Responsável:</label>
+                                <select id="responsibleDetails" onchange="updateDetail('<%=id%>', 'responsible','responsibleDetails')">
+                                    <option > <%=resp.toUpperCase()%> </option>
+                                    <% responsibles.forEach((resp) => { %>
+                                        <option value="<%=resp.user%>"><%=resp.user.toUpperCase()%></option>
+                                        <%})%>
+                                    </select>
+                                </div>
+                                <%if(!history){%>
+                                    <div class="priorityDetails">
+                                        <label>Prioridade:</label>
+                                        <select id="detailPriority" <% if(userFunc == "mec" || userFunc == "fun") { %> style = "display: none;"<%}%>>
+                                            <option value=""><%= priority %></option>
+                                        </select>
+                                        <% if(userFunc == "mec" || userFunc == "fun") { %>
+                                        <textarea readonly cols="1" rows="1"><%= priority %></textarea>
+                                        <% } %>
+                                    </div>
+                                <% }%>
+                </div>
+                <div class="detailsBotton">
+                    <div>
+                    <label >Reclamação:</label>
+                    <textarea id="complaintDetails" <% if(userFunc == "mec" || userFunc == "fun") {%> readonly <%}%>cols="30" rows="3"
+                        onchange="updateDetail('<%=id%>', 'complaint','complaintDetails' )"><%= complaint %></textarea>
                     </div>
                     <div>
-                        <label>Responsável:</label>
-                        <select id="responsibleDetails" onchange="updateDetail('<%=id%>', 'responsible','responsibleDetails')">
-                            <option > <%=resp.toUpperCase()%> </option>
-                            <% responsibles.forEach((resp) => { %>
-                                <option value="<%=resp.user%>"><%=resp.user.toUpperCase()%></option>
-                                <%})%>
-                        </select>
+                        <label> Observações: </label>
+                        <textarea id="observationDetails" onchange="updateDetail('<%=id%>', 'observation', 'observationDetails')"
+                            cols="30" rows="3"><%=observation%></textarea>
                     </div>
                 </div>
                 <div class="bigText">
@@ -228,8 +246,9 @@
                     <ul class="ulServices">
                         <% services.forEach((service, index) =>{%>
                         <li <% if(service.conclude){%>style=" text-decoration: line-through;"<% } %> >
-                            <%= service.service %> <a class="btnCheck" href="/getById/<%=car._id%>/concludeService/<%= index %>" 
-                                title="Cuncluir Etapa"><i class="bi bi-check-lg"></i></a>
+                            <% if(service != "<-- Início do pedido -->" && service != "<-- Fim do pedido -->") {%><%= service.service %> 
+                                <a class="btnCheck" href="/getById/<%=car._id%>/concludeService/<%= index %>" title="Cuncluir Etapa">
+                                    <i class="bi bi-check-lg"></i></a><%}else {%> <%=service%>  <%}%>
                         </li>
                         <% }) %>
                     </ul>
@@ -238,12 +257,13 @@
                 <% } %>
                 <% if(parts != "" && !history) {%>
                 <div>
-                    <label style="margin-right: 1.5rem;" class="lab">Peças:</label>
+                    <label style="margin-right: 1rem;" class="lab">Peças:</label>
                     <ul class="ulParts">
                         <% parts.forEach((part, index) =>{%>
                         <li <%if(part.conclude){%>style=" text-decoration: line-through;"<% } %>>
-                            <%= part.part %> <a class="btnCheck" href="/getById/<%=car._id%>/concludePart/<%= index %>" 
-                                title="Cuncluir Etapa"><i class="bi bi-check-lg"></i></a>
+                            <% if(part != "<-- Início do pedido -->" && part != "<-- Fim do pedido -->") {%> <%= part.part %> 
+                                <a class="btnCheck" href="/getById/<%=car._id%>/concludePart/<%= index %>" title="Cuncluir Etapa">
+                                    <i class="bi bi-check-lg"></i></a> <% }else{ %> <%= part%> <% } %>
                         </li>
                         <% }) %>
                     </ul>
@@ -265,18 +285,7 @@
                 </div>    
                     <% } %> 
                 </div>
-                <div>
-                    <div>
-                    <label >Reclamação:</label>
-                    <textarea id="complaintDetails" <% if(userFunc == "mec" || userFunc == "fun") {%> readonly <%}%>cols="30" rows="2"
-                        onchange="updateDetail('<%=id%>', 'complaint','complaintDetails' )"><%= complaint %></textarea>
-                </div>
-                <div>
-                    <label> Observações: </label>
-                    <textarea id="observationDetails" onchange="updateDetail('<%=id%>', 'observation', 'observationDetails')"
-                         cols="30" rows="3"><%=observation%></textarea>
-                </div>
-                </div>
+                
                 <%if(!history) {%>
                 <div class="detailBtns">
                     <a href="/carPage/today/a">Fechar</a>

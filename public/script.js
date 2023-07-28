@@ -62,11 +62,13 @@ if(userFunc != "mec" && userFunc != "fun" && userFunc != "buyer"){
       addUser.style.display = 'flex';
       document.getElementById("user").value = ""; 
       document.getElementById("user").setAttribute('readonly', 'true');
-
+      
+      const errorMessage = document.getElementById('errorMessage');
+      errorMessage.style.display = 'none';
       setTimeout(() => {
         document.getElementById("user").removeAttribute('readonly');
         document.getElementById("user").value = "";
-      }, 1500);
+      }, 1000);
 
     });
     function close (element) {
@@ -74,13 +76,13 @@ if(userFunc != "mec" && userFunc != "fun" && userFunc != "buyer"){
     }
     
     document.getElementById('user').addEventListener('input', function() {
+      const errorMessage = document.getElementById('errorMessage');
       let inputUser = this.value;
       if(inputUser == "ottokar"){
         inputUser = "";
       }
       console.log(inputUser)
       const userExists = users.some(name => name.user === inputUser.toLowerCase());
-      const errorMessage = document.getElementById('errorMessage');
 
       errorMessage.style.display = inputUser && userExists ? 'block' : 'none';
     });
@@ -340,5 +342,16 @@ function updateDetail(id, change, selector){
     console.error('Error:', error);
     location.reload();
   });
+}
 
+function checkPassword(idPassword,confirm, btnSend) {
+  const password = document.getElementById(idPassword).value;
+  const verifyPassword = document.getElementById(confirm).value;
+  const submitButton = document.getElementById(btnSend);
+
+  if (password === verifyPassword) {
+      submitButton.disabled = false;
+  } else {
+      submitButton.disabled = true;
+  }
 }
