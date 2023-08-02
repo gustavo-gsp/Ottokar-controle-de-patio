@@ -299,6 +299,8 @@ const getAllCars = async (req, res) => {
                     carList = await Car.find({
                         date: {$regex: today}, specialty: func, $and: [
                             { $or: [
+                              { stage: "Agendado" },
+                              { stage: "Aguardando" },
                               { stage: "Analisando" },
                               { stage: "Reparando" },
                               { stage: "Entregando" }
@@ -734,7 +736,7 @@ const concludeCar = async (req, res) =>{
         let history = "";
         message = 'Etapa concluida com sucesso!';
         if(status == "Agendado"){
-            stages = 'Aguardando';
+            stages = 'Analisando';
             history = `${moment().format("HH:mm DD/MM")} - ${userName} concluiu para ${stages}.`;
             historic.push(history)
             await Car.updateMany({_id: req.params.id}, {$set: {stage: stages, historic: historic}});

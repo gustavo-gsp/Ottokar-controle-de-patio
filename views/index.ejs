@@ -190,8 +190,9 @@
                 <div><label >Placa:</label>
                 <textarea readonly cols="8" rows="1"><%= plate %></textarea></div></div>
                 <div><div><label ><%if(history){%> Data agendamento: <%}else{%>Previsão:<%}%></label>
-                    <textarea readonly cols=<%if(history){%>"15"<%}else{%>"10"<%}%> rows="1"
-                        ><%if(history){%> <%=date%> <%}else{%> <%=forecast %> <%}%></textarea></div>
+                    <textarea id="forecastDetails" cols="<%if(history){%>15<%}else{%>10<%}%>" rows="1" <% if(history){%> readonly <%}%>
+                        onchange="updateDetail('<%=id%>', 'forecast','forecastDetails')"
+                        > <%if(history){%> <%=date%> <%}else{%> <%=forecast %> <%}%></textarea></div>
                     <div><label >Status:</label>
                     <textarea readonly name="" id="" cols="10" rows="1" ><%= stage %></textarea></div></div>
                     <div class="priorityDetails">
