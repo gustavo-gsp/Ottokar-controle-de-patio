@@ -78,10 +78,7 @@ if(userFunc != "mec" && userFunc != "fun" && userFunc != "buyer"){
     document.getElementById('user').addEventListener('input', function() {
       const errorMessage = document.getElementById('errorMessage');
       let inputUser = this.value;
-      if(inputUser == "ottokar"){
-        inputUser = "";
-      }
-      console.log(inputUser)
+      
       const userExists = users.some(name => name.user === inputUser.toLowerCase());
 
       errorMessage.style.display = inputUser && userExists ? 'block' : 'none';

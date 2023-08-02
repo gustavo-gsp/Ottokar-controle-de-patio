@@ -259,7 +259,12 @@ const getAllCars = async (req, res) => {
             const datefour =  new RegExp(`^${date4.substring(0,2)}`);
             const hoje = new Date();
             let func = userFunc == "mec"? "Mecanica" : "Funilaria";
-            
+            dateToday = moment().format("DD/MM/YYYY");
+            date1 = moment().add(1, 'days').format("DD/MM/YYYY");
+            date2 = moment().add(2, 'days').format("DD/MM/YYYY");
+            date3 = moment().add(3, 'days').format("DD/MM/YYYY");
+            date4 = moment().add(4, 'days').format("DD/MM/YYYY");
+
             setTimeout(() => {
                 message = "";
             }, 2000); 
