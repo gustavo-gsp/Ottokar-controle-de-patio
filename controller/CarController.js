@@ -3,13 +3,14 @@ const User = require('../models/User');
 const Historic = require('../models/Historic');
 const Bcrypt = require('bcrypt');
 const axios = require('axios')
+const cheerio = require('cheerio');
 const moment = require('moment');
 const passport = require('passport');
 const { format, addDays } = require('date-fns');
 const session = require('express-session');
 const { trusted } = require('mongoose');
 const puppeteer = require('puppeteer');
-const cheerio = require('cheerio');
+const { Cluster } = require('puppeteer-cluster');
 const { arMA } = require('date-fns/locale');
 
 let users = [];
@@ -466,44 +467,52 @@ const getAllCars = async (req, res) => {
     }
 }
 
-const getCarModel = async (req,res) => {
-
-    const carListAll = await Car.find();
-try{
-    const plate = req.params.plate.toUpperCase();
-    const browser = await puppeteer.launch({
-        headless: "new",
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
-    const page = await browser.newPage();
-
-    await page.goto(`https://www.keplaca.com/placa/${plate}`);
-
-    const tableSelector = '.fipeTablePriceDetail';
-    const rows = await page.$$(`${tableSelector} tr`);
-    const model = await rows[1].$eval('td:nth-child(2)', td => td.textContent.trim());
-    const yearModel = await rows[4].$eval('td:nth-child(2)', td => td.textContent.trim());
-        
-    carModel = `${model} ${yearModel}`
-
-    await browser.close();
-
-    plateAddCar = plate;
-
-    return res.json({carModel})
-}catch(err){
-    plateAddCar = (req.params.plate).toUpperCase();
-    carModel = "";
-    message = "Erro: Veículo não encontrado, tente novamente ou contate o suporte.";
-    console.log(err.message);
-    return res.render('index', {
+const getCarModel = async (req, res) => {
+    const carListAll = await Car.find();  
+    try {
+        const plate = req.params.plate.toUpperCase();
+        const cluster = await Cluster.launch({
+            concurrency: Cluster.CONCURRENCY_CONTEXT,
+            maxConcurrency: 3, // Defina o número de instâncias paralelas de Chromium desejado (ajuste conforme suas necessidades)
+            puppeteerOptions: {
+            headless: 'new',
+            args: ['--no-sandbox', '--disable-setuid-sandbox'],
+            },
+        });
+    
+        const carModel = await cluster.execute(plate, async ({ page, data }) => {
+            const plate = data;
+            await page.goto(`https://www.keplaca.com/placa/${plate}`);
+            const tableSelector = '.fipeTablePriceDetail';
+            const rows = await page.$$(`${tableSelector} tr`);
+            let carModel = "";
+            if (rows[1]) {
+            const model = await rows[1].$eval('td:nth-child(2)', (td) => td.textContent.trim());
+            const yearModel = await rows[4].$eval('td:nth-child(2)', (td) => td.textContent.trim());
+            carModel = `${model} ${yearModel}`;
+            }
+            return carModel;
+        });
+    
+        await cluster.idle();
+        await cluster.close();
+    
+        return res.json({ carModel });
+    } catch (err) {
+      plateAddCar = req.params.plate.toUpperCase();
+      carModel = "";
+      message = "Erro: Veículo não encontrado, tente novamente ou contate o suporte.";
+      console.log(err.message);
+      return res.render('index', {
         carList, userName, userFunc, status, togle, carListAll,plateAddCar,
         details, conclude, addCar,part: false, responsibles,users,
         date1, date2, date3, date4, history, week, message,carModel,
-    });
-}
+      });
+    }
+  };
+  
 
-}
+
 
 const createUser = async (req, res) => {
     try{
@@ -560,8 +569,28 @@ const updateDetail = async (req, res) =>{
         const idCar = req.params.id;
         const change = req.params.change;
         const newValue = req.body.changeValue;
+        const car = await Car.findOne({_id: idCar});
+        const historic = [...car.historic];
+        let history = "";
+
         const updateField = {};
         updateField[change] = newValue;
+        switch (change){
+            case 'observation':
+                history = `${moment().format("HH:mm DD/MM")} - ${userName} alterou a observação para: "${newValue}".`;
+                break;
+            case 'complaint':
+                history = `${moment().format("HH:mm DD/MM")} - ${userName} alterou a reclamação para: "${newValue}".`;
+                break;
+            case 'responsible':
+                history = `${moment().format("HH:mm DD/MM")} - ${userName} alterou o responsavél para: ${newValue.toUpperCase()}.`; 
+                break;   
+            case 'forecast':
+                history = `${moment().format("HH:mm DD/MM")} - ${userName} alterou a previsão para: ${newValue}.`; 
+                break;   
+        }
+        historic.push(history);
+        updateField['historic'] = historic;
 
         await Car.updateOne({_id: idCar}, {$set: updateField})
         message = "Alteração realizada com sucesso!"

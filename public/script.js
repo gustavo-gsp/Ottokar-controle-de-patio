@@ -78,7 +78,7 @@ if(userFunc != "mec" && userFunc != "fun" && userFunc != "buyer"){
     document.getElementById('user').addEventListener('input', function() {
       const errorMessage = document.getElementById('errorMessage');
       let inputUser = this.value;
-      
+
       const userExists = users.some(name => name.user === inputUser.toLowerCase());
 
       errorMessage.style.display = inputUser && userExists ? 'block' : 'none';
@@ -287,15 +287,22 @@ plateInput.addEventListener('blur',()=> {
   plate = plateInput.value;
 
   if(plate.length == 7){
-    $('#carName').val('Buscando...');
+    $('#carName').val("");
+    $('#carName').attr('placeholder','Buscando...');
     $.ajax({
       url: `/getCarModel/${plate}`,
       type: 'GET',
       success: function (response) {
-        $('#carName').val(response.carModel); 
+        if(response.carModel){
+          $('#carName').val(response.carModel); 
+        }else{
+          $('#carName').val("");
+          $('#carName').attr('placeholder','Veículo não encontrado!!!')
+          $('#carName').prop('disabled', false);
+        }
       },
       error: function (error) {
-        $('#carName').val("");
+        $('#carName').attr('placeholder','Veículo não encontrado!!!')
         console.error(error);
       }
     })
