@@ -234,13 +234,14 @@ const getById = async (req, res) => {
                     message = "Dados Consultados Com Sucesso!"
                     res.redirect(`/getById/${car._id}/details/${car.stage}`)
             }catch(err){
-                message = err.message+"Impossivél Encontrar Dados Para Esta Placa."
+                message = "Impossivél Encontrar Dados Para Esta Placa."
+                console.log(`${dateToday + userName} DetailsDocument: ${err.message}`)
                 res.redirect(`/getById/${car._id}/details/${car.stage}`)
             }
         }
     }catch (err) {
         message = "Erro: Requisição não concluída, tente novamente ou contate o suporte.";
-        console.log(err.message);
+        console.log(err.message);console.log(`${dateToday + userName} Details: ${err.message}`)
         res.redirect('/carPage/today/a');
     }
 }
@@ -265,7 +266,7 @@ const getAllCars = async (req, res) => {
             date2 = moment().add(2, 'days').format("DD/MM/YYYY");
             date3 = moment().add(3, 'days').format("DD/MM/YYYY");
             date4 = moment().add(4, 'days').format("DD/MM/YYYY");
-
+            week.splice(0, week.length);
             setTimeout(() => {
                 message = "";
             }, 2000); 
@@ -462,7 +463,7 @@ const getAllCars = async (req, res) => {
         
     }catch (err) {
         message = "Erro: Requisição não concluída, tente novamente ou contate o suporte.";
-        console.log(err.message);
+        console.log(`${dateToday + userName} getAllCars: ${err.message}`)
         res.redirect('/carPage/today/a');
     }
 }
@@ -502,7 +503,7 @@ const getCarModel = async (req, res) => {
       plateAddCar = req.params.plate.toUpperCase();
       carModel = "";
       message = "Erro: Veículo não encontrado, tente novamente ou contate o suporte.";
-      console.log(err.message);
+      console.log(`${dateToday + userName} getCarModel: ${err.message}`)
       return res.render('index', {
         carList, userName, userFunc, status, togle, carListAll,plateAddCar,
         details, conclude, addCar,part: false, responsibles,users,
@@ -529,7 +530,7 @@ const createUser = async (req, res) => {
         return res.redirect('/carPage/today/a');
     }catch (err) {
         message = "Erro: Requisição não concluída, tente novamente ou contate o suporte.";
-        console.log(err.message);
+        console.log(`${dateToday + userName} createUser: ${err.message}`)
         res.redirect('/carPage/today/a');
     }
 }
@@ -546,7 +547,7 @@ const updateUser = async (req, res) => {
             return res.redirect('/carPage/today/a')
         }catch (err) {
             message = "Erro: Requisição não concluída, tente novamente ou contate o suporte.";
-            console.log(err.message);
+            console.log(`${dateToday + userName} updateUser(password): ${err.message}`)
             res.redirect('/carPage/today/a');
         }
     }else if(method == "delete"){
@@ -556,7 +557,7 @@ const updateUser = async (req, res) => {
             return res.redirect('/carPage/today/a')
         }catch (err) {
             message = "Erro: Requisição não concluída, tente novamente ou contate o suporte.";
-            console.log(err.message);
+            console.log(`${dateToday + userName} updateUSer(delete): ${err.message}`)
             res.redirect('/carPage/today/a');
         }
     }else{
@@ -597,7 +598,7 @@ const updateDetail = async (req, res) =>{
         res.redirect(`/getById/${idCar}/details/Analisando`)
     }catch(err){
         message = "Erro: Requisição não concluída, tente novamente ou contate o suporte.";
-        console.log(err.message);
+        console.log(`${dateToday + userName} updateDetail: ${err.message}`)
         res.redirect('/carPage/today/a');
     }
 }
@@ -651,7 +652,7 @@ const createCar = async (req, res) =>{
         return res.redirect('/carPage/today/a');
     }catch (err) {
         message = "Erro: Requisição não concluída, tente novamente ou contate o suporte.";
-        console.log(err.message);
+        console.log(`${dateToday + userName} createCar: ${err.message}`)
         res.redirect('/carPage/today/a');
     }
 }
@@ -709,7 +710,7 @@ const orderParts = async (req, res) =>{
             res.redirect('/carPage/today/a');
         }catch (err){
             message = "Erro: Requisição não concluída, tente novamente ou contate o suporte.";
-            console.log(err.message);
+            console.log(`${dateToday + userName} orderParts: ${err.message}`)
             res.redirect('/carPage/today/a');
         }
 }
@@ -756,7 +757,7 @@ const updatePriority = async (req, res) =>{
         return res.redirect(`/carPage/today/responsible?responsibleList=${carDetails.responsible}`)
     }catch(err){
         message = "Erro: Requisição não concluída, tente novamente ou contate o suporte.";
-        console.log(err.message);
+        console.log(err.message);console.log(`${dateToday + userName} updatePriority: ${err.message}`)
         res.redirect('/carPage/today/a');
     }
 }
@@ -835,7 +836,7 @@ const concludeCar = async (req, res) =>{
         }
     }catch (err) {
         message = "Erro: Requisição não concluída, tente novamente ou contate o suporte.";
-        console.log(err.message);
+        console.log(`${dateToday + userName} concludeCar: ${err.message}`)
         res.redirect('/carPage/today/a');
     }
 }
