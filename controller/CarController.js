@@ -265,6 +265,7 @@ const getAllCars = async (req, res) => {
             const datethree =  new RegExp(`^${date3.substring(0,2)}`);
             const datefour =  new RegExp(`^${date4.substring(0,2)}`);
             const hoje = new Date();
+            dateCompare = moment().format("DD/MM/YYYY HH:mm")
             let func = userFunc == "mec"? "Mecanica" : "Funilaria";
             dateToday = moment().format("DD/MM/YYYY");
             date1 = moment().add(1, 'days').format("DD/MM/YYYY");
