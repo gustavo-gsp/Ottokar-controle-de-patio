@@ -752,12 +752,15 @@ ul li a:hover {
   align-items: center;
   height: auto;
   width: 100%;
-  /* justify-content: end; */
+}
+.filter div{
+  display: flex;
+  align-items: center;
 }
 .filter label{
   color: black;
 }
-.filter select{
+.filterSelect{
   background-color: #212153;
   color:#00ffff;
   font-weight: bold;
@@ -765,6 +768,9 @@ ul li a:hover {
   text-align: center;
   width: 10rem;
   font-size: 1rem;
+}
+.filterSelect option{
+  font-weight: bold;
 }
 .filter button{
   background-color: #01467a;
@@ -795,6 +801,7 @@ ul li a:hover {
   padding: .5rem;
   width: 6rem;
   text-transform: uppercase;
+  background-color: #ffffffe3;
 }
 #modalUser{
   position: fixed;
@@ -1045,6 +1052,16 @@ ul li a:hover {
   }
   .filter{
     padding-right: 1rem;
+  }
+  .filter .optionsFilter{
+    flex-direction: column;
+  }
+  .filter .optionsFilter div{
+    margin: .3rem 0;
+
+  }
+  .filterSelect{
+    margin: 0;
   }
   #controlUser{
     width: 95%;

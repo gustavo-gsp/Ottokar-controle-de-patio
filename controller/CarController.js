@@ -29,6 +29,7 @@ let addCar = "addCar";
 let history = false;
 let togle = false;
 let week = [];
+let dateCompare = moment().format("DD/MM/YYYY HH:mm")
 let dateToday = moment().format("DD/MM/YYYY");
 let date1 = moment().add(1, 'days').format("DD/MM/YYYY");
 let date2 = moment().add(2, 'days').format("DD/MM/YYYY");
@@ -70,7 +71,7 @@ const getById = async (req, res) => {
             {
                 conclude: true, car, status, carList, userName, userFunc,message,
                 details, addCar, date1, date2, date3,date4, part: false,users,plateAddCar,
-                history: false, week, togle, responsibles, carListAll,carModel,
+                history: false, week, togle, responsibles, carListAll,carModel,dateCompare,
             });
         }else if(req.params.method == "details"){
             addCar = "addCarNone";
@@ -80,7 +81,7 @@ const getById = async (req, res) => {
                 car = await Historic.findOne({ _id: req.params.id });
             }
             return res.render('index', {
-                userName, userFunc,status, car, carList,conclude:false, week,
+                userName, userFunc,status, car, carList,conclude:false, week,dateCompare,
                 addCar, date1, date2, date3, date4, part: false, history, togle,
                 responsibles, carListAll, message, users, carModel,plateAddCar,
                 details: true,
@@ -164,7 +165,7 @@ const getById = async (req, res) => {
             res.render("index", 
             {
                 conclude, car, status, carList, userName, userFunc, message,plateAddCar,
-                details, addCar, date1, date2, date3,date4, part: true,users,
+                details, addCar, date1, date2, date3,date4, part: true,users,dateCompare,
                 history: false, week, togle, responsibles, carListAll,carModel,
             });
         }else{
@@ -250,7 +251,11 @@ const getAllCars = async (req, res) => {
             users = await User.find();
             const user = await User.findOne({_id: req.user});
             const carListAll = await Car.find();
-            responsibles = await User.find({func: {$in:["mec", "fun"]} });
+            responsibles = await User.find({  $or: [
+                { func: { $in: ["mec", "fun"] } },
+                { user: "cintia" }
+              ]
+            });
             userName = user.user.toUpperCase();
             userFunc = user.func;
             const yourCars = [{modelo: "corsa", placa:"GFF5T44"}]
@@ -270,7 +275,6 @@ const getAllCars = async (req, res) => {
             setTimeout(() => {
                 message = "";
             }, 2000); 
-
             for (let i = 1; i <= 4; i++) {
                 const nextDate = addDays(hoje, i);
                 const dayWeek = format(nextDate, 'eeee', { locale: require('date-fns/locale/pt-BR') });
@@ -384,7 +388,7 @@ const getAllCars = async (req, res) => {
                 return res.render('index', {
                 carList, userName, userFunc, status, week, responsibles,users,plateAddCar,
                 details, conclude, addCar,part: false, togle,carListAll,carModel,
-                date1, date2, date3, date4, history: false, yourCars,message
+                date1, date2, date3, date4, history: false, yourCars,message,dateCompare,
             });
             }else if(req.params.show == 'logout'){
                 togle = false;
@@ -398,7 +402,7 @@ const getAllCars = async (req, res) => {
                 }
                 return res.render('index',
                 {
-                    carList, userName, status, details, conclude, message,users,
+                    carList, userName, status, details, conclude, message,users,dateCompare,
                     addCar, date1, date2, date3, date4, part, responsibles,carModel,
                     userFunc, history, week, togle, yourCars, carListAll,plateAddCar,
                 });
@@ -424,7 +428,7 @@ const getAllCars = async (req, res) => {
             carList.sort((a, b) => a.priority - b.priority);
                 return res.render('index',
                 {
-                    carList, userName, status, details, conclude, message,users,
+                    carList, userName, status, details, conclude, message,users,dateCompare,
                     addCar, date1, date2, date3, date4, part, responsibles,carModel,
                     userFunc, history, week, togle, yourCars, carListAll,plateAddCar,
                 });
@@ -436,7 +440,7 @@ const getAllCars = async (req, res) => {
                 carList.sort((a, b) => a.priority - b.priority);
                     return res.render('index',
                     {
-                        carList, userName, status, details, conclude, message,users,
+                        carList, userName, status, details, conclude, message,users,dateCompare,
                         addCar, date1, date2, date3, date4, part, responsibles,carModel,
                         userFunc, history, week, togle, yourCars, carListAll,plateAddCar,
                     });
@@ -446,17 +450,41 @@ const getAllCars = async (req, res) => {
                 carList = await Historic.find({plate: new RegExp(`^${req.query.plateFilter.toUpperCase()}`)});
                 return res.render('index', {
                     carList, userName, userFunc, status, togle, carListAll,plateAddCar,
-                    details, conclude, addCar,part: false, responsibles,carModel,
+                    details, conclude, addCar,part: false, responsibles,carModel,dateCompare,
                     date1, date2, date3, date4, history, week, message,users,
                 });
                 }else{
                     return res.render('index', {
                         carList, userName, userFunc, status, togle, carListAll,plateAddCar,
-                        details, conclude, addCar,part: false, responsibles,users,
+                        details, conclude, addCar,part: false, responsibles,users,dateCompare,
                         date1, date2, date3, date4, history, week,carModel, message
                     });
                     
                 }
+            }else if(req.params.show == "resp"){
+    
+                 if(req.query.responsibleListHistoric && req.query.responsibleListHistoric != "all"){
+                    carList = await Historic.find({responsible: new RegExp(`^${req.query.responsibleListHistoric}`)});
+                    return res.render('index', {
+                        carList, userName, userFunc, status, togle, carListAll,plateAddCar,
+                        details, conclude, addCar,part: false, responsibles,carModel,
+                        date1, date2, date3, date4, history, week, message,users,dateCompare,
+                    });
+                 }else{
+                    return res.render('index', {
+                        carList, userName, userFunc, status, togle, carListAll,plateAddCar,
+                        details, conclude, addCar,part: false, responsibles,carModel,
+                        date1, date2, date3, date4, history, week, message,users,dateCompare,
+                    });
+                 }
+            }else if((req.params.show == "month")){
+                const month = req.query.monthSelect;
+                carList = carList.filter(car => (car.date.substring(3,5) == month))
+                return res.render('index', {
+                    carList, userName, userFunc, status, togle, carListAll,plateAddCar,
+                    details, conclude, addCar,part: false, responsibles,carModel,
+                    date1, date2, date3, date4, history, week, message,users,dateCompare,
+                });  
             }else{
                 return res.redirect('/');
             }
@@ -506,7 +534,7 @@ const getCarModel = async (req, res) => {
       console.log(`${dateToday + userName} getCarModel: ${err.message}`)
       return res.render('index', {
         carList, userName, userFunc, status, togle, carListAll,plateAddCar,
-        details, conclude, addCar,part: false, responsibles,users,
+        details, conclude, addCar,part: false, responsibles,users,dateCompare,
         date1, date2, date3, date4, history, week, message,carModel,
       });
     }

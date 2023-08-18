@@ -359,3 +359,33 @@ function checkPassword(idPassword,confirm, btnSend) {
       submitButton.disabled = true;
   }
 }
+
+function updateFilterHistoric() {
+  const formFilter = document.getElementById("formFilter");
+  const filterSelect = document.getElementById("filterSelect");
+  const param = filterSelect.options[filterSelect.selectedIndex].value;
+  const plateFilter = document.getElementById("plateFilter");
+  const responsibleFilter = document.getElementById("responsibleListHistoric");
+  const monthFilter = document.getElementById("monthSelect");
+
+  switch (param) {
+    case "plate":
+      plateFilter.style.display = "flex";
+      responsibleFilter.style.display ="none";
+      monthFilter.style.display ="none";
+      formFilter.action = "/carPage/historic/plate";
+      break;
+    case "responsible":
+      responsibleFilter.style.display ="flex";
+      plateFilter.style.display = "none";
+      monthFilter.style.display ="none";
+      formFilter.action = "/carPage/historic/resp";
+      break;
+    case "month":
+      monthFilter.style.display ="flex";
+      plateFilter.style.display = "none";
+      responsibleFilter.style.display ="none";
+      formFilter.action = "/carPage/historic/month";
+      break;
+    }
+} 

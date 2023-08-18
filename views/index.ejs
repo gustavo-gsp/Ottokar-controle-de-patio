@@ -337,7 +337,7 @@
         <section class="filter">
                 <form action="/carPage/today/responsible" method="get">
                     <label>Filtrar Responsavel: </label>
-                    <select id="responsibleList" name="responsibleList">
+                    <select class="filterSelect" id="responsibleList" name="responsibleList">
                         <option value="all">Todos</option>
                         <% responsibles.forEach((resp) => { %>
                             <option value="<%=resp.user%>"><%=resp.user.toUpperCase()%></option>
@@ -348,11 +348,52 @@
         </section>
             <%}else {%>
                 <section class="filter">
-                    <form action="/carPage/historic/plate" method="get">
-                        <label>Filtrar por placa: </label>
-                        <input type="text" name="plateFilter" id="plateFilter" placeholder="ex. ABC1A123" required>
+                    <form id="formFilter" action="/carPage/historic/plate" method="get">
+                        <div class="optionsFilter">
+                            <div>
+                                <label>Filtrar por: </label>
+                                <select class="filterSelect" id="filterSelect" name="filterSelect" onchange="updateFilterHistoric()">
+                                    <option value="plate">Placa</option>
+                                    <option value="month">Período</option>
+                                    <option value="responsible">Responsável</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="color: rgba(255, 119, 0, 0.973);">Filtrar por: </label>
+                            <div>
+                                <input type="text" name="plateFilter" id="plateFilter" placeholder="ex. ABC1A123">
+                            </div>
+                            
+                            <div>
+                                <select class="filterSelect" id="responsibleListHistoric" name="responsibleListHistoric" style="display: none;">
+                                    <option value="all">Todos</option>
+                                    <% responsibles.forEach((resp) => { %>
+                                        <option value="<%=resp.user%>"><%=resp.user.toUpperCase()%></option>
+                                        <%})%>
+                                </select>
+                            </div>
+                            <div>
+                                <select class="filterSelect" name="monthSelect" id="monthSelect" style="display: none;">
+                                    <option value="01">Janeiro</option>
+                                    <option value="02">Ferveiro</option>
+                                    <option value="03">Março</option>
+                                    <option value="04">Abril</option>
+                                    <option value="05">Maio</option>
+                                    <option value="06">Junho</option>
+                                    <option value="07">Julho</option>
+                                    <option value="08">Agosto</option>
+                                    <option value="09">Setembro</option>
+                                    <option value="10">Outubro</option>
+                                    <option value="11">Novembro</option>
+                                    <option value="12">Dezembro</option>
+                                </select>
+                            </div>
+                        </div>
+                        </div>
+                        <div>
                             <button> <i class="bi bi-search"></i> </button>
                             <a style="margin:0 .3rem 0 .3rem;" href="/carPage/historic/plate"><i class="bi bi-arrow-clockwise"></i></a>
+                        </div>
                     </form>
             </section>
                 <%}%>
@@ -393,7 +434,33 @@
     <section class="cars">    
         <ul>
                 <% carList.forEach((car) =>{ %>
-                    <li onclick="location.href='/getById/<%=car._id%>/details/<%=car.stage%>'">
+                    <% 
+                    let delay =false;
+                    if(!history){
+                        let currentDay = parseInt(dateCompare.substring(0,2));
+                        let currentmonth = parseInt(dateCompare.substring(3,5));
+                        let currentHour = parseInt(dateCompare.substring(10,13));
+                        let currentMinutes = parseInt(dateCompare.substring(14,16));
+
+                        let forecastDay = parseInt(car.forecast.substring(0,2));
+                        let forecastMonth = parseInt(car.forecast.substring(3,5));
+                        let forecastHour = parseInt(car.forecast.substring(6,8));
+                        let forecastMinutes = parseInt(car.forecast.substring(9,11));
+                        if (currentDay > forecastDay && currentmonth >= forecastMonth){
+                            delay = true;
+                        }else if(currentDay == forecastDay){
+                            if(currentHour > forecastHour){
+                                delay = true;
+                            }else if(currentHour == forecastHour){
+                                if(currentMinutes > forecastMinutes){
+                                    delay = true;
+                                }
+                            }
+                        }
+                    }
+                    %>
+
+                    <li <% if (delay ) { %> style="color: red;" <%}%> onclick="location.href='/getById/<%=car._id%>/details/<%=car.stage%>'"  >
                         <div class="list">
                             <p class="rowsList"><%if(!history) {%><p class="priorityList"><%= car.priority %></p> <%}%>   
                                 <p><%= car.responsible%> <i class="bi bi-tools"></i></p>
