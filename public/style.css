@@ -566,6 +566,7 @@ ul li a:hover {
 }
 .cardParts{
   width: 26rem;
+  max-height: 40rem;
   border: rgba(49, 134, 204, 0.877) solid 0.1rem;
   border-radius: 0.4rem;
   position: relative;
@@ -575,6 +576,7 @@ ul li a:hover {
   align-items: center;
   flex-wrap: wrap;
   padding: .8rem;
+  overflow-y: auto;
 }
 .cardParts div{
   display: flex;
