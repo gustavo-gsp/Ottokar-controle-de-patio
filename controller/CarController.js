@@ -702,7 +702,7 @@ const orderParts = async (req, res) =>{
         if (car.parts) {
             parts = [...car.parts];
         }
-        if (req.body.servicos != null) {
+        if (req.body.servicos) {
             req.body.servicos.forEach((serv, index) =>{
                 servicesUpd[index] = {
                     service: serv,
@@ -712,7 +712,7 @@ const orderParts = async (req, res) =>{
             servicesUpd.push(end)
             services.push(...servicesUpd);
         }
-        if (req.body.pecas != null) {
+        if (req.body.pecas) {
             req.body.pecas.forEach((part, index) =>{
                 partsUpd[index] = {
                     part: part,
