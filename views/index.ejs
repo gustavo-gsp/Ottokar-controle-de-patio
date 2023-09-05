@@ -25,8 +25,8 @@
                 <a href="/carPage/today/a">Hoje</a>
                 <a href="/carPage/date1/a">Amanhã</a>
                 <%if(userFunc == "mec" || userFunc == "fun"){ %> <a href="/carPage/today/all">Todos</a> <% } %>
-                <% if(userFunc != "mec" && userFunc != "fun" && userFunc != "buyer") {%>
                 <a class="btnAdd" href="/carPage/today/addCar">Novo veículo</a>
+                <% if(userFunc != "mec" && userFunc != "fun" && userFunc != "buyer") {%>
             </div>    
                 <div class="menuDates">    
                 <a href="/carPage/date2/a"><%=week[1]%></a>
@@ -56,7 +56,7 @@
         
     </section>
 
-    <% if(userFunc != "mec" && userFunc != "fun" && userFunc != "buyer") {%>
+    <% if(userFunc != "buyer") {%>
         <section id="<%=addCar%>">
             <div>
                 <h1 >Adicionar Veículo</h1>
@@ -190,7 +190,7 @@
                 <div><label >Placa:</label>
                 <textarea readonly cols="8" rows="1"><%= plate %></textarea></div></div>
                 <div><div><label ><%if(history){%> Data agendamento: <%}else{%>Previsão:<%}%></label>
-                    <textarea id="forecastDetails" cols="<%if(history){%>15<%}else{%>10<%}%>" rows="1" <% if(history){%> readonly <%}%>
+                    <textarea  id="forecastDetails" cols="<%if(history){%>15<%}else{%>10<%}%>" rows="1" <% if(history){%> readonly <%}%>
                         onchange="updateDetail('<%=id%>', 'forecast','forecastDetails')"
                         > <%if(history){%> <%=date%> <%}else{%> <%=forecast %> <%}%></textarea></div>
                     <div><label >Status:</label>
@@ -446,6 +446,9 @@
                         let forecastMonth = parseInt(car.forecast.substring(3,5));
                         let forecastHour = parseInt(car.forecast.substring(6,8));
                         let forecastMinutes = parseInt(car.forecast.substring(9,11));
+                        if(currentmonth > forecastMonth){
+                            delay = true;
+                        }
                         if (currentDay > forecastDay && currentmonth >= forecastMonth){
                             delay = true;
                         }else if(currentDay == forecastDay){

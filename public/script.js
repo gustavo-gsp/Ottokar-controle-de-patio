@@ -318,9 +318,9 @@ function documentDetails (option){
   }
 }
 function updateDetail(id, change, selector){
-  //pegar get id, e value, depois enviar via fetch
   showLoading()
-  changeValue = document.getElementById(selector).value
+  changeValue = (document.getElementById(selector).value).trim();
+  
   const data = {
     changeValue: changeValue
   };

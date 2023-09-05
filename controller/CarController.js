@@ -637,10 +637,13 @@ const createCar = async (req, res) =>{
     const resp = (car.responsible).split('|');
 
     try{
-        await Car.create({
-            carName: car.carName.toUpperCase(),
-            plate: car.plate.toUpperCase(),
-            forecast: moment(car.forecast).format("DD/MM HH:mm"),
+        const carExist = await Car.findOne({plate: car.plate.toUpperCase()})
+        if(!carExist){
+
+            await Car.create({
+                carName: car.carName.toUpperCase(),
+                plate: car.plate.toUpperCase(),
+                forecast: moment(car.forecast).format("DD/MM HH:mm"),
             date: moment(car.date).format("DD/MM/YYYY HH:mm"),
             complaint: car.complaint,
             services: car.services,
@@ -656,7 +659,7 @@ const createCar = async (req, res) =>{
         const data = (carDetails.date).substring(0,10);
         const date = moment(data, "DD/MM/YYYY");
         const today = moment(dateToday, "DD/MM/YYYY");
-
+        
         cars.forEach(async(carResponsible)=>{
             const carData = (carResponsible.date).substring(0,10);
             const carDate = moment(carData, "DD/MM/YYYY");
@@ -665,20 +668,24 @@ const createCar = async (req, res) =>{
                     if(carResponsible.priority >= carDetails.priority){
                         let newPriority = carResponsible.priority+1;
                         await Car.updateOne({_id: carResponsible._id}, {$set: {priority: newPriority}})
-                        }    
+                    }    
                 }
             }else if(date.isSame(carDate)){
                 if(carResponsible.plate !== carDetails.plate){
                     if(carResponsible.priority >= carDetails.priority){
                         let newPriority = carResponsible.priority+1;
                         await Car.updateOne({_id: carResponsible._id}, {$set: {priority: newPriority}})
-                        }    
+                    }    
                 }
             }
         });
         message = 'Veículo adicionado com sucesso!'
         if(addCar == "addCarPhone") addCar = "addCarNone";
         return res.redirect('/carPage/today/a');
+    }else{
+        message = `Erro: Esse veículo já está cadastrado, e está em fase de ${carExist.stage}.`;
+        return res.redirect('/carPage/today/addCar');
+    }
     }catch (err) {
         message = "Erro: Requisição não concluída, tente novamente ou contate o suporte.";
         console.log(`${dateToday + userName} createCar: ${err.message}`)
