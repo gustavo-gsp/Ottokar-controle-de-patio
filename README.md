@@ -1,5 +1,7 @@
 # Ottokar-controle-de-patio
 
+#Software desenvolvimento com Javascript/NodeJS/MongoDB/EJS/HTML/CSS.
+
 Software web com aplicativo android que é baseado em uma WebView que reinderiza a pagina web no App.
 Um sistema de controle de patio de oficina mecanica, no qual os funcionarios conseguem ter controle sob toda a agenda de carros para manutenção. 
 
