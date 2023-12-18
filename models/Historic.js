@@ -38,7 +38,10 @@ const historicCarSchema = new mongoose.Schema ({
     },
     observation: {
         type: String
-    } 
+    },
+    vacancy: {
+        type: String
+    }    
 });
 
 module.exports = mongoose.model('Historic', historicCarSchema);

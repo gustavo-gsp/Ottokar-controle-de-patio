@@ -1,6 +1,7 @@
 const Car = require('../models/Car');
 const User = require('../models/User');
 const Historic = require('../models/Historic');
+const Vacancies = require('../models/Vacancies');
 const Bcrypt = require('bcrypt');
 const axios = require('axios')
 const cheerio = require('cheerio');
@@ -14,6 +15,7 @@ const { Cluster } = require('puppeteer-cluster');
 const { arMA } = require('date-fns/locale');
 
 let users = [];
+let vacancies = [];
 let carList = [];
 let responsibles = [];
 let message = "";
@@ -249,6 +251,7 @@ const getById = async (req, res) => {
 const getAllCars = async (req, res) => {
     try{
             users = await User.find();
+            vacancies = await Vacancies.find();
             const user = await User.findOne({_id: req.user});
             const carListAll = await Car.find();
             responsibles = await User.find({  $or: [
@@ -633,26 +636,63 @@ const updateDetail = async (req, res) =>{
 }
 
 const createCar = async (req, res) =>{
-    const car = req.body;
-    const resp = (car.responsible).split('|');
-
     try{
+        const car = req.body;
+        const resp = (car.responsible).split('|');
+        vacancies = await Vacancies.find();
+        let modelUpdt = [];
+        let vacancy = car.vacancy;
+        vacancy = (
+            vacancy === 'Zero' ? '0' : vacancy === 'One' ? '1' : vacancy === 'Two' ? '2' : vacancy === 'Three' ? '3' : vacancy === 'Four' ? '4' :
+            vacancy === 'Five' ? '5' : vacancy === 'Six' ? '6' : vacancy === 'Seven' ? '7' : vacancy === 'Eight' ? '8' : vacancy === 'Nine' ? '9' :
+            vacancy === 'Ten' ? '10' : vacancy === 'Eleven' ? '11' : vacancy === 'Twelve' ? '12' : vacancy === 'Thirteen' ? '13' : 
+            vacancy === 'Fourteen' ? '14' : vacancy === 'Fifteen' ? '15' : vacancy === 'Sixteen' ? '16' : vacancy === 'Seventeen' ? '17' :
+            vacancy === 'Eighteen' ? '18' : vacancy === 'Nineteen' ? '19' : vacancy === 'Parking' ?? 'Estacionamento'
+        );
+            
+        modelUpdt = vacancies.find(vacancy => vacancy.number === car.vacancy);
+        if(modelUpdt){
+            if(car.vacancy === 'Zero' || car.vacancy === 'Parking'){
+                modelUpdt.cars.push({
+                    carName: car.carName.toUpperCase(),
+                    plate: car.plate.toUpperCase(),
+                    entryDate: moment(car.date).format("DD/MM/YYYY HH:mm")
+                })
+                await Vacancies.updateOne({_id: modelUpdt._id},{$set:{cars: modelUpdt.cars}});
+            }else{
+                if(modelUpdt.plate !== ''){
+                    await Car.updateOne({plate: modelUpdt.plate}, {$set:{vacancy: '0'}});
+                    let vacancyZero = vacancies.find(vacancy => vacancy.number === 'Zero');
+                    vacancyZero.cars.push({
+                        carName: modelUpdt.carName,
+                        plate: modelUpdt.plate,
+                        entryDate: moment(car.date).format("DD/MM/YYYY HH:mm")
+                    })
+                    //adicionar ao historico da vaga e dar updateOne na vaga atual e na zero
+                }else{
+                    modelUpdt.carName = car.carName.toUpperCase();
+                    modelUpdt.plate = car.plate.toUpperCase();
+                    modelUpdt.entryDate = moment(car.date).format("DD/MM/YYYY HH:mm");
+                }
+            }    
+        }
+
         const carExist = await Car.findOne({plate: car.plate.toUpperCase()})
         if(!carExist){
-
             await Car.create({
                 carName: car.carName.toUpperCase(),
                 plate: car.plate.toUpperCase(),
                 forecast: moment(car.forecast).format("DD/MM HH:mm"),
-            date: moment(car.date).format("DD/MM/YYYY HH:mm"),
-            complaint: car.complaint,
-            services: car.services,
-            parts: car.parts,
-            responsible: resp[0],
-            specialty: car.specialty,
-            historic: `${moment().format("HH:mm DD/MM")} - ${userName} Agendou o veículo para ${moment(car.date).format("DD/MM/YYYY HH:mm")}`,
-            priority: car.priority
-        });       
+                date: moment(car.date).format("DD/MM/YYYY HH:mm"),
+                complaint: car.complaint,
+                services: car.services,
+                parts: car.parts,
+                responsible: resp[0],
+                specialty: car.specialty,
+                historic: `${moment().format("HH:mm DD/MM")} - ${userName} Agendou o veículo para ${moment(car.date).format("DD/MM/YYYY HH:mm")}`,
+                priority: car.priority,
+                vacancy: vacancy,
+            });       
         
         const carDetails = await Car.findOne({plate: car.plate.toUpperCase()});
         const cars = await Car.find({responsible: carDetails.responsible});

@@ -39,7 +39,11 @@ const carSchema = new mongoose.Schema({
     },
     observation: {
         type: String
+    },
+    vacancy: {
+        type: String
     }    
+
 });
 
 module.exports = mongoose.model('Car', carSchema);

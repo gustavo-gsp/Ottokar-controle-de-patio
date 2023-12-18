@@ -951,6 +951,7 @@ ul li a:hover {
   #addCarPhone .labelShow{
     display: flex;
     justify-content: center;
+    align-items: center;
     flex-basis: 100%;
     margin: .5rem;
   }
